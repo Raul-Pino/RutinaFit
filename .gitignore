@@ -1,0 +1,28 @@
+# --- JAVA / SPRING BOOT ---
+**/target/
+**.class
+**/mvnw
+**/mvnw.cmd
+**/.mvn/wrapper/maven-wrapper.properties
+
+# --- IDEs (IntelliJ, Eclipse, VS Code) ---
+**/.idea/
+**/*.iml
+**/.settings/
+**/.classpath
+**/.project
+**/.factorypath
+**/.vscode/
+
+# --- SISTEMA OPERATIVO ---
+.DS_Store
+Thumbs.db
+
+# --- FRONTEND (Si usaras Node/React en el futuro) ---
+**/node_modules/
+**/dist/
+.env
+
+# --- OTROS ---
+*.log
+temp/
