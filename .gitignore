@@ -4,6 +4,7 @@
 **/mvnw
 **/mvnw.cmd
 **/.mvn/wrapper/maven-wrapper.properties
+*.p12
 
 # --- IDEs (IntelliJ, Eclipse, VS Code) ---
 **/.idea/
