@@ -54,8 +54,13 @@ public class RutinaService {
     */
     public Rutina create(Long usuarioId, Rutina rutina) {
         Usuario usuario = usuarioRepository.findById(usuarioId)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
-
+            .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+            
+        long cantidad = rutinaRepository.countByUsuarioId(usuarioId);
+        if (cantidad >= usuario.getNivelSuscripcion().getLimiteRutinas()) {
+                throw new RuntimeException("Has alcanzado el límite de rutinas para tu plan " + usuario.getNivelSuscripcion());
+        }
+        
         rutina.setUsuario(usuario);
         return rutinaRepository.save(rutina);
     }

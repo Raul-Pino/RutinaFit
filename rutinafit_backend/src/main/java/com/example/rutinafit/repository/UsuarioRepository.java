@@ -24,4 +24,6 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
 
     @Query(value = "SELECT * FROM usuario WHERE rol != 'ADMIN'", nativeQuery = true)
     List<Usuario> findAllUsers();
+
+    long countByEntrenadorId(Long id);
 }

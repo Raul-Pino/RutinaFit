@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RutinaFit - Laboratorio Social y Tiers</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; display: flex; flex-wrap: wrap; gap: 20px; padding: 20px; background: #eef2f3; }
+        .card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 320px; }
+        h3 { color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 5px; }
+        input, select, button { width: 100%; padding: 10px; margin: 8px 0; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; }
+        button { background: #3498db; color: white; border: none; font-weight: bold; transition: 0.3s; }
+        button:hover { background: #2980b9; }
+        .status { padding: 8px; border-radius: 4px; font-size: 0.9em; min-height: 20px; }
+        .error { background: #ffdada; color: #a94442; border: 1px solid #ebccd1; }
+        .success { background: #dff0d8; color: #3c763d; border: 1px solid #d6e9c6; }
+        ul { padding-left: 20px; font-size: 0.9em; }
+        li { margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <h3>1. Acceso</h3>
+        <p style="font-size: 0.8em; color: #666;">Prueba con: usuario / 123456</p>
+        <input type="text" id="username" placeholder="Username" value="usuario">
+        <input type="password" id="password" placeholder="Password" value="123456">
+        <button onclick="login()">Obtener Token</button>
+        <div id="auth-status" class="status">Estado: No identificado</div>
+    </div>
+
+    <div class="card">
+        <h3>2. Social y Amistad</h3>
+        <input type="number" id="destId" placeholder="ID Destinatario (ej: 2)">
+        <select id="tipoSol">
+            <option value="AMISTAD">Amistad</option>
+            <option value="ENTRENAMIENTO">Entrenamiento</option>
+        </select>
+        <button onclick="enviarSolicitud()">Enviar Solicitud</button>
+        <div id="social-status" class="status"></div>
+    </div>
+
+    <div class="card">
+        <h3>3. Bandeja de Entrada</h3>
+        <button onclick="cargarPendientes()" style="background: #9b59b6;">Ver Peticiones</button>
+        <ul id="lista-pendientes"></ul>
+    </div>
+
+    <div class="card">
+        <h3>4. Límite de Rutinas</h3>
+        <p style="font-size: 0.8em;">Plan Gratis: Máx 3 rutinas.</p>
+        <button onclick="crearRutinaTest()" style="background: #e67e22;">Crear Rutina Rápida</button>
+        <div id="tier-status" class="status"></div>
+    </div>
+
+    <script>
+        let token = "";
+        const API_URL = "https://localhost:8443";
+
+        // Función de Login
+        async function login() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const status = document.getElementById('auth-status');
+
+            try {
+                const resp = await fetch(`${API_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+
+                if (resp.ok) {
+                    const data = await resp.json();
+                    token = data.token;
+                    status.className = "status success";
+                    status.innerText = "✅ Autenticado correctamente";
+                } else {
+                    status.className = "status error";
+                    status.innerText = "❌ Credenciales inválidas";
+                }
+            } catch (e) {
+                status.className = "status error";
+                status.innerText = "🔥 Error: ¿HTTPS aceptado?";
+            }
+        }
+
+        // Enviar solicitud (Amistad/Entrenador)
+        async function enviarSolicitud() {
+            const destId = document.getElementById('destId').value;
+            const tipo = document.getElementById('tipoSol').value;
+            const status = document.getElementById('social-status');
+
+            try {
+                const resp = await fetch(`${API_URL}/solicitudes/enviar/${destId}?tipo=${tipo}`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (resp.ok) {
+                    status.className = "status success";
+                    status.innerText = "✅ Petición enviada";
+                } else {
+                    const txt = await resp.text();
+                    status.className = "status error";
+                    status.innerText = "❌ " + txt;
+                }
+            } catch (e) { status.innerText = "🔥 Error de conexión"; }
+        }
+
+        // Cargar solicitudes pendientes
+        async function cargarPendientes() {
+            const lista = document.getElementById('lista-pendientes');
+            try {
+                const resp = await fetch(`${API_URL}/solicitudes/pendientes`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const solicitudes = await resp.json();
+                lista.innerHTML = "";
+                solicitudes.forEach(s => {
+                    lista.innerHTML += `<li>
+                        <b>De:</b> ${s.remitente.username} (${s.tipo}) <br>
+                        <button onclick="gestionar(${s.id}, 'aceptar')" style="width:45%; background:green;">Ok</button>
+                        <button onclick="gestionar(${s.id}, 'rechazar')" style="width:45%; background:red;">No</button>
+                    </li>`;
+                });
+            } catch (e) { alert("Inicia sesión primero"); }
+        }
+
+        async function gestionar(id, accion) {
+            await fetch(`${API_URL}/solicitudes/${id}/${accion}`, {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            cargarPendientes();
+        }
+
+        // Prueba de límites de Tiers (Punto 3 de nuestra implementación)
+        async function crearRutinaTest() {
+            const status = document.getElementById('tier-status');
+            try {
+                const resp = await fetch(`${API_URL}/rutinas`, {
+                    method: 'POST',
+                    headers: { 
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ nombre: "Rutina " + Date.now(), descripcion: "Prueba automática" })
+                });
+
+                if (resp.ok) {
+                    status.className = "status success";
+                    status.innerText = "✅ Rutina guardada";
+                } else {
+                    const txt = await resp.text();
+                    status.className = "status error";
+                    status.innerText = "⛔ Límite: " + txt;
+                }
+            } catch (e) { status.innerText = "🔥 Error conexión"; }
+        }
+    </script>
+</body>
+</html>

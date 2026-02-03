@@ -10,4 +10,5 @@ import java.util.List;
 public interface RutinaRepository extends JpaRepository<Rutina, Long> {
 
     List<Rutina> findByUsuarioId(Long usuarioId);
+    Long countByUsuarioId(Long id);
 }
