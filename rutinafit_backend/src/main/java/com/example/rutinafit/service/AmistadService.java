@@ -1,13 +1,17 @@
 package com.example.rutinafit.service;
 
+import com.example.rutinafit.dto.UsuarioResponse;
 import com.example.rutinafit.model.Amistad;
+import com.example.rutinafit.model.Usuario;
 import com.example.rutinafit.repository.AmistadRepository;
 import com.example.rutinafit.repository.SolicitudRepository;
+import com.example.rutinafit.repository.UsuarioRepository;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -17,8 +21,18 @@ public class AmistadService {
     private final AmistadRepository amistadRepository;
     private final SolicitudRepository solicitudRepository;
 
-    public List<Amistad> listarAmigos(Long usuarioId) {
-        return amistadRepository.findAllByUsuarioId(usuarioId);
+    public List<UsuarioResponse> listarMisAmigos(Long userId) {
+        List<Amistad> amistades = amistadRepository.findAllByUsuarioId(userId);
+
+        List<UsuarioResponse> respuesta = new ArrayList<>();
+
+        for(Amistad a : amistades){
+            Usuario amigo;
+            if(a.getUsuario1().getId().equals(userId)) amigo = a.getUsuario2();
+            else amigo = a.getUsuario1();
+            respuesta.add(new UsuarioResponse(amigo.getId(), amigo.getUsername(), amigo.isEsEntrenador()));
+        }
+        return respuesta;
     }
 
     @Transactional
@@ -32,9 +46,10 @@ public class AmistadService {
             throw new RuntimeException("No tienes permiso para eliminar esta amistad");
         }
 
-        solicitudRepository.borrarSolicitudAmistad(
+        solicitudRepository.borrarSolicitud(
             amistad.getUsuario1().getId(), 
-            amistad.getUsuario2().getId()
+            amistad.getUsuario2().getId(),
+            "AMISTAD"
         );
 
         amistadRepository.deleteById(amistadId);

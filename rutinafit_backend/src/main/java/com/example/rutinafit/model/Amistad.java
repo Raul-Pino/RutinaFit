@@ -11,11 +11,13 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 
 @Data
 @Entity
 @NoArgsConstructor
-@Table(name = "amistades")
+@Table(name = "amistades", 
+uniqueConstraints = { @UniqueConstraint(columnNames = {"usuario1_id", "usuario2_id"})})
 public class Amistad {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -30,15 +30,15 @@ public class SolicitudController {
 
     @PostMapping("/enviar")
     public ResponseEntity<?> enviar(
-        @Valid @RequestBody SolicitudRequest request, 
+        @Valid @RequestBody SolicitudRequest dto, 
         @RequestHeader("Authorization") String authHeader){
         Long remitenteId = jwtService.obtenerId(authHeader.substring(7));
-        solicitudService.enviarSolicitud(remitenteId, request);
+        solicitudService.enviarSolicitud(remitenteId, dto);
         return ResponseEntity.ok("Solicitud procesada");
     }
 
     @GetMapping("/pendientes")
-    public ResponseEntity<List<Solicitud>> listar(@RequestHeader("Authorization") String authHeader) {
+    public ResponseEntity<?> listar(@RequestHeader("Authorization") String authHeader) {
         Long usuarioId = jwtService.obtenerId(authHeader.substring(7));
         return ResponseEntity.ok(solicitudService.obtenerSolicitudesPendientes(usuarioId));
     }

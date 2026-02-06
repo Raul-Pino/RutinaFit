@@ -1,5 +1,6 @@
 package com.example.rutinafit.controller;
 
+import com.example.rutinafit.dto.UsuarioResponse;
 import com.example.rutinafit.dto.UsuarioUpdateRequest;
 import com.example.rutinafit.model.Usuario;
 import com.example.rutinafit.service.JwtService;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 
@@ -68,12 +70,20 @@ public class UsuarioController {
     }
 
     /*
+    * Buscar usuario por nombre
+    */
+    @GetMapping("/buscar")
+    public ResponseEntity<List<UsuarioResponse>> buscar(@RequestParam String nombre) {
+        return ResponseEntity.ok(usuarioService.buscarUsuarios(nombre));
+    }
+
+    /*
     * Listar los alumnos del entrenador
     */
     @GetMapping("/alumnos")
-    public ResponseEntity<List<Usuario>> getMisAlumnos(@RequestHeader("Authorization") String auth) {
-        Long entrenadorId = getUsuarioId(auth);
-        List<Usuario> alumnos = usuarioService.listarMisAlumnos(entrenadorId);
+    public ResponseEntity<?> getMisAlumnos(@RequestHeader("Authorization") String authHeader) {
+        Long entrenadorId = getUsuarioId(authHeader);
+        List<UsuarioResponse> alumnos = usuarioService.listarMisAlumnos(entrenadorId);
         return ResponseEntity.ok(alumnos);
     }
 
@@ -81,8 +91,8 @@ public class UsuarioController {
     * Eliminar entrenador
     */
     @PostMapping("/entrenador/quitar/{alumnoId}")
-    public ResponseEntity<?> quitarEntrenador(@PathVariable Long alumnoId, @RequestHeader("Authorization") String auth) {
-        Long solicitanteId = jwtService.obtenerId(auth.substring(7));
+    public ResponseEntity<?> quitarEntrenador(@PathVariable Long alumnoId, @RequestHeader("Authorization") String authHeader) {
+        Long solicitanteId = jwtService.obtenerId(authHeader.substring(7));
         usuarioService.dejarEntrenador(alumnoId, solicitanteId);
         return ResponseEntity.ok("Relación de entrenamiento finalizada");
     }

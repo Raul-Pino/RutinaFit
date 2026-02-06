@@ -1,5 +1,6 @@
 package com.example.rutinafit.controller;
 
+import com.example.rutinafit.dto.UsuarioResponse;
 import com.example.rutinafit.model.Amistad;
 import com.example.rutinafit.service.AmistadService;
 import com.example.rutinafit.service.JwtService;
@@ -28,9 +29,9 @@ public class AmistadController {
      * Lista todos los amigos del usuario logueado.
      */
     @GetMapping
-    public ResponseEntity<List<Amistad>> listarMisAmigos(@RequestHeader("Authorization") String authHeader) {
+    public ResponseEntity<List<UsuarioResponse>> listarMisAmigos(@RequestHeader("Authorization") String authHeader) {
         Long usuarioId = jwtService.obtenerId(authHeader.substring(7));
-        return ResponseEntity.ok(amistadService.listarAmigos(usuarioId));
+        return ResponseEntity.ok(amistadService.listarMisAmigos(usuarioId));
     }
 
     /**

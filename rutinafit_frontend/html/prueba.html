@@ -36,7 +36,7 @@
             <option value="AMISTAD">Amistad</option>
             <option value="ENTRENAMIENTO">Entrenamiento</option>
         </select>
-        <button onclick="enviarSolicitud()">Enviar Petición</button>
+        <button onclick="enviarSol()">Enviar Petición</button>
         <div id="social-status" class="status"></div>
     </div>
 
@@ -69,6 +69,18 @@
         <ul id="lista-alumnos"></ul>
     </div>
 
+    <div class="card">
+        <h3>7. Buscador de Usuarios</h3>
+        <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+            <input type="text" id="inputBusqueda" placeholder="Escribe un username..." style="flex-grow: 1;">
+            <button onclick="buscarUsuarios()" style="background: #007bff;">Buscar</button>
+        </div>
+        
+        <div id="resultados-busqueda" style="border-top: 1px solid #eee; padding-top: 10px;">
+            <p style="color: #666; font-size: 0.9em;">Los resultados aparecerán aquí...</p>
+        </div>
+    </div>
+
     <script>
         let token = "";
         const API_URL = "http://localhost:8080";
@@ -98,12 +110,16 @@
             }
         }
 
-        async function enviarSolicitud() {
+        function enviarSol() {
             const destId = document.getElementById('destId').value;
             const tipo = document.getElementById('tipoSol').value;
+            enviarSolicitud(destId, tipo)
+        }
+        
+        async function enviarSolicitud(destId, tipo) {
             const status = document.getElementById('social-status');
+
             try {
-                // Usando el nuevo SolicitudRequest (DTO)
                 const resp = await fetch(`${API_URL}/solicitudes/enviar`, {
                     method: 'POST',
                     headers: { 
@@ -179,8 +195,8 @@
                 const resp = await fetch(`${API_URL}/amistades`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
-                
-                if (!resp.ok) throw new Error("Error al obtener amigos");
+
+                if(!resp.ok) throw new Error("Error al obtener amigos");
                 
                 const amistades = await resp.json();
                 lista.innerHTML = "";
@@ -189,13 +205,13 @@
                     lista.innerHTML = "<li>No tienes amigos aún 😢</li>";
                     return;
                 }
-
+                console.log(amistades);
                 amistades.forEach(a => {
                     // Lógica para saber cuál de los dos usuarios eres tú y mostrar al "otro"
                     // Nota: Esto asume que el objeto Usuario tiene el campo 'username'
                     lista.innerHTML += `<li>
                         <b>ID Relación: ${a.id}</b><br>
-                        Amigo: ${a.usuario1.username} & ${a.usuario2.username}<br>
+                        Amigo: ${a.username}<br>
                         <small>Usa el ID ${a.id} para eliminarla</small>
                     </li>`;
                 });
@@ -233,6 +249,30 @@
                 alert("Error: " + e.message); 
             }
         }
+
+        async function buscarUsuarios() {
+            const nombre = document.getElementById('inputBusqueda').value;
+            const listaResultados = document.getElementById('resultados-busqueda');
+            
+            const resp = await fetch(`${API_URL}/usuarios/buscar?nombre=${nombre}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            
+            if (resp.ok) {
+                const usuarios = await resp.json();
+                listaResultados.innerHTML = "";
+
+                usuarios.forEach(u => {
+                    // Mostramos el nombre, pero el botón envía el ID
+                    listaResultados.innerHTML += `
+                    <li>
+                        ${u.username} ${u.esEntrenador ? '(Entrenador)' : ''}
+                        <button onclick="enviarSolicitud(${u.id}, 'AMISTAD')">Añadir</button>
+                        </li>`;
+                    });  
+                }
+        }
+
     </script>
 </body>
 </html>

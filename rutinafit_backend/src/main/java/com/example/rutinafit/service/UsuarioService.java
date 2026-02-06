@@ -1,5 +1,6 @@
 package com.example.rutinafit.service;
 
+import com.example.rutinafit.dto.UsuarioResponse;
 import com.example.rutinafit.dto.UsuarioUpdateRequest;
 import com.example.rutinafit.model.Usuario;
 import com.example.rutinafit.repository.SolicitudRepository;
@@ -19,14 +20,22 @@ public class UsuarioService {
     private final SolicitudRepository solicitudRepository;
 
     // LISTAR (Solo admins deberían poder hacer esto habitualmente)
-    public List<Usuario> findAll() {
-        return usuarioRepository.findAll();
+    public List<UsuarioResponse> findAll() {
+        return usuarioRepository.findAll().stream().map(this::transformarAResponse).toList();
     }
 
     // VER PERFIL
     public Usuario findById(Long id) {
         return usuarioRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+    }
+
+    // Buscar por Nombre de usuario
+    public List<UsuarioResponse> buscarUsuarios(String nombre) {
+        return usuarioRepository.findByUsernameContainingIgnoreCase(nombre)
+                .stream()
+                .map(u -> new UsuarioResponse(u.getId(), u.getUsername(), u.isEsEntrenador()))
+                .toList();
     }
 
     // ELIMINAR (Admin elimina usuario o usuario se da de baja)
@@ -57,13 +66,13 @@ public class UsuarioService {
         return usuarioRepository.save(usuarioExistente);
     }
 
-    public List<Usuario> listarMisAlumnos(Long entrenadorId) {
+    public List<UsuarioResponse> listarMisAlumnos(Long entrenadorId) {
         Usuario entrenador = findById(entrenadorId);
         if (!entrenador.isEsEntrenador()) {
             throw new RuntimeException("Solo los entrenadores pueden consultar su lista de alumnos.");
         }
 
-        return usuarioRepository.findByEntrenadorId(entrenadorId);
+        return usuarioRepository.findByEntrenadorId(entrenadorId).stream().map(this::transformarAResponse).toList();
     }
 
     @Transactional
@@ -81,9 +90,14 @@ public class UsuarioService {
                 throw new RuntimeException("No tienes permiso para romper esta relación");
         }
 
-        solicitudRepository.borrarSolicitudEntrenamiento(entrenador.getId(), alumno.getId());
+        solicitudRepository.borrarSolicitud(entrenador.getId(), alumno.getId(), "ENTRENAMIENTO");
 
         alumno.setEntrenador(null);
         usuarioRepository.save(alumno);
+    }
+
+    // "Transforma" un objeto usuario a un objeto que puede enviarse al frontEnd (Eliminando información sensible)
+    public UsuarioResponse transformarAResponse(Usuario usuario) {
+        return new UsuarioResponse(usuario.getId(), usuario.getUsername(), usuario.isEsEntrenador());
     }
 }
