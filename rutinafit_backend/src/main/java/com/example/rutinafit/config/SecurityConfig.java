@@ -33,7 +33,7 @@ public class SecurityConfig {
         @Override
         public void addCorsMappings(CorsRegistry registry) {
             registry.addMapping("/**")
-                    .allowedOrigins("*") // Para pruebas, permite todo
+                    .allowedOrigins("*") //Para pruebas, permite todo
                     .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                     .allowedHeaders("*");
         }

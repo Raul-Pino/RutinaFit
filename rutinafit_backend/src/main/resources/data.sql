@@ -29,6 +29,7 @@ CREATE TABLE usuarios (
     email VARCHAR(255) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
     rol VARCHAR(255) NOT NULL,
+    es_entrenador BOOLEAN DEFAULT FALSE,
     nivel_suscripcion VARCHAR(20) DEFAULT 'GRATIS', 
     entrenador_id BIGINT,
     CONSTRAINT fk_usuario_entrenador FOREIGN KEY (entrenador_id) REFERENCES usuarios(usuario_id)
@@ -97,10 +98,10 @@ CREATE TABLE solicitudes (
 -- =======================================================
 -- NOTA: La contraseña es '123456' en texto plano. 
 -- Si usas BCrypt en el backend, estos logins fallarán hasta que uses hashes reales.
-INSERT INTO usuarios (username, email, password, rol, nivel_suscripcion) VALUES 
-('admin', 'admin@correo.com', '$2a$10$dmkVr.E0jsbk5.rq0IxZAe/QdQPsTDXoy3DRo1StFdPB676e4Ve4S', 'ADMIN', 'TIER2'),
-('entrenador', 'entrenador@correo.com', '$2a$10$dmkVr.E0jsbk5.rq0IxZAe/QdQPsTDXoy3DRo1StFdPB676e4Ve4S', 'ENTRENADOR', 'TIER1'),
-('usuario', 'usuario@correo.com', '$2a$10$dmkVr.E0jsbk5.rq0IxZAe/QdQPsTDXoy3DRo1StFdPB676e4Ve4S', 'USER', 'GRATIS');
+INSERT INTO usuarios (username, email, password, rol, es_entrenador, nivel_suscripcion) VALUES 
+('admin', 'admin@correo.com', '$2a$10$dmkVr.E0jsbk5.rq0IxZAe/QdQPsTDXoy3DRo1StFdPB676e4Ve4S', 'ADMIN', 'FALSE', 'TIER2'),
+('entrenador', 'entrenador@correo.com', '$2a$10$dmkVr.E0jsbk5.rq0IxZAe/QdQPsTDXoy3DRo1StFdPB676e4Ve4S', 'ENTRENADOR', 'TRUE', 'TIER1'),
+('usuario', 'usuario@correo.com', '$2a$10$dmkVr.E0jsbk5.rq0IxZAe/QdQPsTDXoy3DRo1StFdPB676e4Ve4S', 'USER', 'FALSE','GRATIS');
 
 -- =======================================================
 -- 2. CATÁLOGO DE EJERCICIOS (Info)

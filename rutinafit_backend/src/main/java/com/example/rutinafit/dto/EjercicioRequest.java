@@ -1,20 +1,18 @@
 package com.example.rutinafit.dto;
 
 import jakarta.validation.constraints.NotNull;
-import lombok.Data;
 
-@Data
-public class EjercicioRequest {
-    
+public record EjercicioRequest(
     // El ID del tipo de ejercicio (ej: 5 = Press Banca)
     @NotNull(message = "Debes indicar el tipo de ejercicio")
-    private Long ejercicioInfoId;
+    Long ejercicioInfoId,
 
     // param1: Puede ser Peso (kg) o Distancia (km)
     @NotNull
-    private Double param1;
+    Double param1,
 
     // param2: Puede ser Repeticiones o Tiempo (min)
     @NotNull
-    private Double param2;
+    Double param2
+) {
 }

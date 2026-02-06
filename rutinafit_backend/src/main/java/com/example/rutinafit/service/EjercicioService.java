@@ -49,7 +49,7 @@ public class EjercicioService {
         }
 
         // 2. Validar Tipo de Ejercicio
-        EjercicioInfo info = ejercicioInfoRepository.findById(request.getEjercicioInfoId())
+        EjercicioInfo info = ejercicioInfoRepository.findById(request.ejercicioInfoId())
                 .orElseThrow(() -> new RuntimeException("El tipo de ejercicio no existe"));
 
         // 3. Crear Entidad
@@ -58,8 +58,8 @@ public class EjercicioService {
         ejercicio.setEjercicioInfo(info);
         
         // Aquí asignamos los valores genéricos
-        ejercicio.setParam1(request.getParam1()); 
-        ejercicio.setParam2(request.getParam2());
+        ejercicio.setParam1(request.param1()); 
+        ejercicio.setParam2(request.param2());
 
         return ejercicioRepository.save(ejercicio);
     }
@@ -75,11 +75,11 @@ public class EjercicioService {
             throw new RuntimeException("No autorizado");
         }
 
-        ejercicio.setParam1(request.getParam1());
-        ejercicio.setParam2(request.getParam2());
+        ejercicio.setParam1(request.param1());
+        ejercicio.setParam2(request.param2());
 
-        if (!ejercicio.getEjercicioInfo().getId().equals(request.getEjercicioInfoId())) {
-            EjercicioInfo info = ejercicioInfoRepository.findById(request.getEjercicioInfoId())
+        if (!ejercicio.getEjercicioInfo().getId().equals(request.ejercicioInfoId())) {
+            EjercicioInfo info = ejercicioInfoRepository.findById(request.ejercicioInfoId())
                     .orElseThrow(() -> new RuntimeException("El tipo de ejercicio no existe"));
             ejercicio.setEjercicioInfo(info);
         }

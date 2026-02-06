@@ -2,113 +2,122 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RutinaFit - Laboratorio Social y Tiers</title>
+    <title>RutinaFit - Laboratorio Social V2</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; display: flex; flex-wrap: wrap; gap: 20px; padding: 20px; background: #eef2f3; }
-        .card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 320px; }
-        h3 { color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 5px; }
-        input, select, button { width: 100%; padding: 10px; margin: 8px 0; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; }
-        button { background: #3498db; color: white; border: none; font-weight: bold; transition: 0.3s; }
-        button:hover { background: #2980b9; }
-        .status { padding: 8px; border-radius: 4px; font-size: 0.9em; min-height: 20px; }
-        .error { background: #ffdada; color: #a94442; border: 1px solid #ebccd1; }
-        .success { background: #dff0d8; color: #3c763d; border: 1px solid #d6e9c6; }
-        ul { padding-left: 20px; font-size: 0.9em; }
-        li { margin-bottom: 10px; }
+        body { font-family: 'Segoe UI', sans-serif; display: flex; flex-wrap: wrap; gap: 20px; padding: 20px; background: #f0f2f5; }
+        .card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); width: 350px; }
+        h3 { color: #1a73e8; border-bottom: 2px solid #e8f0fe; padding-bottom: 10px; }
+        input, select, button { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #dadce0; border-radius: 8px; box-sizing: border-box; }
+        button { background: #1a73e8; color: white; border: none; font-weight: bold; cursor: pointer; }
+        button:hover { background: #1765d1; }
+        .btn-danger { background: #d93025; }
+        .btn-danger:hover { background: #b92118; }
+        .status { padding: 10px; border-radius: 6px; font-size: 0.9em; margin-top: 10px; min-height: 20px; }
+        .error { background: #fce8e6; color: #d93025; }
+        .success { background: #e6f4ea; color: #1e8e3e; }
+        ul { list-style: none; padding: 0; }
+        li { background: #f8f9fa; padding: 10px; margin-bottom: 8px; border-radius: 6px; border-left: 4px solid #1a73e8; }
     </style>
 </head>
 <body>
 
     <div class="card">
-        <h3>1. Acceso</h3>
-        <p style="font-size: 0.8em; color: #666;">Prueba con: usuario / 123456</p>
-        <input type="text" id="username" placeholder="Username" value="usuario">
+        <h3>1. Autenticación</h3>
+        <input type="text" id="email" placeholder="Usuario" value="usuario@correo.com">
         <input type="password" id="password" placeholder="Password" value="123456">
-        <button onclick="login()">Obtener Token</button>
-        <div id="auth-status" class="status">Estado: No identificado</div>
+        <button onclick="login()">Loguearse (HTTP 8080)</button>
+        <div id="auth-status" class="status">Estado: Desconectado</div>
     </div>
 
     <div class="card">
-        <h3>2. Social y Amistad</h3>
-        <input type="number" id="destId" placeholder="ID Destinatario (ej: 2)">
+        <h3>2. Enviar Solicitud (DTO)</h3>
+        <input type="number" id="destId" placeholder="ID del destinatario">
         <select id="tipoSol">
             <option value="AMISTAD">Amistad</option>
             <option value="ENTRENAMIENTO">Entrenamiento</option>
         </select>
-        <button onclick="enviarSolicitud()">Enviar Solicitud</button>
+        <button onclick="enviarSolicitud()">Enviar Petición</button>
         <div id="social-status" class="status"></div>
     </div>
 
     <div class="card">
         <h3>3. Bandeja de Entrada</h3>
-        <button onclick="cargarPendientes()" style="background: #9b59b6;">Ver Peticiones</button>
+        <button onclick="cargarPendientes()" style="background: #34a853;">Refrescar Pendientes</button>
         <ul id="lista-pendientes"></ul>
     </div>
 
     <div class="card">
-        <h3>4. Límite de Rutinas</h3>
-        <p style="font-size: 0.8em;">Plan Gratis: Máx 3 rutinas.</p>
-        <button onclick="crearRutinaTest()" style="background: #e67e22;">Crear Rutina Rápida</button>
-        <div id="tier-status" class="status"></div>
+        <h3>4. Romper Relaciones</h3>
+        <p style="font-size: 0.8em; color: #666;">Introduce el ID de la <b>Amistad</b> o del <b>Alumno</b>:</p>
+        <input type="number" id="relacionId" placeholder="ID Amistad / ID Alumno">
+        
+        <button class="btn-danger" onclick="romperAmistad()">Eliminar Amistad</button>
+        <button class="btn-danger" onclick="quitarEntrenador()" style="margin-top: 4px;">Quitar Entrenador/Alumno</button>
+        
+        <div id="rel-status" class="status"></div>
+    </div>
+
+        <div class="card">
+        <h3>5. Mis Amigos</h3>
+        <button onclick="cargarAmigos()" style="background: #4285f4;">Ver Lista de Amigos</button>
+        <ul id="lista-amigos"></ul>
+    </div>
+
+    <div class="card">
+        <h3>6. Mis Alumnos</h3>
+        <button onclick="cargarAlumnos()" style="background: #f4b400; color: black;">Ver Lista de Alumnos</button>
+        <ul id="lista-alumnos"></ul>
     </div>
 
     <script>
         let token = "";
-        const API_URL = "https://localhost:8443";
+        const API_URL = "http://localhost:8080";
 
-        // Función de Login
         async function login() {
-            const username = document.getElementById('username').value;
+            const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
             const status = document.getElementById('auth-status');
-
             try {
                 const resp = await fetch(`${API_URL}/auth/login`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username, password })
+                    body: JSON.stringify({ email, password })
                 });
-
                 if (resp.ok) {
                     const data = await resp.json();
                     token = data.token;
                     status.className = "status success";
-                    status.innerText = "✅ Autenticado correctamente";
+                    status.innerText = "✅ Conectado";
                 } else {
                     status.className = "status error";
-                    status.innerText = "❌ Credenciales inválidas";
+                    status.innerText = "❌ Error en credenciales";
                 }
             } catch (e) {
                 status.className = "status error";
-                status.innerText = "🔥 Error: ¿HTTPS aceptado?";
+                status.innerText = "🔥 Servidor caído o error CORS";
             }
         }
 
-        // Enviar solicitud (Amistad/Entrenador)
         async function enviarSolicitud() {
             const destId = document.getElementById('destId').value;
             const tipo = document.getElementById('tipoSol').value;
             const status = document.getElementById('social-status');
-
             try {
-                const resp = await fetch(`${API_URL}/solicitudes/enviar/${destId}?tipo=${tipo}`, {
+                // Usando el nuevo SolicitudRequest (DTO)
+                const resp = await fetch(`${API_URL}/solicitudes/enviar`, {
                     method: 'POST',
-                    headers: { 'Authorization': `Bearer ${token}` }
+                    headers: { 
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ destinatarioId: parseInt(destId), tipo: tipo })
                 });
-
-                if (resp.ok) {
-                    status.className = "status success";
-                    status.innerText = "✅ Petición enviada";
-                } else {
-                    const txt = await resp.text();
-                    status.className = "status error";
-                    status.innerText = "❌ " + txt;
-                }
+                const msg = await resp.text();
+                status.className = resp.ok ? "status success" : "status error";
+                status.innerText = resp.ok ? "✅ " + msg : "❌ " + msg;
             } catch (e) { status.innerText = "🔥 Error de conexión"; }
         }
 
-        // Cargar solicitudes pendientes
         async function cargarPendientes() {
             const lista = document.getElementById('lista-pendientes');
             try {
@@ -119,12 +128,12 @@
                 lista.innerHTML = "";
                 solicitudes.forEach(s => {
                     lista.innerHTML += `<li>
-                        <b>De:</b> ${s.remitente.username} (${s.tipo}) <br>
-                        <button onclick="gestionar(${s.id}, 'aceptar')" style="width:45%; background:green;">Ok</button>
-                        <button onclick="gestionar(${s.id}, 'rechazar')" style="width:45%; background:red;">No</button>
+                        <b>De:</b> ${s.remitente.username} (${s.tipo})<br>
+                        <button onclick="gestionar(${s.id}, 'aceptar')" style="width:48%; background:green;">Aceptar</button>
+                        <button onclick="gestionar(${s.id}, 'rechazar')" style="width:48%; background:red;">Rechazar</button>
                     </li>`;
                 });
-            } catch (e) { alert("Inicia sesión primero"); }
+            } catch (e) { alert("Error al cargar pendientes"); }
         }
 
         async function gestionar(id, accion) {
@@ -135,28 +144,94 @@
             cargarPendientes();
         }
 
-        // Prueba de límites de Tiers (Punto 3 de nuestra implementación)
-        async function crearRutinaTest() {
-            const status = document.getElementById('tier-status');
-            try {
-                const resp = await fetch(`${API_URL}/rutinas`, {
-                    method: 'POST',
-                    headers: { 
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ nombre: "Rutina " + Date.now(), descripcion: "Prueba automática" })
-                });
+        // --- FUNCIONES PARA ROMPER RELACIONES ---
 
-                if (resp.ok) {
-                    status.className = "status success";
-                    status.innerText = "✅ Rutina guardada";
-                } else {
-                    const txt = await resp.text();
-                    status.className = "status error";
-                    status.innerText = "⛔ Límite: " + txt;
+        async function romperAmistad() {
+            const id = document.getElementById('relacionId').value;
+            const status = document.getElementById('rel-status');
+            try {
+                const resp = await fetch(`${API_URL}/amistades/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                status.className = resp.ok ? "status success" : "status error";
+                status.innerText = resp.ok ? "✅ Amistad eliminada y solicitud borrada" : "❌ Error al borrar";
+            } catch (e) { status.innerText = "🔥 Error de red"; }
+        }
+
+        async function quitarEntrenador() {
+            const alumnoId = document.getElementById('relacionId').value;
+            const status = document.getElementById('rel-status');
+
+            try {
+                const resp = await fetch(`${API_URL}/usuarios/entrenador/quitar/${alumnoId}`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                status.className = resp.ok ? "status success" : "status error";
+                status.innerText = resp.ok ? "✅ Vínculo roto y solicitud borrada" : "❌ No tienes permiso";
+            } catch (e) { status.innerText = "🔥 Error de red"; }
+        }
+
+        async function cargarAmigos() {
+            const lista = document.getElementById('lista-amigos');
+            try {
+                const resp = await fetch(`${API_URL}/amistades`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                if (!resp.ok) throw new Error("Error al obtener amigos");
+                
+                const amistades = await resp.json();
+                lista.innerHTML = "";
+                
+                if (amistades.length === 0) {
+                    lista.innerHTML = "<li>No tienes amigos aún 😢</li>";
+                    return;
                 }
-            } catch (e) { status.innerText = "🔥 Error conexión"; }
+
+                amistades.forEach(a => {
+                    // Lógica para saber cuál de los dos usuarios eres tú y mostrar al "otro"
+                    // Nota: Esto asume que el objeto Usuario tiene el campo 'username'
+                    lista.innerHTML += `<li>
+                        <b>ID Relación: ${a.id}</b><br>
+                        Amigo: ${a.usuario1.username} & ${a.usuario2.username}<br>
+                        <small>Usa el ID ${a.id} para eliminarla</small>
+                    </li>`;
+                });
+            } catch (e) { 
+                alert("Error: " + e.message); 
+            }
+        }
+
+        async function cargarAlumnos() {
+            const lista = document.getElementById('lista-alumnos');
+            try {
+                const resp = await fetch(`${API_URL}/usuarios/alumnos`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                if (!resp.ok) throw new Error("Error al obtener alumnos o no eres entrenador");
+                
+                const alumnos = await resp.json();
+                lista.innerHTML = "";
+                
+                if (alumnos.length === 0) {
+                    lista.innerHTML = "<li>No tienes alumnos asignados todavía.</li>";
+                    return;
+                }
+
+                alumnos.forEach(alumno => {
+                    // Aquí mostramos el ID del alumno para que puedas usarlo en "Romper Relaciones"
+                    lista.innerHTML += `<li>
+                        <b>ID Alumno: ${alumno.id}</b><br>
+                        Nombre: ${alumno.username}<br>
+                        <small>Usa el ID ${alumno.id} para desvincularlo</small>
+                    </li>`;
+                });
+            } catch (e) { 
+                alert("Error: " + e.message); 
+            }
         }
     </script>
 </body>

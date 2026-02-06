@@ -29,7 +29,7 @@ public class AmistadController {
      */
     @GetMapping
     public ResponseEntity<List<Amistad>> listarMisAmigos(@RequestHeader("Authorization") String authHeader) {
-        Long usuarioId = jwtService.obetenerId(authHeader.substring(7));
+        Long usuarioId = jwtService.obtenerId(authHeader.substring(7));
         return ResponseEntity.ok(amistadService.listarAmigos(usuarioId));
     }
 
@@ -41,7 +41,7 @@ public class AmistadController {
             @PathVariable Long id,
             @RequestHeader("Authorization") String authHeader) {
         
-        Long usuarioId = jwtService.obetenerId(authHeader.substring(7));
+        Long usuarioId = jwtService.obtenerId(authHeader.substring(7));
         amistadService.eliminarAmistad(id, usuarioId);
         return ResponseEntity.noContent().build();
     }

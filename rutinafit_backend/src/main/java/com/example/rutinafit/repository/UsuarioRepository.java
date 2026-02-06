@@ -19,11 +19,12 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
 
     Optional<Usuario> findByEmail(String email);
 
-    @Query(value = "SELECT * FROM usuario WHERE rol = 'entrenador'", nativeQuery = true)
-    List<Usuario> findAllEntrenadores();
-
     @Query(value = "SELECT * FROM usuario WHERE rol != 'ADMIN'", nativeQuery = true)
     List<Usuario> findAllUsers();
 
     long countByEntrenadorId(Long id);
+
+    List<Usuario> findByEsEntrenadorTrue();
+
+    List<Usuario> findByEntrenadorId(Long entrenadorId);
 }

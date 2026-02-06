@@ -71,6 +71,6 @@ public class SesionController {
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             throw new RuntimeException("Token inválido");
         }
-        return jwtService.obetenerId(authHeader.substring(7));
+        return jwtService.obtenerId(authHeader.substring(7));
     }
 }

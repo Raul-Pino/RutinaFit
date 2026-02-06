@@ -9,6 +9,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.example.rutinafit.dto.SolicitudRequest;
 import com.example.rutinafit.model.Amistad;
 import com.example.rutinafit.model.Solicitud;
 import com.example.rutinafit.model.Usuario;
@@ -23,20 +24,27 @@ public class SolicitudService {
     private final UsuarioRepository usuarioRepository;
     private final AmistadRepository amistadRepository;
 
-    public Solicitud enviarSolicitud(Long remitenteId, Long destinatarioId, String tipo) {
-        if (solicitudRepository.existsByRemitenteIdAndDestinatarioIdAndEstado(remitenteId, destinatarioId, "PENDIENTE")) {
-            throw new RuntimeException("Ya existe una solicitud pendiente");
+    @Transactional
+    public void enviarSolicitud(Long remitenteId, SolicitudRequest dto) {
+        Usuario remitente = usuarioRepository.findById(remitenteId)
+                .orElseThrow(() -> new RuntimeException("Remitente no encontrado"));
+        Usuario destinatario = usuarioRepository.findById(dto.destinatarioId())
+                .orElseThrow(() -> new RuntimeException("Destinatario no encontrado"));
+        
+        if(dto.tipo().equals("ENTRENAMIENTO") && !destinatario.isEsEntrenador()){
+            throw new RuntimeException("Este usuario no es entrenador");
         }
+        if(remitenteId == destinatario.getId()){
+            throw new RuntimeException("No te puedes enviar una solicitud a ti mismo");
+        }
+                
+        Solicitud nueva = new Solicitud();
+        nueva.setRemitente(remitente);
+        nueva.setDestinatario(destinatario);
+        nueva.setTipo(dto.tipo());
+        nueva.setEstado("PENDIENTE");
 
-        Usuario rem = usuarioRepository.findById(remitenteId).orElseThrow();
-        Usuario dest = usuarioRepository.findById(destinatarioId).orElseThrow();
-
-        Solicitud sol = new Solicitud();
-        sol.setRemitente(rem);
-        sol.setDestinatario(dest);
-        sol.setTipo(tipo);
-        sol.setEstado("PENDIENTE");
-        return solicitudRepository.save(sol);
+        solicitudRepository.save(nueva);
     }
 
     /**

@@ -55,6 +55,9 @@ public class Usuario {
     @Column(nullable = false)
     private String rol;
 
+    @Column(nullable = false)
+    private boolean esEntrenador = false;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "nivel_suscripcion")
     private NivelSuscripcion nivelSuscripcion = NivelSuscripcion.GRATIS;

@@ -1,15 +1,20 @@
 package com.example.rutinafit.controller;
 
+import com.example.rutinafit.dto.UsuarioUpdateRequest;
 import com.example.rutinafit.model.Usuario;
 import com.example.rutinafit.service.JwtService;
 import com.example.rutinafit.service.UsuarioService;
 import lombok.RequiredArgsConstructor;
+
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -55,11 +60,31 @@ public class UsuarioController {
      */
     @PutMapping("/perfil")
     public ResponseEntity<Usuario> actualizarMiPerfil(
-            @RequestBody Usuario usuarioDatosNuevos,
+            @RequestBody UsuarioUpdateRequest dto,
             @RequestHeader("Authorization") String authHeader){
         
         Long myId = getUsuarioId(authHeader);
-        return ResponseEntity.ok(usuarioService.update(myId, usuarioDatosNuevos));
+        return ResponseEntity.ok(usuarioService.update(myId, dto));
+    }
+
+    /*
+    * Listar los alumnos del entrenador
+    */
+    @GetMapping("/alumnos")
+    public ResponseEntity<List<Usuario>> getMisAlumnos(@RequestHeader("Authorization") String auth) {
+        Long entrenadorId = getUsuarioId(auth);
+        List<Usuario> alumnos = usuarioService.listarMisAlumnos(entrenadorId);
+        return ResponseEntity.ok(alumnos);
+    }
+
+    /*
+    * Eliminar entrenador
+    */
+    @PostMapping("/entrenador/quitar/{alumnoId}")
+    public ResponseEntity<?> quitarEntrenador(@PathVariable Long alumnoId, @RequestHeader("Authorization") String auth) {
+        Long solicitanteId = jwtService.obtenerId(auth.substring(7));
+        usuarioService.dejarEntrenador(alumnoId, solicitanteId);
+        return ResponseEntity.ok("Relación de entrenamiento finalizada");
     }
 
     // ===============
@@ -105,7 +130,7 @@ public class UsuarioController {
             throw new RuntimeException("Token inválido");
         }
         String token = authHeader.substring(7);
-        return jwtService.obetenerId(token);
+        return jwtService.obtenerId(token);
     }
 
     private boolean esAdmin(String authHeader) {

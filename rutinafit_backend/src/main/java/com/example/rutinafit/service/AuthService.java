@@ -23,25 +23,25 @@ public class AuthService {
          */
         public AuthResponse register(RegisterRequest request) {
                 // 1. Validar que el usuario no exista ya
-                if (usuarioRepository.existsByUsername(request.getUsername())) {
+                if (usuarioRepository.existsByUsername(request.username())) {
                         throw new RuntimeException("El nombre de usuario ya existe");
                 }
-                if (usuarioRepository.existsByEmail(request.getEmail())) {
+                if (usuarioRepository.existsByEmail(request.email())) {
                         throw new RuntimeException("El email ya está registrado");
                 }
 
                 // 2. Construir el objeto Usuario
                 Usuario usuario = new Usuario();
-                usuario.setUsername(request.getUsername());
-                usuario.setEmail(request.getEmail());
+                usuario.setUsername(request.username());
+                usuario.setEmail(request.email());
                 //usuario.setPassword(request.getPassword());
 
                 // 3. ENCRIPTAR la contraseña antes de guardar
-                usuario.setPassword(encoder.encode(request.getPassword()));
+                usuario.setPassword(encoder.encode(request.password()));
 
                 // 4. Asignar el ROL elegido en el registro
                 // Lo pasamos a mayúsculas para mantener consistencia (admin -> ADMIN)
-                usuario.setRol(request.getRol().toUpperCase());
+                usuario.setRol(request.rol().toUpperCase());
 
                 // 5. Guardar en Base de Datos
                 Usuario usuarioGuardado = usuarioRepository.save(usuario);
@@ -65,14 +65,14 @@ public class AuthService {
          */
         public AuthResponse login(LoginRequest request) {
                 // 1. Buscar usuario por email
-                Usuario usuario = usuarioRepository.findByEmail(request.getEmail())
+                Usuario usuario = usuarioRepository.findByEmail(request.email())
                         .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
                 // 2. Comprobamos que la contraseña es correcta
                 // if (!usuario.getPassword().equals(request.getPassword())) {
                 //         throw new RuntimeException("Contraseña incorrecta");
                 // }
-                if(!encoder.matches(request.getPassword(), usuario.getPassword())){
+                if(!encoder.matches(request.password(), usuario.getPassword())){
                         throw new RuntimeException("Contraseña incorrecta");
                 }
 

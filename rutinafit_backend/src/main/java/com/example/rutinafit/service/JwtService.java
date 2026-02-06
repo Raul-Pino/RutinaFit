@@ -38,7 +38,7 @@ public class JwtService {
         }
     }
 
-    public Long obetenerId(String token) {
+    public Long obtenerId(String token) {
         try {
             Claims claims = getClaims(token);
             return claims.get("id", Long.class); 

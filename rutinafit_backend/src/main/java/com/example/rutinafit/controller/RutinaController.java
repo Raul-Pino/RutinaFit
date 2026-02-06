@@ -97,6 +97,6 @@ public class RutinaController {
             throw new RuntimeException("Token inválido o inexistente");
         }
         String token = authHeader.substring(7);
-        return jwtService.obetenerId(token);
+        return jwtService.obtenerId(token);
     }
 }
