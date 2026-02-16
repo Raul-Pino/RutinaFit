@@ -254,7 +254,7 @@
             const nombre = document.getElementById('inputBusqueda').value;
             const listaResultados = document.getElementById('resultados-busqueda');
             
-            const resp = await fetch(`${API_URL}/usuarios/buscar?nombre=${nombre}`, {
+            const resp = await fetch(`${API_URL}/usuarios/buscar?username=${nombre}`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             

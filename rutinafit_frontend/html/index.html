@@ -23,12 +23,6 @@
         <input type="text" id="username" placeholder="Usuario (solo registro)" class="hidden">
         <input type="email" id="email" placeholder="Email" required>
         <input type="password" id="password" placeholder="Contraseña" required>
-        
-        <select id="rol" class="hidden">
-            <option value="USER">Usuario</option>
-            <option value="ADMIN">Administrador</option>
-            <option value="ENTRENADOR">Entrenador</option>
-        </select>
 
         <button type="submit" id="submitBtn">Entrar</button>
     </form>
@@ -39,7 +33,7 @@
 
 <script>
     let isRegister = false;
-    const API_URL = 'https://localhost:8443/auth';
+    const API_URL = 'http://localhost:8080/auth';
 
     function toggleMode() {
         isRegister = !isRegister;
@@ -48,7 +42,6 @@
         document.querySelector('.toggle').innerText = isRegister ? '¿Ya tienes cuenta? Inicia sesión' : '¿No tienes cuenta? Regístrate';
         
         document.getElementById('username').classList.toggle('hidden');
-        document.getElementById('rol').classList.toggle('hidden');
     }
 
     document.getElementById('authForm').addEventListener('submit', async (e) => {
@@ -62,10 +55,11 @@
 
         if (isRegister) {
             body.username = document.getElementById('username').value;
-            body.rol = document.getElementById('rol').value;
         }
 
         try {
+            console.log(API_URL)
+            console.log(endpoint)
             const res = await fetch(API_URL + endpoint, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },

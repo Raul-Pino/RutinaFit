@@ -1,7 +1,6 @@
 package com.example.rutinafit.controller;
 
 import com.example.rutinafit.dto.SolicitudRequest;
-import com.example.rutinafit.model.Solicitud;
 import com.example.rutinafit.service.JwtService;
 import com.example.rutinafit.service.SolicitudService;
 
@@ -17,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
 
 @RestController
 @RequestMapping("/solicitudes")

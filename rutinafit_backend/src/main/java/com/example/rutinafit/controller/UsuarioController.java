@@ -5,6 +5,8 @@ import com.example.rutinafit.dto.UsuarioUpdateRequest;
 import com.example.rutinafit.model.Usuario;
 import com.example.rutinafit.service.JwtService;
 import com.example.rutinafit.service.UsuarioService;
+
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
@@ -61,8 +63,8 @@ public class UsuarioController {
      * Actualizar datos de perfil
      */
     @PutMapping("/perfil")
-    public ResponseEntity<Usuario> actualizarMiPerfil(
-            @RequestBody UsuarioUpdateRequest dto,
+    public ResponseEntity<UsuarioResponse> actualizarPerfil(
+            @Valid @RequestBody UsuarioUpdateRequest dto,
             @RequestHeader("Authorization") String authHeader){
         
         Long myId = getUsuarioId(authHeader);
@@ -73,8 +75,8 @@ public class UsuarioController {
     * Buscar usuario por nombre
     */
     @GetMapping("/buscar")
-    public ResponseEntity<List<UsuarioResponse>> buscar(@RequestParam String nombre) {
-        return ResponseEntity.ok(usuarioService.buscarUsuarios(nombre));
+    public ResponseEntity<List<UsuarioResponse>> buscar(@RequestParam String username) {
+        return ResponseEntity.ok(usuarioService.buscarUsuarios(username));
     }
 
     /*

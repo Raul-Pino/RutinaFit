@@ -11,30 +11,23 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
 
 @Data
 @Entity
 @NoArgsConstructor
-@Table(name = "amistades", 
-uniqueConstraints = { @UniqueConstraint(columnNames = {"usuario1_id", "usuario2_id"})})
+@Table(name = "amistades")
 public class Amistad {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "usuario_id_1", nullable = false)
+    @JoinColumn(name = "usuario1_id", nullable = false)
     private Usuario usuario1;
 
     @ManyToOne
-    @JoinColumn(name = "usuario_id_2", nullable = false)
+    @JoinColumn(name = "usuario2_id", nullable = false)
     private Usuario usuario2;
 
     private LocalDateTime fechaAmistad = LocalDateTime.now();
-
-    public Amistad(Usuario u1, Usuario u2) {
-        this.usuario1 = u1;
-        this.usuario2 = u2;
-    }
 }

@@ -39,10 +39,6 @@ public class AuthService {
                 // 3. ENCRIPTAR la contraseña antes de guardar
                 usuario.setPassword(encoder.encode(request.password()));
 
-                // 4. Asignar el ROL elegido en el registro
-                // Lo pasamos a mayúsculas para mantener consistencia (admin -> ADMIN)
-                usuario.setRol(request.rol().toUpperCase());
-
                 // 5. Guardar en Base de Datos
                 Usuario usuarioGuardado = usuarioRepository.save(usuario);
 

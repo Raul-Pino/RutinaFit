@@ -53,7 +53,7 @@ public class Usuario {
 
     @NotBlank(message = "El rol es obligatorio")
     @Column(nullable = false)
-    private String rol;
+    private String rol = "USER";
 
     @Column(nullable = false)
     private boolean esEntrenador = false;

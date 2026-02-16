@@ -5,7 +5,6 @@ import com.example.rutinafit.model.Amistad;
 import com.example.rutinafit.model.Usuario;
 import com.example.rutinafit.repository.AmistadRepository;
 import com.example.rutinafit.repository.SolicitudRepository;
-import com.example.rutinafit.repository.UsuarioRepository;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;

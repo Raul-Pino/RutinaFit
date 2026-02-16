@@ -4,7 +4,6 @@ import org.hibernate.validator.constraints.Length;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
 
 public record RegisterRequest(
     @NotBlank(message = "El nombre es obligatorio")
@@ -17,9 +16,5 @@ public record RegisterRequest(
 
     @NotBlank(message = "La contraseña es obligatoria")
     @Length(min = 6, message = "La contraseña debe tener al menos 6 caracteres")
-    String password,
-
-    @NotBlank(message = "El rol es obligatorio")
-    @Pattern(regexp = "USER|ADMIN|ENTRENADOR", message = "El rol debe ser USER, ADMIN o ENTRENADOR")
-    String rol
+    String password
 ) {}

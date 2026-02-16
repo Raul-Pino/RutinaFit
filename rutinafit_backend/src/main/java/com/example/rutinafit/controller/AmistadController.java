@@ -1,7 +1,6 @@
 package com.example.rutinafit.controller;
 
 import com.example.rutinafit.dto.UsuarioResponse;
-import com.example.rutinafit.model.Amistad;
 import com.example.rutinafit.service.AmistadService;
 import com.example.rutinafit.service.JwtService;
 import lombok.RequiredArgsConstructor;

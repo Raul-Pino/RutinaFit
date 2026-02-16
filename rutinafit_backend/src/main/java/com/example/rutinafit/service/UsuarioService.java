@@ -21,7 +21,7 @@ public class UsuarioService {
 
     // LISTAR (Solo admins deberían poder hacer esto habitualmente)
     public List<UsuarioResponse> findAll() {
-        return usuarioRepository.findAll().stream().map(this::transformarAResponse).toList();
+        return usuarioRepository.findAll().stream().map(this::transformarADTO).toList();
     }
 
     // VER PERFIL
@@ -47,23 +47,16 @@ public class UsuarioService {
     }
     
     // ACTUALIZAR
-    public Usuario update(Long id, UsuarioUpdateRequest dto) {
-        Usuario usuarioExistente = findById(id);
-
-        // Solo se actualiza si el DTO tiene información
-        if (dto.username() != null && !dto.username().isBlank()) {
-            usuarioExistente.setUsername(dto.username());
-        }
+    public UsuarioResponse update(Long userId, UsuarioUpdateRequest dto) {
+        Usuario usuario = usuarioRepository.findById(userId)
+            .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
         
-        if (dto.email() != null && !dto.email().isBlank()) {
-            usuarioExistente.setEmail(dto.email());
-        }
-
-        if (dto.esEntrenador() != null) {
-            usuarioExistente.setEsEntrenador(dto.esEntrenador());
-        }
+        usuario.setUsername(dto.username());
+        usuario.setEmail(dto.email());
+        usuario.setEsEntrenador(dto.esEntrenador());
         
-        return usuarioRepository.save(usuarioExistente);
+        usuarioRepository.save(usuario);
+        return transformarADTO(usuario);
     }
 
     public List<UsuarioResponse> listarMisAlumnos(Long entrenadorId) {
@@ -72,7 +65,7 @@ public class UsuarioService {
             throw new RuntimeException("Solo los entrenadores pueden consultar su lista de alumnos.");
         }
 
-        return usuarioRepository.findByEntrenadorId(entrenadorId).stream().map(this::transformarAResponse).toList();
+        return usuarioRepository.findByEntrenadorId(entrenadorId).stream().map(this::transformarADTO).toList();
     }
 
     @Transactional
@@ -97,7 +90,7 @@ public class UsuarioService {
     }
 
     // "Transforma" un objeto usuario a un objeto que puede enviarse al frontEnd (Eliminando información sensible)
-    public UsuarioResponse transformarAResponse(Usuario usuario) {
+    public UsuarioResponse transformarADTO(Usuario usuario) {
         return new UsuarioResponse(usuario.getId(), usuario.getUsername(), usuario.isEsEntrenador());
     }
 }

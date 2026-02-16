@@ -2,10 +2,8 @@ package com.example.rutinafit.service;
 
 import lombok.RequiredArgsConstructor;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -90,7 +88,10 @@ public class SolicitudService {
         }
 
         else if ("AMISTAD".equals(sol.getTipo())) {
-            amistadRepository.save(new Amistad(sol.getRemitente(), sol.getDestinatario()));
+            Amistad nuevaAmistad = new Amistad();
+            nuevaAmistad.setUsuario1(sol.getRemitente());
+            nuevaAmistad.setUsuario2(sol.getDestinatario());
+            amistadRepository.save(nuevaAmistad);
         }
 
         sol.setEstado("ACEPTADA");
@@ -98,7 +99,6 @@ public class SolicitudService {
     }
 
     public List<Solicitud> obtenerSolicitudesPendientes(Long usuarioId) {
-    //LocalDateTime haceUnMes = LocalDateTime.now().minusDays(30);
     return solicitudRepository.findByDestinatarioIdAndEstado(usuarioId, "PENDIENTE");
     }
 
