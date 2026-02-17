@@ -193,7 +193,12 @@
             const lista = document.getElementById('lista-amigos');
             try {
                 const resp = await fetch(`${API_URL}/amistades`, {
-                    headers: { 'Authorization': `Bearer ${token}` }
+                    method: 'GET',
+                    headers: {
+                        // El formato debe ser "Bearer <token>"
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
                 });
 
                 if(!resp.ok) throw new Error("Error al obtener amigos");
@@ -205,7 +210,7 @@
                     lista.innerHTML = "<li>No tienes amigos aún 😢</li>";
                     return;
                 }
-                console.log(amistades);
+
                 amistades.forEach(a => {
                     // Lógica para saber cuál de los dos usuarios eres tú y mostrar al "otro"
                     // Nota: Esto asume que el objeto Usuario tiene el campo 'username'

@@ -67,7 +67,7 @@ public class UsuarioControllerIT {
                 .param("username", "marcos"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].username").value("marcos"));
-        }
+    }
 
     @Test
     @DisplayName("El sistema rechaza un registro con email inválido")
@@ -87,7 +87,7 @@ public class UsuarioControllerIT {
     }
 
     @Test
-    @DisplayName("alidar que la BD mantiene la integridad de la relación de amistad")
+    @DisplayName("Validar que la BD mantiene la integridad de la relación de amistad")
     void testCrearYComprobarAmistad() throws Exception {
         Usuario u1 = new Usuario();
         u1.setUsername("paco");

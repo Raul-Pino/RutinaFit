@@ -2,6 +2,7 @@ package com.example.rutinafit.service;
 
 import com.example.rutinafit.dto.UsuarioResponse;
 import com.example.rutinafit.dto.UsuarioUpdateRequest;
+import com.example.rutinafit.model.TipoSolicitud;
 import com.example.rutinafit.model.Usuario;
 import com.example.rutinafit.repository.SolicitudRepository;
 import com.example.rutinafit.repository.UsuarioRepository;
@@ -59,6 +60,7 @@ public class UsuarioService {
         return transformarADTO(usuario);
     }
 
+    // Listar Alumnos de un enternador
     public List<UsuarioResponse> listarMisAlumnos(Long entrenadorId) {
         Usuario entrenador = findById(entrenadorId);
         if (!entrenador.isEsEntrenador()) {
@@ -68,6 +70,7 @@ public class UsuarioService {
         return usuarioRepository.findByEntrenadorId(entrenadorId).stream().map(this::transformarADTO).toList();
     }
 
+    // Dejar de ser Entrenador o dejar de ser Alumno de un entrenador
     @Transactional
     public void dejarEntrenador(Long alumnoId, Long solicitanteId) {
         Usuario alumno = usuarioRepository.findById(alumnoId)
@@ -83,7 +86,7 @@ public class UsuarioService {
                 throw new RuntimeException("No tienes permiso para romper esta relación");
         }
 
-        solicitudRepository.borrarSolicitud(entrenador.getId(), alumno.getId(), "ENTRENAMIENTO");
+        solicitudRepository.borrarSolicitud(entrenador.getId(), alumno.getId(), TipoSolicitud.ENTRENAMIENTO);
 
         alumno.setEntrenador(null);
         usuarioRepository.save(alumno);

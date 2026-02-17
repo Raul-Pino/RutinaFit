@@ -9,7 +9,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.example.rutinafit.dto.SolicitudRequest;
 import com.example.rutinafit.model.Amistad;
+import com.example.rutinafit.model.EstadoSolicitud;
 import com.example.rutinafit.model.Solicitud;
+import com.example.rutinafit.model.TipoSolicitud;
 import com.example.rutinafit.model.Usuario;
 import com.example.rutinafit.repository.AmistadRepository;
 import com.example.rutinafit.repository.SolicitudRepository;
@@ -45,13 +47,13 @@ public class SolicitudServiceTest {
 
 
 
-    // Tests
+    // Tests 1
 
     @Test
     @DisplayName("Debe lanzar excepción si el remitente y destinatario son el mismo")
     void testEnviarSolicitudAMismoUsuario(){
         Long miId = 2L;
-        SolicitudRequest dto = new SolicitudRequest(miId, "AMISTAD");
+        SolicitudRequest dto = new SolicitudRequest(miId, TipoSolicitud.AMISTAD);
 
         Usuario usuario = new Usuario();
         usuario.setId(miId);
@@ -71,7 +73,7 @@ public class SolicitudServiceTest {
     void testEnviarSolicitudDuplicada() {
         Long remitenteId = 1L;
         Long destinatarioId = 2L;
-        SolicitudRequest dto = new SolicitudRequest(destinatarioId, "AMISTAD");
+        SolicitudRequest dto = new SolicitudRequest(destinatarioId, TipoSolicitud.AMISTAD);
 
         Usuario remitente = new Usuario();
         remitente.setId(remitenteId);
@@ -81,7 +83,7 @@ public class SolicitudServiceTest {
         destinatario.setId(destinatarioId);
         when(usuarioRepository.findById(destinatarioId)).thenReturn(Optional.of(destinatario));
 
-        when(solicitudRepository.existsByUsuariosYTipo(remitenteId, destinatarioId, "AMISTAD"))
+        when(solicitudRepository.existsByUsuariosYTipo(remitenteId, destinatarioId, TipoSolicitud.AMISTAD))
             .thenReturn(true);
 
         RuntimeException exception = assertThrows(RuntimeException.class, () -> {
@@ -96,7 +98,7 @@ public class SolicitudServiceTest {
     void testSolicitudEntrenamiento() {
         Long remitenteId = 1L;
         Long destinatarioId = 2L;
-        SolicitudRequest dto = new SolicitudRequest(destinatarioId, "ENTRENAMIENTO");
+        SolicitudRequest dto = new SolicitudRequest(destinatarioId, TipoSolicitud.ENTRENAMIENTO);
 
         Usuario remitente = new Usuario();
         remitente.setId(remitenteId);
@@ -117,7 +119,7 @@ public class SolicitudServiceTest {
     }
 
     @Test
-    @DisplayName("Debe crear una Amistad y eliminar la Solicitud cuando se acepta")
+    @DisplayName("Debe crear una Amistad y el estado de la solicitud se actualiza a ACEPTADA")
     void testAceptarSolicitud() {
         // GIVEN
         Long solicitudId = 100L;
@@ -128,7 +130,7 @@ public class SolicitudServiceTest {
         sol.setId(solicitudId);
         sol.setRemitente(remitente);
         sol.setDestinatario(destinatario);
-        sol.setTipo("AMISTAD");
+        sol.setTipo(TipoSolicitud.AMISTAD);
 
         when(solicitudRepository.findById(solicitudId)).thenReturn(Optional.of(sol));
 
@@ -136,6 +138,6 @@ public class SolicitudServiceTest {
 
         verify(amistadRepository, times(1)).save(any(Amistad.class));
         verify(solicitudRepository, times(1)).save(any(Solicitud.class));
-        verify(solicitudRepository, never()).delete(any());
+        assertEquals(EstadoSolicitud.ACEPTADA, sol.getEstado());
     }
 }

@@ -9,7 +9,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.example.rutinafit.dto.SolicitudRequest;
 import com.example.rutinafit.model.Amistad;
+import com.example.rutinafit.model.EstadoSolicitud;
 import com.example.rutinafit.model.Solicitud;
+import com.example.rutinafit.model.TipoSolicitud;
 import com.example.rutinafit.model.Usuario;
 import com.example.rutinafit.repository.AmistadRepository;
 import com.example.rutinafit.repository.SolicitudRepository;
@@ -38,7 +40,7 @@ public class SolicitudService {
             throw new RuntimeException("No te puedes enviar una solicitud a ti mismo");
         }
 
-        if (dto.tipo().equals("AMISTAD")) {
+        if (dto.tipo() == TipoSolicitud.AMISTAD){
                 boolean yaSonAmigos = amistadRepository.sonAmigos(remitenteId, dto.destinatarioId());
                 if (yaSonAmigos) {
                     throw new RuntimeException("Ya sois amigos, no puedes enviar otra solicitud.");
@@ -52,7 +54,7 @@ public class SolicitudService {
         nueva.setRemitente(remitente);
         nueva.setDestinatario(destinatario);
         nueva.setTipo(dto.tipo());
-        nueva.setEstado("PENDIENTE");
+        nueva.setEstado(EstadoSolicitud.PENDIENTE);
 
         solicitudRepository.save(nueva);
     }
@@ -72,7 +74,7 @@ public class SolicitudService {
             throw new RuntimeException("No tienes permiso para aceptar esta solicitud");
         }
 
-        if ("ENTRENAMIENTO".equals(sol.getTipo())) {
+        if (sol.getTipo() == TipoSolicitud.ENTRENAMIENTO) {
             Usuario entrenador = sol.getDestinatario(); 
             Usuario alumno = sol.getRemitente(); 
 
@@ -87,19 +89,19 @@ public class SolicitudService {
             usuarioRepository.save(alumno);
         }
 
-        else if ("AMISTAD".equals(sol.getTipo())) {
+        if (sol.getTipo() == TipoSolicitud.AMISTAD) {
             Amistad nuevaAmistad = new Amistad();
             nuevaAmistad.setUsuario1(sol.getRemitente());
             nuevaAmistad.setUsuario2(sol.getDestinatario());
             amistadRepository.save(nuevaAmistad);
         }
 
-        sol.setEstado("ACEPTADA");
+        sol.setEstado(EstadoSolicitud.ACEPTADA);
         solicitudRepository.save(sol);
     }
 
     public List<Solicitud> obtenerSolicitudesPendientes(Long usuarioId) {
-    return solicitudRepository.findByDestinatarioIdAndEstado(usuarioId, "PENDIENTE");
+    return solicitudRepository.findByDestinatarioIdAndEstado(usuarioId, EstadoSolicitud.PENDIENTE);
     }
 
     /**

@@ -4,6 +4,8 @@ import com.example.rutinafit.dto.UsuarioResponse;
 import com.example.rutinafit.service.AmistadService;
 import com.example.rutinafit.service.JwtService;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -28,7 +30,11 @@ public class AmistadController {
      * Lista todos los amigos del usuario logueado.
      */
     @GetMapping
-    public ResponseEntity<List<UsuarioResponse>> listarMisAmigos(@RequestHeader("Authorization") String authHeader) {
+    public ResponseEntity<List<UsuarioResponse>> listarMisAmigos(@RequestHeader(value = "Authorization", required = false) String authHeader) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build(); // Devuelve 401 si no hay token
+        }
+        
         Long usuarioId = jwtService.obtenerId(authHeader.substring(7));
         return ResponseEntity.ok(amistadService.listarMisAmigos(usuarioId));
     }

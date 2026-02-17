@@ -3,8 +3,9 @@ package com.example.rutinafit.model;
 import lombok.Data;
 import java.time.LocalDateTime;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -30,11 +31,11 @@ public class Solicitud {
     @JoinColumn(name = "destinatario_id", nullable = false)
     private Usuario destinatario;
 
-    @Column(nullable = false)
-    private String tipo; // "AMISTAD" o "ENTRENAMIENTO"
+    @Enumerated(EnumType.STRING)
+    private TipoSolicitud tipo;
 
-    @Column(nullable = false)
-    private String estado; // "PENDIENTE", "ACEPTADA", "RECHAZADA"
+    @Enumerated(EnumType.STRING)
+    private EstadoSolicitud estado;
 
     private LocalDateTime fechaCreacion = LocalDateTime.now();
 }
