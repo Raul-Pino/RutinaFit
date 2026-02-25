@@ -1,8 +1,9 @@
 package com.example.rutinafit.controller;
 
-import com.example.rutinafit.model.Rutina;
-import com.example.rutinafit.service.JwtService;
+import com.example.rutinafit.dto.RutinaRequest;
+import com.example.rutinafit.dto.RutinaResponse;
 import com.example.rutinafit.service.RutinaService;
+import com.example.rutinafit.util.SecurityUtils;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -27,14 +28,14 @@ import java.util.List;
 public class RutinaController {
 
     private final RutinaService rutinaService;
-    private final JwtService jwtService;
+    private final SecurityUtils securityUtils;
 
     /**
      * Listar mis rutinas
      */
     @GetMapping
-    public ResponseEntity<List<Rutina>> getMisRutinas(@RequestHeader("Authorization") String authHeader) {
-        Long usuarioId = getUsuarioIdFromHeader(authHeader);
+    public ResponseEntity<List<RutinaResponse>> getMisRutinas(@RequestHeader("Authorization") String authHeader) {
+        Long usuarioId = securityUtils.getUsuarioId(authHeader);
         return ResponseEntity.ok(rutinaService.findByUsuarioId(usuarioId));
     }
 
@@ -42,10 +43,10 @@ public class RutinaController {
      * Ver una rutina de mi propiedad
      */
     @GetMapping("/{id}")
-    public ResponseEntity<Rutina> getRutina(
+    public ResponseEntity<RutinaResponse> getRutina(
             @PathVariable Long id,
             @RequestHeader("Authorization") String authHeader) {
-        Long usuarioId = getUsuarioIdFromHeader(authHeader);
+        Long usuarioId = securityUtils.getUsuarioId(authHeader);
         return ResponseEntity.ok(rutinaService.findByIdAndUsuarioId(id, usuarioId));
     }
 
@@ -53,26 +54,25 @@ public class RutinaController {
      * Crear una nueva rutina de mi propiedad
      */
     @PostMapping
-    public ResponseEntity<Rutina> create(
-            @RequestBody Rutina rutina,
+    public ResponseEntity<RutinaResponse> crearRutina(
+            @RequestBody RutinaRequest rutina,
             @RequestHeader("Authorization") String authHeader) {
         
-        Long usuarioId = getUsuarioIdFromHeader(authHeader);
-        return ResponseEntity.ok(rutinaService.create(usuarioId, rutina));
+        Long usuarioId = securityUtils.getUsuarioId(authHeader);
+        return ResponseEntity.ok(rutinaService.create(usuarioId, usuarioId, rutina));
     }
 
     /**
      * Actualizar una rutina de mi propiedad
      */
     @PutMapping("/{id}")
-    public ResponseEntity<Rutina> update(
+    public ResponseEntity<RutinaResponse> update(
             @PathVariable Long id,
-            @Valid @RequestBody Rutina rutinaDatos,
+            @Valid @RequestBody RutinaRequest rutina,
             @RequestHeader("Authorization") String authHeader) {
         
-        Long usuarioId = getUsuarioIdFromHeader(authHeader);
-        
-        return ResponseEntity.ok(rutinaService.update(id, usuarioId, rutinaDatos));
+        Long usuarioId = securityUtils.getUsuarioId(authHeader);
+        return ResponseEntity.ok(rutinaService.update(id, usuarioId, rutina));
     }
 
     /**
@@ -83,20 +83,36 @@ public class RutinaController {
             @PathVariable Long id,
             @RequestHeader("Authorization") String authHeader) {
         
-        Long usuarioId = getUsuarioIdFromHeader(authHeader);
+        Long usuarioId = securityUtils.getUsuarioId(authHeader);
         rutinaService.delete(id, usuarioId);
         return ResponseEntity.noContent().build();
     }
 
+
     // ===============
-    // AUX
+    // PARTE ENTRENADOR
     // ===============
 
-    private Long getUsuarioIdFromHeader(String authHeader) {
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            throw new RuntimeException("Token inválido o inexistente");
-        }
-        String token = authHeader.substring(7);
-        return jwtService.obtenerId(token);
+    /**
+     * Crear una nueva rutina para un alumno
+     */
+    @PostMapping("/alumnos/{alumnoId}")
+    public ResponseEntity<RutinaResponse> crearRutinaAlumno(
+            @PathVariable Long alumnoId,
+            @RequestBody RutinaRequest rutina,
+            @RequestHeader("Authorization") String authHeader) {
+        Long usuarioId = securityUtils.getUsuarioId(authHeader);
+        return ResponseEntity.ok(rutinaService.create(usuarioId, alumnoId, rutina));
+    }
+
+    /**
+     * Listar rutinas de alumnos
+     */
+    @GetMapping("/alumnos/{alumnoId}")
+    public ResponseEntity<List<RutinaResponse>> ListarRutinasAlumno(
+            @PathVariable Long alumnoId,
+            @RequestHeader("Authorization") String authHeader) {
+        Long usuarioId = securityUtils.getUsuarioId(authHeader);
+        return ResponseEntity.ok(rutinaService.findByUsuarioId(usuarioId, alumnoId));
     }
 }

@@ -25,18 +25,9 @@ public class AmistadService {
         List<Usuario> amistades = amistadRepository.buscarPorUsuarioId(userId);
 
         List<UsuarioResponse> respuesta = new ArrayList<>();
-
-        /*
-        for(Amistad a : amistades){
-            Usuario amigo;
-            if(a.getUsuario1().getId().equals(userId)) amigo = a.getUsuario2();
-            else amigo = a.getUsuario1();
-            respuesta.add(new UsuarioResponse(amigo.getId(), amigo.getUsername(), amigo.isEsEntrenador()));
-        }
-        */
     
         for(Usuario amigo : amistades){
-            respuesta.add(new UsuarioResponse(amigo.getId(), amigo.getUsername(), amigo.isEsEntrenador()));
+            respuesta.add(new UsuarioResponse(amigo.getId(), amigo.getUsername(), amigo.getEmail(), amigo.getRol()));
         }
 
         return respuesta;

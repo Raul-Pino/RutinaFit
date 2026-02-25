@@ -41,14 +41,20 @@
 
 <header>
     <h1>Gestión de Catálogo (Admin)</h1>
+    <a href="./app.html" class="btn-create">Aplicación</a>
     <button onclick="logout()">Cerrar Sesión</button>
 </header>
+
 
 <div class="form-inline">
     <input type="number" id="newCodigo" placeholder="Cód (1=Fuerza...)" required min="1" max="10" style="flex: 0.5;">
     <input type="text" id="newNombre" placeholder="Nombre (ej: Press Banca)" required>
     <input type="text" id="newDesc" placeholder="Descripción (ej: Pecho, Barra)" required>
     <button class="btn-create" onclick="crearInfo()">+ Añadir</button>
+</div>
+<div class="form-inline">
+    <label>Buscar Ejercicio:</label>
+    <input type="text" placeholder="Ej: Press, Sentadilla..." onkeyup="buscarEjerciciosInfo(this.value)">
 </div>
 
 <table>
@@ -240,6 +246,36 @@
         window.location.href = 'index.html';
     }
 
+    async function buscarEjerciciosInfo(texto) {        
+        try {
+            let url = `${API_URL}/buscar?nombre=${texto}`
+            const res = await fetch(url);
+            const data = await res.json();
+            const tbody = document.getElementById('tbodyInfo');
+            tbody.innerHTML = '';
+            
+            data.forEach(item => {
+                const safeNombre = item.nombre.replace(/"/g, '&quot;');
+                const safeDesc = (item.descripcion || '').replace(/"/g, '&quot;');
+
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${item.id}</td>
+                        <td>${item.codigo}</td>
+                        <td>${item.nombre}</td>
+                        <td>${item.descripcion || ''}</td>
+                        <td>
+                            <button class="btn-mini btn-edit" onclick="abrirEditar(${item.id}, ${item.codigo}, '${safeNombre}', '${safeDesc}')">Editar</button>
+                            <button class="btn-mini btn-delete" onclick="borrarInfo(${item.id})">Eliminar</button>
+                        </td>
+                    </tr>
+                `;
+            });
+        } catch (e) {
+            console.error("Error cargando catálogo", e);
+        }
+
+    }
     cargarCatalogo();
 </script>
 

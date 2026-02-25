@@ -34,7 +34,6 @@ public class AuthService {
                 Usuario usuario = new Usuario();
                 usuario.setUsername(request.username());
                 usuario.setEmail(request.email());
-                //usuario.setPassword(request.getPassword());
 
                 // 3. ENCRIPTAR la contraseña antes de guardar
                 usuario.setPassword(encoder.encode(request.password()));
@@ -64,10 +63,6 @@ public class AuthService {
                 Usuario usuario = usuarioRepository.findByEmail(request.email())
                         .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
-                // 2. Comprobamos que la contraseña es correcta
-                // if (!usuario.getPassword().equals(request.getPassword())) {
-                //         throw new RuntimeException("Contraseña incorrecta");
-                // }
                 if(!encoder.matches(request.password(), usuario.getPassword())){
                         throw new RuntimeException("Contraseña incorrecta");
                 }

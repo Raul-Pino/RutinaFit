@@ -40,7 +40,7 @@
         .modal { background: white; padding: 20px; width: 400px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
         .modal h3 { margin-top: 0; border-bottom: 1px solid #ccc; padding-bottom: 10px; }
         .token-box { background: #333; color: #0f0; padding: 10px; font-family: monospace; font-size: 12px; word-break: break-all; max-height: 100px; overflow-y: auto; border-radius: 4px; margin-bottom: 10px; }
-        .btn-primary { background: #007bff; color: white; width: 100%; border: none; padding: 10px; cursor: pointer; margin-top: 10px; }
+        .btn-primary { background: #007bff; color: white; width: 100%; border: none; padding: 10px; cursor: pointer; margin-top: 10px; border-radius: 5px;}
         .close-modal { float: right; cursor: pointer; font-size: 20px; font-weight: bold; color: #999; }
         
         label { font-weight: bold; font-size: 14px; display: block; margin-top: 10px; }
@@ -52,6 +52,7 @@
     <h3>Mi Gym Tracker</h3>
     <div>
         <span id="headerUsername">Cargando...</span>
+        <a id="btn-admin" href="./admin.html" class="btn-primary" style="text-decoration: none; display: none;">Zona administración</a>
         <button class="btn-profile" onclick="abrirPerfil()">Mi Perfil</button>
         <button class="btn-logout" onclick="logout()">Salir</button>
     </div>
@@ -167,6 +168,10 @@
             document.getElementById('headerUsername').innerText = user.username;
             document.getElementById('profileUsername').value = user.username;
             document.getElementById('profileEmail').value = user.email;
+            let admin = document.getElementById("btn-admin")
+            if(user.rol === "ADMIN") admin.style.display = "";
+            if(user.rol === "ADMIN") console.log("HGOL")
+            else console.log("ADIOS")
         } catch (e) { console.error(e); }
     }
     function abrirPerfil() {
@@ -302,10 +307,10 @@
         data.forEach(e => {
             div.innerHTML += `
                 <div class="card">
-                    <strong>${e.ejercicioInfo.nombre}</strong><br>
+                    <strong>${e.nombreEjercicio}</strong><br>
                     <span>Val 1: ${e.param1} | Val 2: ${e.param2}</span>
                     <div class="btn-actions">
-                        <button class="btn-mini btn-edit" onclick="abrirEditarEjercicio(${e.id}, ${e.ejercicioInfo.id}, ${e.param1}, ${e.param2}, event)">Editar</button>
+                        <button class="btn-mini btn-edit" onclick="abrirEditarEjercicio(${e.id}, ${e.id}, ${e.param1}, ${e.param2}, event)">Editar</button>
                         <button class="btn-mini btn-delete" onclick="borrarEjercicio(${e.id}, event)">X</button>
                     </div>
                 </div>

@@ -1,8 +1,10 @@
 package com.example.rutinafit.controller;
 
-import com.example.rutinafit.model.Sesion;
-import com.example.rutinafit.service.JwtService;
+import com.example.rutinafit.dto.SesionRequest;
+import com.example.rutinafit.dto.SesionResponse;
 import com.example.rutinafit.service.SesionService;
+import com.example.rutinafit.util.SecurityUtils;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -22,19 +24,18 @@ import java.util.List;
 public class SesionController {
 
     private final SesionService sesionService;
-    private final JwtService jwtService;
+    private final SecurityUtils securityUtils;
 
     /**
      * Crear una nueva sesión en una rutina
      */
     @PostMapping("/rutinas/{rutinaId}/sesiones")
-    public ResponseEntity<Sesion> crearSesion(
+    public ResponseEntity<SesionResponse> crearSesion(
             @PathVariable Long rutinaId,
-            @RequestBody Sesion sesion,
+            @RequestBody SesionRequest sesion,
             @RequestHeader("Authorization") String authHeader) {
-        
-        Long usuarioId = getUsuarioId(authHeader);
-        
+
+        Long usuarioId = securityUtils.getUsuarioId(authHeader);        
         return ResponseEntity.ok(sesionService.create(usuarioId, rutinaId, sesion));
     }
 
@@ -42,11 +43,11 @@ public class SesionController {
      * Listar todas las sesiones de una rutina
      */
     @GetMapping("/rutinas/{rutinaId}/sesiones")
-    public ResponseEntity<List<Sesion>> listarSesiones(
+    public ResponseEntity<List<SesionResponse>> listarSesiones(
             @PathVariable Long rutinaId,
             @RequestHeader("Authorization") String authHeader) {
         
-        Long usuarioId = getUsuarioId(authHeader);
+        Long usuarioId = securityUtils.getUsuarioId(authHeader);
         return ResponseEntity.ok(sesionService.findByRutinaId(usuarioId, rutinaId));
     }
 
@@ -58,19 +59,9 @@ public class SesionController {
             @PathVariable Long id,
             @RequestHeader("Authorization") String authHeader) {
         
-        Long usuarioId = getUsuarioId(authHeader);
+        Long usuarioId = securityUtils.getUsuarioId(authHeader);
         sesionService.delete(usuarioId, id);
         return ResponseEntity.noContent().build();
     }
 
-    // ===============
-    // AUX
-    // ===============
-
-    private Long getUsuarioId(String authHeader) {
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            throw new RuntimeException("Token inválido");
-        }
-        return jwtService.obtenerId(authHeader.substring(7));
-    }
 }

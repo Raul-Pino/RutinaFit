@@ -1,6 +1,7 @@
 package com.example.rutinafit.controller;
 
-import com.example.rutinafit.model.EjercicioInfo;
+import com.example.rutinafit.dto.EjercicioInfoRequest;
+import com.example.rutinafit.dto.EjercicioInfoResponse;
 import com.example.rutinafit.service.EjercicioInfoService;
 import com.example.rutinafit.service.JwtService;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -36,16 +38,8 @@ public class EjercicioInfoController {
      * Listar todos los tipos de ejercicios
      */
     @GetMapping
-    public ResponseEntity<List<EjercicioInfo>> findAll() {
+    public ResponseEntity<List<EjercicioInfoResponse>> ListarTodos() {
         return ResponseEntity.ok(ejercicioInfoService.findAll());
-    }
-    
-    /**
-     * Lista todos los ejercicios de un tipo específico
-     */
-    @GetMapping("/tipo/{codigo}")
-    public ResponseEntity<List<EjercicioInfo>> findByCodigo(@PathVariable int codigo) {
-        return ResponseEntity.ok(ejercicioInfoService.findByCodigo(codigo));
     }
 
     // ===============
@@ -57,7 +51,7 @@ public class EjercicioInfoController {
      */
     @PostMapping
     public ResponseEntity<?> create(
-            @RequestBody EjercicioInfo info,
+            @RequestBody EjercicioInfoRequest info,
             @RequestHeader("Authorization") String authHeader) {
         
         String token = authHeader.substring(7);
@@ -76,7 +70,7 @@ public class EjercicioInfoController {
     @PutMapping("/{id}")
     public ResponseEntity<?> update(
             @PathVariable Long id,
-            @RequestBody EjercicioInfo info,
+            @RequestBody EjercicioInfoRequest info,
             @RequestHeader("Authorization") String authHeader) {
 
         String token = authHeader.substring(7);
@@ -107,5 +101,13 @@ public class EjercicioInfoController {
 
         ejercicioInfoService.delete(id);
         return ResponseEntity.noContent().build();
+    }
+
+    /**
+     * Busca la información del ejercicio
+     */
+    @GetMapping("/buscar")
+    public ResponseEntity<List<EjercicioInfoResponse>> buscar(@RequestParam String nombre) {
+        return ResponseEntity.ok(ejercicioInfoService.buscarEjercicioInfo(nombre));
     }
 }

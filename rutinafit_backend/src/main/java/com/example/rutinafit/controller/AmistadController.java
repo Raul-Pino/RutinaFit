@@ -2,10 +2,10 @@ package com.example.rutinafit.controller;
 
 import com.example.rutinafit.dto.UsuarioResponse;
 import com.example.rutinafit.service.AmistadService;
-import com.example.rutinafit.service.JwtService;
+import com.example.rutinafit.util.SecurityUtils;
+
 import lombok.RequiredArgsConstructor;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -24,18 +24,14 @@ import java.util.List;
 public class AmistadController {
 
     private final AmistadService amistadService;
-    private final JwtService jwtService;
+    private final SecurityUtils securityUtils;
 
     /**
      * Lista todos los amigos del usuario logueado.
      */
     @GetMapping
     public ResponseEntity<List<UsuarioResponse>> listarMisAmigos(@RequestHeader(value = "Authorization", required = false) String authHeader) {
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build(); // Devuelve 401 si no hay token
-        }
-        
-        Long usuarioId = jwtService.obtenerId(authHeader.substring(7));
+        Long usuarioId = securityUtils.getUsuarioId(authHeader);
         return ResponseEntity.ok(amistadService.listarMisAmigos(usuarioId));
     }
 
@@ -47,7 +43,7 @@ public class AmistadController {
             @PathVariable Long id,
             @RequestHeader("Authorization") String authHeader) {
         
-        Long usuarioId = jwtService.obtenerId(authHeader.substring(7));
+        Long usuarioId = securityUtils.getUsuarioId(authHeader);
         amistadService.eliminarAmistad(id, usuarioId);
         return ResponseEntity.noContent().build();
     }

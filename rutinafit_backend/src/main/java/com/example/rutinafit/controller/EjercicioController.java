@@ -1,9 +1,9 @@
 package com.example.rutinafit.controller;
 
 import com.example.rutinafit.dto.EjercicioRequest;
-import com.example.rutinafit.model.Ejercicio;
+import com.example.rutinafit.dto.EjercicioResponse;
 import com.example.rutinafit.service.EjercicioService;
-import com.example.rutinafit.service.JwtService;
+import com.example.rutinafit.util.SecurityUtils;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +26,8 @@ import java.util.List;
 public class EjercicioController {
 
     private final EjercicioService ejercicioService;
-    private final JwtService jwtService;
+    private final SecurityUtils securityUtils;
+
 
     /**
      * Añadir una ejercicio (serie) a una sesión
@@ -34,13 +35,12 @@ public class EjercicioController {
      * { "ejercicioInfoId": 5, "param1": 50.0, "param2": 10.0 }
      */
     @PostMapping("/sesiones/{sesionId}/ejercicios")
-    public ResponseEntity<Ejercicio> crearEjercicio(
+    public ResponseEntity<EjercicioResponse> crearEjercicio(
             @PathVariable Long sesionId,
             @RequestBody EjercicioRequest requestDTO,
             @RequestHeader("Authorization") String authHeader) {
         
-        Long usuarioId = getUsuarioId(authHeader);
-        
+        Long usuarioId = securityUtils.getUsuarioId(authHeader);
         return ResponseEntity.ok(ejercicioService.create(usuarioId, sesionId, requestDTO));
     }
 
@@ -48,13 +48,12 @@ public class EjercicioController {
      * Actualizar un ejercicio por su ID
      */
     @PutMapping("/ejercicios/{id}")
-    public ResponseEntity<Ejercicio> update(
+    public ResponseEntity<EjercicioResponse> actualizarEjercicio(
             @PathVariable Long id,
             @Valid @RequestBody EjercicioRequest requestDTO, 
             @RequestHeader("Authorization") String authHeader) {
         
-        Long usuarioId = getUsuarioId(authHeader);
-        
+        Long usuarioId = securityUtils.getUsuarioId(authHeader);
         return ResponseEntity.ok(ejercicioService.update(usuarioId, id, requestDTO));
     }
 
@@ -62,11 +61,11 @@ public class EjercicioController {
      * Listar todos los ejercicios de una sesión
      */
     @GetMapping("/sesiones/{sesionId}/ejercicios")
-    public ResponseEntity<List<Ejercicio>> listarEjercicios(
+    public ResponseEntity<List<EjercicioResponse>> listarEjercicios(
             @PathVariable Long sesionId,
             @RequestHeader("Authorization") String authHeader) {
         
-        Long usuarioId = getUsuarioId(authHeader);
+        Long usuarioId = securityUtils.getUsuarioId(authHeader);
         return ResponseEntity.ok(ejercicioService.findBySesionId(usuarioId, sesionId));
     }
 
@@ -78,19 +77,8 @@ public class EjercicioController {
             @PathVariable Long id,
             @RequestHeader("Authorization") String authHeader) {
         
-        Long usuarioId = getUsuarioId(authHeader);
+        Long usuarioId = securityUtils.getUsuarioId(authHeader);
         ejercicioService.delete(usuarioId, id);
         return ResponseEntity.noContent().build();
-    }
-
-    // ===============
-    // AUX
-    // ===============
-
-    private Long getUsuarioId(String authHeader) {
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            throw new RuntimeException("Token inválido");
-        }
-        return jwtService.obtenerId(authHeader.substring(7));
     }
 }

@@ -1,9 +1,13 @@
 package com.example.rutinafit.service;
 
+import com.example.rutinafit.dto.SesionRequest;
+import com.example.rutinafit.dto.SesionResponse;
 import com.example.rutinafit.model.Rutina;
 import com.example.rutinafit.model.Sesion;
 import com.example.rutinafit.repository.RutinaRepository;
 import com.example.rutinafit.repository.SesionRepository;
+import com.example.rutinafit.util.SecurityUtils;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -15,55 +19,54 @@ public class SesionService {
 
     private final SesionRepository sesionRepository;
     private final RutinaRepository rutinaRepository;
+    private final SecurityUtils securityUtils;
+
 
     /**
      * Devuelve las sesiones de una rutina, PERO verifica que la rutina sea del usuario.
      */
-    public List<Sesion> findByRutinaId(Long usuarioId, Long rutinaId) {
-        // 1. Buscamos la rutina
+    public List<SesionResponse> findByRutinaId(Long usuarioId, Long rutinaId) {
         Rutina rutina = rutinaRepository.findById(rutinaId)
                 .orElseThrow(() -> new RuntimeException("Rutina no encontrada"));
 
-        // 2. SEGURIDAD: ¿Esta rutina es del usuario que la pide?
-        if (!rutina.getUsuario().getId().equals(usuarioId)) {
-            throw new RuntimeException("No tienes permiso para ver estas sesiones");
-        }
+        // Valida el acceso si es el dueño o el entrenador
+        securityUtils.validarAcceso(rutina.getUsuario(), usuarioId);
 
-        return sesionRepository.findByRutinaId(rutinaId);
+        return sesionRepository.findByRutinaId(rutinaId).stream()
+                    .map( s -> new SesionResponse(s.getId(), s.getFecha(), rutinaId)).toList();
     }
 
     /**
      * Crea una sesión vinculándola a una rutina y verificando al usuario.
      */
-    public Sesion create(Long usuarioId, Long rutinaId, Sesion sesionDatos) {
-        // 1. Buscamos la rutina padre
+    public SesionResponse create(Long usuarioId, Long rutinaId, SesionRequest dto) {
+        // Buscamos la rutina padre
         Rutina rutina = rutinaRepository.findById(rutinaId)
                 .orElseThrow(() -> new RuntimeException("Rutina no encontrada"));
 
-        // 2. Comprobarmos que el usuario es el propietario de la rutina
-        if (!rutina.getUsuario().getId().equals(usuarioId)) {
-            throw new RuntimeException("No puedes añadir sesiones a una rutina que no es tuya");
-        }
+        // Valida el acceso si es el dueño o el entrenador
+        securityUtils.validarAcceso(rutina.getUsuario(), usuarioId);
 
-        // 3. Asignar la rutina a la sesion
-        sesionDatos.setRutina(rutina);
+        // Asignar los valores a la nueva sesión
+        Sesion nuevaSesion = new Sesion();
+        nuevaSesion.setFecha(dto.fecha());
+        nuevaSesion.setRutina(rutina);
 
-        // 4. Guardar
-        return sesionRepository.save(sesionDatos);
+        // Guardar
+        nuevaSesion = sesionRepository.save(nuevaSesion);
+        return new SesionResponse(nuevaSesion.getId(), nuevaSesion.getFecha(), rutinaId);
     }
 
     /**
-     * Elimina una sesión verificando toda la cadena de propiedad.
+     * Elimina una sesión.
      */
     public void delete(Long usuarioId, Long sesionId) {
-        // 1. Buscamos la sesión
+        // Buscamos la sesión
         Sesion sesion = sesionRepository.findById(sesionId)
                 .orElseThrow(() -> new RuntimeException("Sesión no encontrada"));
 
-        // Verificamos si la rutina de esta sesión pertenece al usuario
-        if (!sesion.getRutina().getUsuario().getId().equals(usuarioId)) {
-            throw new RuntimeException("No tienes permiso para eliminar esta sesión");
-        }
+        // Valida el acceso si es el dueño o el entrenador
+        securityUtils.validarAcceso(sesion.getRutina().getUsuario(), usuarioId);
 
         sesionRepository.deleteById(sesionId);
     }

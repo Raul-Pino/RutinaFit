@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.rutinafit.dto.SolicitudRequest;
+import com.example.rutinafit.dto.SolicitudResponse;
 import com.example.rutinafit.model.Amistad;
 import com.example.rutinafit.model.EstadoSolicitud;
 import com.example.rutinafit.model.Solicitud;
@@ -70,7 +71,7 @@ public class SolicitudService {
         Solicitud sol = solicitudRepository.findById(solicitudId)
                 .orElseThrow(() -> new RuntimeException("Solicitud no encontrada"));
 
-        if (!sol.getDestinatario().getId().equals(usuarioLogueadoId)) {
+        if (sol.getDestinatario().getId() != usuarioLogueadoId) {
             throw new RuntimeException("No tienes permiso para aceptar esta solicitud");
         }
 
@@ -100,8 +101,15 @@ public class SolicitudService {
         solicitudRepository.save(sol);
     }
 
-    public List<Solicitud> obtenerSolicitudesPendientes(Long usuarioId) {
-    return solicitudRepository.findByDestinatarioIdAndEstado(usuarioId, EstadoSolicitud.PENDIENTE);
+    public List<SolicitudResponse> obtenerSolicitudesPendientes(Long usuarioId) {
+        return solicitudRepository.findByDestinatarioIdAndEstado(usuarioId, EstadoSolicitud.PENDIENTE)
+                    .stream()
+                    .map(s -> new SolicitudResponse(
+                        s.getId(), 
+                        s.getRemitente().getUsername(), 
+                        s.getTipo().name(), 
+                        s.getFechaCreacion()))
+                    .toList();
     }
 
     /**
@@ -121,7 +129,7 @@ public class SolicitudService {
         Solicitud sol = solicitudRepository.findById(solicitudId)
                 .orElseThrow(() -> new RuntimeException("Solicitud no encontrada"));
 
-        if (!sol.getDestinatario().getId().equals(usuarioLogueadoId)) {
+        if (sol.getDestinatario().getId() != usuarioLogueadoId) {
             throw new RuntimeException("No autorizado");
         }
 

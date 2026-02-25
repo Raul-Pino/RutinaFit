@@ -14,5 +14,4 @@ public record EjercicioRequest(
     // param2: Puede ser Repeticiones o Tiempo (min)
     @NotNull
     Double param2
-) {
-}
+) {}

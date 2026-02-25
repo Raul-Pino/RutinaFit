@@ -2,9 +2,9 @@ package com.example.rutinafit.controller;
 
 import com.example.rutinafit.dto.UsuarioResponse;
 import com.example.rutinafit.dto.UsuarioUpdateRequest;
-import com.example.rutinafit.model.Usuario;
 import com.example.rutinafit.service.JwtService;
 import com.example.rutinafit.service.UsuarioService;
+import com.example.rutinafit.util.SecurityUtils;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -34,6 +34,7 @@ public class UsuarioController {
 
     private final UsuarioService usuarioService;
     private final JwtService jwtService;
+    private final SecurityUtils securityUtils;
 
     // ===============
     // PARTE PÚBLICA
@@ -43,8 +44,8 @@ public class UsuarioController {
      * Ver mi propio perfil
      */
     @GetMapping("/perfil")
-    public ResponseEntity<Usuario> verMiPerfil(@RequestHeader("Authorization") String authHeader) {
-        Long myId = getUsuarioId(authHeader);
+    public ResponseEntity<UsuarioResponse> verMiPerfil(@RequestHeader("Authorization") String authHeader) {
+        Long myId = securityUtils.getUsuarioId(authHeader);
         return ResponseEntity.ok(usuarioService.findById(myId));
     }
 
@@ -53,7 +54,7 @@ public class UsuarioController {
      */
     @DeleteMapping("/perfil")
     public ResponseEntity<?> eliminarPerfil(@RequestHeader("Authorization") String authHeader) {
-        Long myId = getUsuarioId(authHeader);
+        Long myId = securityUtils.getUsuarioId(authHeader);
         usuarioService.delete(myId);
         
         return ResponseEntity.noContent().build();
@@ -67,7 +68,7 @@ public class UsuarioController {
             @Valid @RequestBody UsuarioUpdateRequest dto,
             @RequestHeader("Authorization") String authHeader){
         
-        Long myId = getUsuarioId(authHeader);
+        Long myId = securityUtils.getUsuarioId(authHeader);
         return ResponseEntity.ok(usuarioService.update(myId, dto));
     }
 
@@ -84,7 +85,7 @@ public class UsuarioController {
     */
     @GetMapping("/alumnos")
     public ResponseEntity<?> getMisAlumnos(@RequestHeader("Authorization") String authHeader) {
-        Long entrenadorId = getUsuarioId(authHeader);
+        Long entrenadorId = securityUtils.getUsuarioId(authHeader);
         List<UsuarioResponse> alumnos = usuarioService.listarMisAlumnos(entrenadorId);
         return ResponseEntity.ok(alumnos);
     }
@@ -94,7 +95,7 @@ public class UsuarioController {
     */
     @PostMapping("/entrenador/quitar/{alumnoId}")
     public ResponseEntity<?> quitarEntrenador(@PathVariable Long alumnoId, @RequestHeader("Authorization") String authHeader) {
-        Long solicitanteId = jwtService.obtenerId(authHeader.substring(7));
+        Long solicitanteId = securityUtils.getUsuarioId(authHeader);
         usuarioService.dejarEntrenador(alumnoId, solicitanteId);
         return ResponseEntity.ok("Relación de entrenamiento finalizada");
     }
@@ -136,14 +137,6 @@ public class UsuarioController {
     // ===============
     // AUX
     // ===============
-
-    private Long getUsuarioId(String authHeader) {
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            throw new RuntimeException("Token inválido");
-        }
-        String token = authHeader.substring(7);
-        return jwtService.obtenerId(token);
-    }
 
     private boolean esAdmin(String authHeader) {
         if (authHeader == null || !authHeader.startsWith("Bearer ")) return false;

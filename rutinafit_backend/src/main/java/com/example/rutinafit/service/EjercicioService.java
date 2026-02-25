@@ -1,12 +1,16 @@
 package com.example.rutinafit.service;
 
 import com.example.rutinafit.dto.EjercicioRequest;
+import com.example.rutinafit.dto.EjercicioResponse;
 import com.example.rutinafit.model.Ejercicio;
 import com.example.rutinafit.model.EjercicioInfo;
 import com.example.rutinafit.model.Sesion;
+import com.example.rutinafit.model.Usuario;
 import com.example.rutinafit.repository.EjercicioInfoRepository;
 import com.example.rutinafit.repository.EjercicioRepository;
 import com.example.rutinafit.repository.SesionRepository;
+import com.example.rutinafit.util.SecurityUtils;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -19,72 +23,69 @@ public class EjercicioService {
     private final EjercicioRepository ejercicioRepository;
     private final SesionRepository sesionRepository;
     private final EjercicioInfoRepository ejercicioInfoRepository;
+    private final SecurityUtils securityUtils;
+
 
     /**
      * Listar ejercicios de una sesión
      */
-    public List<Ejercicio> findBySesionId(Long usuarioId, Long sesionId) {
+    public List<EjercicioResponse> findBySesionId(Long usuarioId, Long sesionId) {
         Sesion sesion = sesionRepository.findById(sesionId)
                 .orElseThrow(() -> new RuntimeException("Sesión no encontrada"));
 
-        // Seguridad
-        if (!sesion.getRutina().getUsuario().getId().equals(usuarioId)) {
-            throw new RuntimeException("No tienes permiso para ver esta sesión");
-        }
+        securityUtils.validarAcceso(sesion.getRutina().getUsuario(), usuarioId);
 
-        return ejercicioRepository.findBySesionId(sesionId);
+        return ejercicioRepository.findBySesionId(sesionId).stream()
+                    .map(e -> transformarADto(e))
+                    .toList();
     }
 
     /**
      * Crear ejercicio
      */
-    public Ejercicio create(Long usuarioId, Long sesionId, EjercicioRequest request) {
-        
-        // 1. Validar Sesión y Usuario
+    public EjercicioResponse create(Long usuarioId, Long sesionId, EjercicioRequest request) {
+        // Validar Sesión y Usuario
         Sesion sesion = sesionRepository.findById(sesionId)
                 .orElseThrow(() -> new RuntimeException("Sesión no encontrada"));
 
-        if (!sesion.getRutina().getUsuario().getId().equals(usuarioId)) {
-            throw new RuntimeException("No puedes editar una sesión ajena");
-        }
+        securityUtils.validarAcceso(sesion.getRutina().getUsuario(), usuarioId);
 
-        // 2. Validar Tipo de Ejercicio
+        // Validar Tipo de Ejercicio
         EjercicioInfo info = ejercicioInfoRepository.findById(request.ejercicioInfoId())
                 .orElseThrow(() -> new RuntimeException("El tipo de ejercicio no existe"));
 
-        // 3. Crear Entidad
+        // Crear Ejercicio
         Ejercicio ejercicio = new Ejercicio();
         ejercicio.setSesion(sesion);
         ejercicio.setEjercicioInfo(info);
-        
-        // Aquí asignamos los valores genéricos
         ejercicio.setParam1(request.param1()); 
         ejercicio.setParam2(request.param2());
 
-        return ejercicioRepository.save(ejercicio);
+        ejercicio = ejercicioRepository.save(ejercicio);
+        return transformarADto(ejercicio);
     }
 
     /*
     * Actualizar ejercicio
     */
-    public Ejercicio update(Long usuarioId, Long ejercicioId, EjercicioRequest request) {
+    public EjercicioResponse update(Long usuarioId, Long ejercicioId, EjercicioRequest request) {
+        // Validar Sesión y Usuario
         Ejercicio ejercicio = ejercicioRepository.findById(ejercicioId)
                 .orElseThrow(() -> new RuntimeException("Ejercicio no encontrado"));
 
-        if (!ejercicio.getSesion().getRutina().getUsuario().getId().equals(usuarioId)) {
-            throw new RuntimeException("No autorizado");
-        }
 
+        // Valida el acceso si es el dueño o el entrenador
+        Usuario propietario = ejercicio.getSesion().getRutina().getUsuario();
+        securityUtils.validarAcceso(propietario, usuarioId);
+        
+        EjercicioInfo info = ejercicioInfoRepository.findById(request.ejercicioInfoId())
+        .orElseThrow(() -> new RuntimeException("El tipo de ejercicio no existe"));
+        ejercicio.setEjercicioInfo(info);
         ejercicio.setParam1(request.param1());
         ejercicio.setParam2(request.param2());
 
-        if (!ejercicio.getEjercicioInfo().getId().equals(request.ejercicioInfoId())) {
-            EjercicioInfo info = ejercicioInfoRepository.findById(request.ejercicioInfoId())
-                    .orElseThrow(() -> new RuntimeException("El tipo de ejercicio no existe"));
-            ejercicio.setEjercicioInfo(info);
-        }
-
-        return ejercicioRepository.save(ejercicio);
+        ejercicio = ejercicioRepository.save(ejercicio);
+        return transformarADto(ejercicio);
     }
 
     /**
@@ -94,10 +95,24 @@ public class EjercicioService {
         Ejercicio ejercicio = ejercicioRepository.findById(ejercicioId)
                 .orElseThrow(() -> new RuntimeException("Ejercicio no encontrado"));
 
-        if (!ejercicio.getSesion().getRutina().getUsuario().getId().equals(usuarioId)) {
-            throw new RuntimeException("No autorizado");
-        }
+        // Valida el acceso si es el dueño o el entrenador
+        Usuario propietario = ejercicio.getSesion().getRutina().getUsuario();
+        securityUtils.validarAcceso(propietario, usuarioId);
 
         ejercicioRepository.deleteById(ejercicioId);
+    }
+
+
+    // ===============
+    // AUX
+    // ===============
+
+    private EjercicioResponse transformarADto(Ejercicio e){
+        return new EjercicioResponse(
+                        e.getId(), 
+                        e.getEjercicioInfo().getNombre(), 
+                        e.getParam1(), 
+                        e.getParam2(), 
+                        e.getEjercicioInfo().getCodigo());
     }
 }

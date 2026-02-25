@@ -1,11 +1,15 @@
 package com.example.rutinafit.controller;
 
 import com.example.rutinafit.dto.SolicitudRequest;
-import com.example.rutinafit.service.JwtService;
+import com.example.rutinafit.dto.SolicitudResponse;
 import com.example.rutinafit.service.SolicitudService;
+import com.example.rutinafit.util.SecurityUtils;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,20 +28,20 @@ import org.springframework.web.bind.annotation.RestController;
 public class SolicitudController {
 
     private final SolicitudService solicitudService;
-    private final JwtService jwtService;
+    private final SecurityUtils securityUtils;
 
     @PostMapping("/enviar")
     public ResponseEntity<?> enviar(
         @Valid @RequestBody SolicitudRequest dto, 
         @RequestHeader("Authorization") String authHeader){
-        Long remitenteId = jwtService.obtenerId(authHeader.substring(7));
+        Long remitenteId = securityUtils.getUsuarioId(authHeader);
         solicitudService.enviarSolicitud(remitenteId, dto);
         return ResponseEntity.ok("Solicitud procesada");
     }
 
     @GetMapping("/pendientes")
-    public ResponseEntity<?> listar(@RequestHeader("Authorization") String authHeader) {
-        Long usuarioId = jwtService.obtenerId(authHeader.substring(7));
+    public ResponseEntity<List<SolicitudResponse>> listar(@RequestHeader("Authorization") String authHeader) {
+        Long usuarioId = securityUtils.getUsuarioId(authHeader);
         return ResponseEntity.ok(solicitudService.obtenerSolicitudesPendientes(usuarioId));
     }
 
@@ -46,7 +50,7 @@ public class SolicitudController {
             @PathVariable Long id,
             @RequestHeader("Authorization") String authHeader) {
         
-        Long usuarioId = jwtService.obtenerId(authHeader.substring(7));
+        Long usuarioId = securityUtils.getUsuarioId(authHeader);
         solicitudService.aceptarSolicitud(id, usuarioId);
         return ResponseEntity.ok().build();
     }
@@ -56,7 +60,7 @@ public class SolicitudController {
         @PathVariable Long id,
         @RequestHeader("Authorization") String authHeader) {
     
-    Long usuarioId = jwtService.obtenerId(authHeader.substring(7));
+    Long usuarioId = securityUtils.getUsuarioId(authHeader);
     solicitudService.rechazarSolicitud(id, usuarioId);
     return ResponseEntity.ok().build();
 }

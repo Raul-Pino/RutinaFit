@@ -26,16 +26,17 @@ public class UsuarioService {
     }
 
     // VER PERFIL
-    public Usuario findById(Long id) {
-        return usuarioRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+    public UsuarioResponse findById(Long id) {
+        Usuario u = usuarioRepository.findById(id)
+                    .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        return transformarADTO(u);
     }
 
     // Buscar por Nombre de usuario
     public List<UsuarioResponse> buscarUsuarios(String nombre) {
         return usuarioRepository.findByUsernameContainingIgnoreCase(nombre)
                 .stream()
-                .map(u -> new UsuarioResponse(u.getId(), u.getUsername(), u.isEsEntrenador()))
+                .map(u -> new UsuarioResponse(u.getId(), u.getUsername(), u.getEmail(), u.getRol()))
                 .toList();
     }
 
@@ -62,7 +63,9 @@ public class UsuarioService {
 
     // Listar Alumnos de un enternador
     public List<UsuarioResponse> listarMisAlumnos(Long entrenadorId) {
-        Usuario entrenador = findById(entrenadorId);
+        Usuario entrenador = usuarioRepository.findById(entrenadorId)
+                    .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+                    
         if (!entrenador.isEsEntrenador()) {
             throw new RuntimeException("Solo los entrenadores pueden consultar su lista de alumnos.");
         }
@@ -82,7 +85,7 @@ public class UsuarioService {
         }
 
         // Si no es el alumno y ni el entrenador salta un error
-        if (!alumno.getId().equals(solicitanteId) && !entrenador.getId().equals(solicitanteId)) {
+        if (alumno.getId() != solicitanteId && entrenador.getId() != solicitanteId) {
                 throw new RuntimeException("No tienes permiso para romper esta relación");
         }
 
@@ -94,6 +97,6 @@ public class UsuarioService {
 
     // "Transforma" un objeto usuario a un objeto que puede enviarse al frontEnd (Eliminando información sensible)
     public UsuarioResponse transformarADTO(Usuario usuario) {
-        return new UsuarioResponse(usuario.getId(), usuario.getUsername(), usuario.isEsEntrenador());
+        return new UsuarioResponse(usuario.getId(), usuario.getUsername(), usuario.getEmail(), usuario.getRol());
     }
 }

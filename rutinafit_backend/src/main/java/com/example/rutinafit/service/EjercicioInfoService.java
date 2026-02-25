@@ -1,5 +1,7 @@
 package com.example.rutinafit.service;
 
+import com.example.rutinafit.dto.EjercicioInfoRequest;
+import com.example.rutinafit.dto.EjercicioInfoResponse;
 import com.example.rutinafit.model.EjercicioInfo;
 import com.example.rutinafit.repository.EjercicioInfoRepository;
 import lombok.RequiredArgsConstructor;
@@ -15,36 +17,34 @@ public class EjercicioInfoService {
     /*
     * Listar todos los tipos de ejercicios
     */
-    public List<EjercicioInfo> findAll(){
-        return ejercicioInfoRepository.findAll();
-    }
-    
-    /*
-    * Buscar por código de ejercicio
-    */
-    public List<EjercicioInfo> findByCodigo(int codigo){
-        return ejercicioInfoRepository.findByCodigo(codigo);
+    public List<EjercicioInfoResponse> findAll(){
+        return ejercicioInfoRepository.findAll().stream().map(e -> transformarADto(e)).toList();
     }
 
     /*
     * Crear nuevo ejercicio en el catálogo
     */
-    public EjercicioInfo create(EjercicioInfo ejercicioInfo){
-        return ejercicioInfoRepository.save(ejercicioInfo);
+    public EjercicioInfoResponse create(EjercicioInfoRequest dto){
+        EjercicioInfo info = new EjercicioInfo();
+        info.setCodigo(dto.codigo());
+        info.setNombre(dto.nombre());
+        info.setDescripcion(dto.descripcion());
+        
+        return transformarADto(ejercicioInfoRepository.save(info));
     }
 
     /*
     * Actualizar información de ejercicio existente
     */
-    public EjercicioInfo update(Long id, EjercicioInfo nuevosDatos) {
+    public EjercicioInfoResponse update(Long id, EjercicioInfoRequest dto) {
         EjercicioInfo existente = ejercicioInfoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Información de ejercicio no encontrada"));
 
-        existente.setNombre(nuevosDatos.getNombre());
-        existente.setDescripcion(nuevosDatos.getDescripcion());
-        existente.setCodigo(nuevosDatos.getCodigo());
+        existente.setNombre(dto.nombre());
+        existente.setDescripcion(dto.descripcion());
+        existente.setCodigo(dto.codigo());
 
-        return ejercicioInfoRepository.save(existente);
+        return transformarADto(ejercicioInfoRepository.save(existente));
     }
 
     /*  
@@ -56,4 +56,20 @@ public class EjercicioInfoService {
         }
         ejercicioInfoRepository.deleteById(id);
     }
+
+    /**
+     * Buscar el ejercicio info que contenga el nombre
+     */
+    public List<EjercicioInfoResponse> buscarEjercicioInfo(String nombre){
+        return ejercicioInfoRepository.findByNombreContainingIgnoreCase(nombre).stream()
+                    .map(e -> transformarADto(e)).toList();
+    }
+
+
+
+    private EjercicioInfoResponse transformarADto(EjercicioInfo e) {
+        return new EjercicioInfoResponse(e.getId(), e.getCodigo(), e.getNombre(), e.getDescripcion());
+    }
+
+
 }

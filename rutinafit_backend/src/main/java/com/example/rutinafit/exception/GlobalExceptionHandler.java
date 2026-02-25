@@ -17,9 +17,8 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<Map<String, String>> handleRuntimeException(RuntimeException ex) {
         Map<String, String> response = new HashMap<>();
-        response.put("error", ex.getMessage()); // Aquí va el mensaje que pusiste en el Service
+        response.put("error", ex.getMessage());
         
-        // Devolvemos un 400 Bad Request en lugar de 500
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
