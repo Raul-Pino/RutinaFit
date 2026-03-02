@@ -6,6 +6,7 @@ import com.example.rutinafit.model.TipoSolicitud;
 import com.example.rutinafit.model.Usuario;
 import com.example.rutinafit.repository.AmistadRepository;
 import com.example.rutinafit.repository.SolicitudRepository;
+import com.example.rutinafit.util.UsuarioMapper;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,7 @@ public class AmistadService {
 
     private final AmistadRepository amistadRepository;
     private final SolicitudRepository solicitudRepository;
+    private final UsuarioMapper usuarioMapper;
 
     public List<UsuarioResponse> listarMisAmigos(Long userId) {
         List<Usuario> amistades = amistadRepository.buscarPorUsuarioId(userId);
@@ -27,7 +29,7 @@ public class AmistadService {
         List<UsuarioResponse> respuesta = new ArrayList<>();
     
         for(Usuario amigo : amistades){
-            respuesta.add(new UsuarioResponse(amigo.getId(), amigo.getUsername(), amigo.getEmail(), amigo.getRol()));
+            respuesta.add(usuarioMapper.pasarADTO(amigo));
         }
 
         return respuesta;

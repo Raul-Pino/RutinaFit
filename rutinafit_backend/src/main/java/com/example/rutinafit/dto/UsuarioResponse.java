@@ -4,5 +4,6 @@ public record UsuarioResponse(
     Long id,
     String username,
     String email,
-    String rol
+    String rol,
+    String fotoPerfil
 ) {}

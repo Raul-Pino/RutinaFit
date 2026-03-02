@@ -14,11 +14,13 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
 @RestController
+@RequestMapping("/sesiones")
 @RequiredArgsConstructor
 @CrossOrigin(origins = "*")
 public class SesionController {
@@ -29,7 +31,7 @@ public class SesionController {
     /**
      * Crear una nueva sesión en una rutina
      */
-    @PostMapping("/rutinas/{rutinaId}/sesiones")
+    @PostMapping("/rutina/{rutinaId}")
     public ResponseEntity<SesionResponse> crearSesion(
             @PathVariable Long rutinaId,
             @RequestBody SesionRequest sesion,
@@ -42,7 +44,7 @@ public class SesionController {
     /**
      * Listar todas las sesiones de una rutina
      */
-    @GetMapping("/rutinas/{rutinaId}/sesiones")
+    @GetMapping("/rutina/{rutinaId}")
     public ResponseEntity<List<SesionResponse>> listarSesiones(
             @PathVariable Long rutinaId,
             @RequestHeader("Authorization") String authHeader) {
@@ -54,7 +56,7 @@ public class SesionController {
     /**
      * Eliminar una sesión por su ID
      */
-    @DeleteMapping("/sesiones/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<?> eliminarSesion(
             @PathVariable Long id,
             @RequestHeader("Authorization") String authHeader) {

@@ -44,6 +44,13 @@
         .close-modal { float: right; cursor: pointer; font-size: 20px; font-weight: bold; color: #999; }
         
         label { font-weight: bold; font-size: 14px; display: block; margin-top: 10px; }
+        .profile-img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%; /* Esto hace que el cuadrado de UI Avatars sea un círculo */
+            border: 2px solid #007bff;
+            object-fit: cover;
+        }
     </style>
 </head>
 <body>
@@ -52,6 +59,7 @@
     <h3>Mi Gym Tracker</h3>
     <div>
         <span id="headerUsername">Cargando...</span>
+        <img id="userPhoto" class="profile-img">
         <a id="btn-admin" href="./admin.html" class="btn-primary" style="text-decoration: none; display: none;">Zona administración</a>
         <button class="btn-profile" onclick="abrirPerfil()">Mi Perfil</button>
         <button class="btn-logout" onclick="logout()">Salir</button>
@@ -168,10 +176,11 @@
             document.getElementById('headerUsername').innerText = user.username;
             document.getElementById('profileUsername').value = user.username;
             document.getElementById('profileEmail').value = user.email;
+            const imgPerfil = document.getElementById('userPhoto');
+            imgPerfil.src = user.fotoPerfil;
+            imgPerfil.alt = "Avatar de " + user.username;
             let admin = document.getElementById("btn-admin")
             if(user.rol === "ADMIN") admin.style.display = "";
-            if(user.rol === "ADMIN") console.log("HGOL")
-            else console.log("ADIOS")
         } catch (e) { console.error(e); }
     }
     function abrirPerfil() {
@@ -265,7 +274,7 @@
 
     // --- SESIONES ---
     async function cargarSesiones(rutinaId) {
-        const res = await authFetch(`/rutinas/${rutinaId}/sesiones`);
+        const res = await authFetch(`/sesiones/rutina/${rutinaId}`);
         const data = await res.json();
         const div = document.getElementById('listaSesiones');
         div.innerHTML = '';
@@ -282,7 +291,7 @@
     }
     async function crearSesion() {
         const body = { fecha: document.getElementById('newSesionFecha').value };
-        await authFetch(`/rutinas/${currentRutinaId}/sesiones`, 'POST', body);
+        await authFetch(`/sesiones/rutina/${currentRutinaId}`, 'POST', body);
         toggleForm('formSesion'); cargarSesiones(currentRutinaId);
     }
     async function borrarSesion(id, e) {
@@ -300,7 +309,7 @@
 
     // --- EJERCICIOS ---
     async function cargarEjercicios(sesionId) {
-        const res = await authFetch(`/sesiones/${sesionId}/ejercicios`);
+        const res = await authFetch(`/ejercicios/sesion/${sesionId}`);
         const data = await res.json();
         const div = document.getElementById('listaEjercicios');
         div.innerHTML = '';
@@ -349,7 +358,7 @@
             param1: document.getElementById('param1').value,
             param2: document.getElementById('param2').value
         };
-        await authFetch(`/sesiones/${currentSesionId}/ejercicios`, 'POST', body);
+        await authFetch(`/ejercicios/sesion/${currentSesionId}`, 'POST', body);
         toggleForm('formEjercicio'); cargarEjercicios(currentSesionId);
     }
     async function borrarEjercicio(id, e) {

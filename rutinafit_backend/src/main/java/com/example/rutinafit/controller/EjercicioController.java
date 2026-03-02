@@ -16,11 +16,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
 @RestController
+@RequestMapping("/ejercicios")
 @RequiredArgsConstructor
 @CrossOrigin(origins = "*")
 public class EjercicioController {
@@ -34,7 +36,7 @@ public class EjercicioController {
      * ejemplo : 
      * { "ejercicioInfoId": 5, "param1": 50.0, "param2": 10.0 }
      */
-    @PostMapping("/sesiones/{sesionId}/ejercicios")
+    @PostMapping("/sesion/{sesionId}")
     public ResponseEntity<EjercicioResponse> crearEjercicio(
             @PathVariable Long sesionId,
             @RequestBody EjercicioRequest requestDTO,
@@ -47,7 +49,7 @@ public class EjercicioController {
     /**
      * Actualizar un ejercicio por su ID
      */
-    @PutMapping("/ejercicios/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<EjercicioResponse> actualizarEjercicio(
             @PathVariable Long id,
             @Valid @RequestBody EjercicioRequest requestDTO, 
@@ -60,7 +62,7 @@ public class EjercicioController {
     /**
      * Listar todos los ejercicios de una sesión
      */
-    @GetMapping("/sesiones/{sesionId}/ejercicios")
+    @GetMapping("/sesion/{sesionId}")
     public ResponseEntity<List<EjercicioResponse>> listarEjercicios(
             @PathVariable Long sesionId,
             @RequestHeader("Authorization") String authHeader) {
@@ -72,7 +74,7 @@ public class EjercicioController {
     /**
      * Eliminar un ejercicio por su ID
      */
-    @DeleteMapping("/ejercicios/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<?> eliminarEjercicio(
             @PathVariable Long id,
             @RequestHeader("Authorization") String authHeader) {

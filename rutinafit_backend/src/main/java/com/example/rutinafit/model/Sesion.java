@@ -1,6 +1,7 @@
 package com.example.rutinafit.model;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import org.springframework.format.annotation.DateTimeFormat;
 import com.fasterxml.jackson.annotation.JsonBackReference;
@@ -45,5 +46,5 @@ public class Sesion {
     @OneToMany(mappedBy = "sesion", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     @ToString.Exclude
-    private List<Ejercicio> ejercicios;
+    private List<Ejercicio> ejercicios = new ArrayList<>();
 }

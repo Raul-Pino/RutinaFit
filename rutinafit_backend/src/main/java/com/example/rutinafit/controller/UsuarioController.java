@@ -10,6 +10,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +25,6 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
 
 @RestController
 @RequestMapping("/usuarios")
@@ -56,7 +56,7 @@ public class UsuarioController {
     public ResponseEntity<?> eliminarPerfil(@RequestHeader("Authorization") String authHeader) {
         Long myId = securityUtils.getUsuarioId(authHeader);
         usuarioService.delete(myId);
-        
+
         return ResponseEntity.noContent().build();
     }
 
@@ -66,23 +66,23 @@ public class UsuarioController {
     @PutMapping("/perfil")
     public ResponseEntity<UsuarioResponse> actualizarPerfil(
             @Valid @RequestBody UsuarioUpdateRequest dto,
-            @RequestHeader("Authorization") String authHeader){
-        
+            @RequestHeader("Authorization") String authHeader) {
+
         Long myId = securityUtils.getUsuarioId(authHeader);
         return ResponseEntity.ok(usuarioService.update(myId, dto));
     }
 
-    /*
-    * Buscar usuario por nombre
-    */
+    /**
+     * Buscar usuario por nombre
+     */
     @GetMapping("/buscar")
     public ResponseEntity<List<UsuarioResponse>> buscar(@RequestParam String username) {
         return ResponseEntity.ok(usuarioService.buscarUsuarios(username));
     }
 
-    /*
-    * Listar los alumnos del entrenador
-    */
+    /**
+     * Listar los alumnos del entrenador
+     */
     @GetMapping("/alumnos")
     public ResponseEntity<?> getMisAlumnos(@RequestHeader("Authorization") String authHeader) {
         Long entrenadorId = securityUtils.getUsuarioId(authHeader);
@@ -90,14 +90,37 @@ public class UsuarioController {
         return ResponseEntity.ok(alumnos);
     }
 
-    /*
-    * Eliminar entrenador
-    */
+    /**
+     * Eliminar entrenador
+     */
     @PostMapping("/entrenador/quitar/{alumnoId}")
-    public ResponseEntity<?> quitarEntrenador(@PathVariable Long alumnoId, @RequestHeader("Authorization") String authHeader) {
+    public ResponseEntity<?> quitarEntrenador(@PathVariable Long alumnoId,
+            @RequestHeader("Authorization") String authHeader) {
         Long solicitanteId = securityUtils.getUsuarioId(authHeader);
         usuarioService.dejarEntrenador(alumnoId, solicitanteId);
         return ResponseEntity.ok("Relación de entrenamiento finalizada");
+    }
+
+    /**
+     * Cambiar contraseña
+     */
+    @PutMapping("/perfil/password")
+    public ResponseEntity<?> cambiarPassword(
+            @RequestBody Map<String, String> datos,
+            @RequestHeader("Authorization") String authHeader) {
+        Long id = securityUtils.getUsuarioId(authHeader);
+        usuarioService.cambiarPassword(id, datos);
+        return ResponseEntity.ok(Map.of("message", "Contraseña actualizada correctamente"));
+    }
+
+    /**
+     * Cambiar contraseña
+     */
+    @PostMapping("/recuperar-password")
+    public ResponseEntity<?> recuperarPassword(
+            @RequestBody Map<String, String> datos) {
+        usuarioService.recuperarPassword(datos);
+        return ResponseEntity.ok(Map.of("message", "Se ha restablecido la contraseña"));
     }
 
     // ===============
@@ -122,9 +145,9 @@ public class UsuarioController {
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<?> eliminarUsuario(
-            @PathVariable Long id, 
+            @PathVariable Long id,
             @RequestHeader("Authorization") String authHeader) {
-        
+
         if (!esAdmin(authHeader)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
                     .body("Acceso denegado: Solo administradores.");
@@ -139,7 +162,8 @@ public class UsuarioController {
     // ===============
 
     private boolean esAdmin(String authHeader) {
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) return false;
+        if (authHeader == null || !authHeader.startsWith("Bearer "))
+            return false;
         String token = authHeader.substring(7);
         return jwtService.esAdmin(token);
     }

@@ -1,5 +1,8 @@
 package com.example.rutinafit.util;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.springframework.stereotype.Component;
 
 import com.example.rutinafit.model.Usuario;
@@ -39,5 +42,13 @@ public class SecurityUtils {
         if (!esProietario && !esEntrenador) {
             throw new RuntimeException("Acceso denegado: No eres el propietario ni el entrenador asignado");
         }
+    }
+
+
+    public boolean validarPassword(String password){
+        String regex = "(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=.])(?=\\S+$).{8,}$";
+        Pattern p = Pattern.compile(regex);
+        Matcher m = p.matcher(password);
+        return m.matches();
     }
 }

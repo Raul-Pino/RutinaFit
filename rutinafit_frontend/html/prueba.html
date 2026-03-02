@@ -144,7 +144,7 @@
                 lista.innerHTML = "";
                 solicitudes.forEach(s => {
                     lista.innerHTML += `<li>
-                        <b>De:</b> ${s.remitente.username} (${s.tipo})<br>
+                        <b>De:</b> ${s.remitenteNombre} (${s.tipo})<br>
                         <button onclick="gestionar(${s.id}, 'aceptar')" style="width:48%; background:green;">Aceptar</button>
                         <button onclick="gestionar(${s.id}, 'rechazar')" style="width:48%; background:red;">Rechazar</button>
                     </li>`;

@@ -5,6 +5,8 @@ import com.example.rutinafit.dto.LoginRequest;
 import com.example.rutinafit.dto.RegisterRequest;
 import com.example.rutinafit.model.Usuario;
 import com.example.rutinafit.repository.UsuarioRepository;
+import com.example.rutinafit.util.SecurityUtils;
+
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -17,6 +19,7 @@ public class AuthService {
         private final UsuarioRepository usuarioRepository;
         private final JwtService jwtService;
         private final PasswordEncoder encoder;
+        private final SecurityUtils securityUtils;
 
         /**
          * Registra un usuario nuevo en la base de datos y devuelve el token.
@@ -28,6 +31,9 @@ public class AuthService {
                 }
                 if (usuarioRepository.existsByEmail(request.email())) {
                         throw new RuntimeException("El email ya está registrado");
+                }
+                if(!securityUtils.validarPassword(request.password())){
+                        throw new RuntimeException("La contraseña no cumple con los requisitos");
                 }
 
                 // 2. Construir el objeto Usuario
