@@ -42,6 +42,14 @@ public class EjercicioInfoController {
         return ResponseEntity.ok(ejercicioInfoService.findAll());
     }
 
+    /**
+     * Busca la información del ejercicio
+     */
+    @GetMapping("/buscar")
+    public ResponseEntity<List<EjercicioInfoResponse>> buscar(@RequestParam String nombre) {
+        return ResponseEntity.ok(ejercicioInfoService.buscarEjercicioInfo(nombre));
+    }
+
     // ===============
     // PARTE Privada
     // ===============
@@ -101,13 +109,5 @@ public class EjercicioInfoController {
 
         ejercicioInfoService.delete(id);
         return ResponseEntity.noContent().build();
-    }
-
-    /**
-     * Busca la información del ejercicio
-     */
-    @GetMapping("/buscar")
-    public ResponseEntity<List<EjercicioInfoResponse>> buscar(@RequestParam String nombre) {
-        return ResponseEntity.ok(ejercicioInfoService.buscarEjercicioInfo(nombre));
     }
 }

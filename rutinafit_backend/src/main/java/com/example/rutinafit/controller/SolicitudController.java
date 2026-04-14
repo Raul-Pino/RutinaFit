@@ -30,6 +30,9 @@ public class SolicitudController {
     private final SolicitudService solicitudService;
     private final SecurityUtils securityUtils;
 
+    /**
+     * Enviar solicitud
+     */
     @PostMapping("/enviar")
     public ResponseEntity<?> enviar(
         @Valid @RequestBody SolicitudRequest dto, 
@@ -39,12 +42,18 @@ public class SolicitudController {
         return ResponseEntity.ok("Solicitud procesada");
     }
 
+    /**
+     * Listar tus solicitudes pendientes
+     */
     @GetMapping("/pendientes")
     public ResponseEntity<List<SolicitudResponse>> listar(@RequestHeader("Authorization") String authHeader) {
         Long usuarioId = securityUtils.getUsuarioId(authHeader);
         return ResponseEntity.ok(solicitudService.obtenerSolicitudesPendientes(usuarioId));
     }
 
+    /**
+     * Aceptar solicitud
+     */
     @PostMapping("/{id}/aceptar")
     public ResponseEntity<?> aceptar(
             @PathVariable Long id,
@@ -55,13 +64,16 @@ public class SolicitudController {
         return ResponseEntity.ok().build();
     }
 
+    /**
+     * Rechazar solicitud
+     */
     @PostMapping("/{id}/rechazar")
     public ResponseEntity<?> rechazar(
         @PathVariable Long id,
         @RequestHeader("Authorization") String authHeader) {
-    
-    Long usuarioId = securityUtils.getUsuarioId(authHeader);
-    solicitudService.rechazarSolicitud(id, usuarioId);
-    return ResponseEntity.ok().build();
-}
+        
+        Long usuarioId = securityUtils.getUsuarioId(authHeader);
+        solicitudService.rechazarSolicitud(id, usuarioId);
+        return ResponseEntity.ok().build();
+    }
 }

@@ -114,7 +114,7 @@ public class UsuarioController {
     }
 
     /**
-     * Cambiar contraseña
+     * Recuperar contraseña
      */
     @PostMapping("/recuperar-password")
     public ResponseEntity<?> recuperarPassword(
