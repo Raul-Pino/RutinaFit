@@ -1,1 +1,170 @@
-/* You can add global styles to this file, and also import other style files */
+// Importar Bootstrap completo (SCSS)
+@import 'bootstrap/scss/bootstrap';
+
+// ==============================
+// VARIABLES CSS DE RUTINAFIT
+// ==============================
+:root {
+  --verde-principal: #76ff03;
+  --verde-oscuro: #5dcf00;
+  --fondo-principal: #0d1a0d;
+  --fondo-tarjeta: #1a2e1a;
+  --fondo-modal: #1c2b1c;
+  --borde-oscuro: #2e4a2e;
+  --texto-claro: #ffffff;
+  --texto-suave: #8aad8a;
+}
+
+// ==============================
+// ESTILOS GLOBALES
+// ==============================
+body {
+  background-color: var(--fondo-principal);
+  color: var(--texto-claro);
+  font-family: 'Lexend', sans-serif;
+}
+
+// ==============================
+// CLASES DE BOTONES PERSONALIZADOS
+// ==============================
+
+// Botón verde sólido (llamada a la acción principal)
+.btn-verde {
+  background-color: var(--verde-principal);
+  border-color: var(--verde-principal);
+  color: #000;
+  font-weight: 700;
+
+  &:hover,
+  &:focus,
+  &:focus-visible {
+    background-color: var(--verde-oscuro);
+    border-color: var(--verde-oscuro);
+    color: #000;
+    // Eliminar sombra de foco para evitar el hover residual al cerrar el modal
+    box-shadow: none;
+    outline: none;
+  }
+
+  &:active {
+    background-color: var(--verde-oscuro) !important;
+    border-color: var(--verde-oscuro) !important;
+    colour: #000 !important;
+  }
+}
+
+// Botón con borde verde (acción secundaria)
+.btn-contorno-verde {
+  border: 1.5px solid var(--verde-principal);
+  color: var(--verde-principal);
+  font-weight: 600;
+  background-color: transparent;
+
+  &:hover,
+  &:focus,
+  &:focus-visible {
+    background-color: var(--verde-principal);
+    color: #000;
+    box-shadow: none;
+    outline: none;
+  }
+}
+
+// ==============================
+// CLASES DE TEXTO Y ENLACES
+// ==============================
+
+.texto-verde {
+  color: var(--verde-principal) !important;
+}
+
+.enlace-verde {
+  color: var(--verde-principal);
+  text-decoration: none;
+  font-weight: 600;
+  cursor: pointer;
+
+  &:hover {
+    color: var(--verde-oscuro);
+  }
+}
+
+// ==============================
+// CLASES DE TARJETAS (CARDS)
+// ==============================
+
+.tarjeta-oscura {
+  background-color: var(--fondo-tarjeta);
+  border: 1px solid var(--borde-oscuro);
+}
+
+// ==============================
+// ESTILOS DE MODALES
+// ==============================
+
+.modal-content {
+  background-color: var(--fondo-modal);
+  border: 1px solid var(--borde-oscuro);
+  border-radius: 1rem;
+  color: var(--texto-claro);
+  // Forzar overflow oculto para que la barra superior se adapte al border-radius
+  overflow: hidden;
+}
+
+// Barra decorativa verde en la parte superior de los modales
+.barra-superior-modal {
+  height: 5px;
+  background-color: var(--verde-principal);
+}
+
+// ==============================
+// ESTILOS DE CAMPOS DE FORMULARIO
+// ==============================
+
+// Campo de texto con estilo oscuro
+.campo-formulario {
+  background-color: #1f3520;
+  border: 1.5px solid var(--borde-oscuro);
+  color: var(--texto-claro);
+  border-radius: 0.5rem;
+  padding: 0.6rem 1rem;
+
+  &::placeholder {
+    color: #5a7a5a;
+  }
+
+  &:focus {
+    background-color: #1f3520;
+    border-color: var(--verde-principal);
+    color: var(--texto-claro);
+    box-shadow: 0 0 0 0.15rem rgba(118, 255, 3, 0.2);
+  }
+}
+
+// Icono prefijo del campo de formulario (dentro de input-group)
+.grupo-icono {
+  background-color: #1f3520;
+  border: 1.5px solid var(--borde-oscuro);
+  border-right: none;
+  color: #5a7a5a;
+}
+
+// Botón para mostrar/ocultar contraseña (icono ojo)
+.boton-toggle-ojo {
+  background-color: #1f3520;
+  border: 1.5px solid var(--borde-oscuro);
+  border-left: none;
+  color: #5a7a5a;
+
+  &:hover,
+  &:focus {
+    background-color: #1f3520;
+    color: var(--verde-principal);
+    box-shadow: none;
+  }
+}
+
+// Corrección: cuando el campo está dentro de un input-group, quitar el border-left
+.input-group .campo-formulario {
+  border-left: none;
+}
