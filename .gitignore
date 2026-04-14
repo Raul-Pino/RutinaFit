@@ -19,7 +19,7 @@
 .DS_Store
 Thumbs.db
 
-# --- FRONTEND (Si usaras Node/React en el futuro) ---
+# --- FRONTEND ---
 **/node_modules/
 **/dist/
 .env
@@ -27,3 +27,6 @@ Thumbs.db
 # --- OTROS ---
 *.log
 temp/
+
+
+rutinafit_frontend_backup/
