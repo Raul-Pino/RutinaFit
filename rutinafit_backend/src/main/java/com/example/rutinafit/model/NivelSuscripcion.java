@@ -1,8 +1,8 @@
 package com.example.rutinafit.model;
 
 public enum NivelSuscripcion {
-    GRATIS(3, 0, 10),    // 3 rutinas, 0 alumnos, 10 amigos
-    TIER1(10, 10, 20),   // 10 rutinas, 10 alumnos, 20 amigos
+    GRATIS(10, 0, 10), // 10 rutinas, 0 alumnos, 10 amigos
+    TIER1(20, 10, 20), // 20 rutinas, 10 alumnos, 20 amigos
     TIER2(Integer.MAX_VALUE, 50, Integer.MAX_VALUE); // Ilimitado
 
     private final int limiteRutinas;
@@ -16,7 +16,15 @@ public enum NivelSuscripcion {
     }
 
     // Getters
-    public int getLimiteRutinas() { return limiteRutinas; }
-    public int getLimiteAlumnos() { return limiteAlumnos; }
-    public int getLimiteAmigos() { return limiteAmigos; }
+    public int getLimiteRutinas() {
+        return limiteRutinas;
+    }
+
+    public int getLimiteAlumnos() {
+        return limiteAlumnos;
+    }
+
+    public int getLimiteAmigos() {
+        return limiteAmigos;
+    }
 }

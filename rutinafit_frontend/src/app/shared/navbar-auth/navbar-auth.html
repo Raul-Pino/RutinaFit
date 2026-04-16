@@ -1,0 +1,40 @@
+<nav class="navbar navbar-auth d-flex justify-content-between align-items-center px-4 py-3">
+
+  <button class="btn d-md-none text-white border-0 p-1" type="button"
+    data-bs-toggle="offcanvas" data-bs-target="#sidebarOffcanvas"
+    aria-controls="sidebarOffcanvas">
+    <i class="bi bi-list fs-2"></i>
+  </button>
+
+  <div class="d-none d-md-block"></div>
+
+  <div class="d-flex align-items-center gap-3 ms-auto">
+    <button class="btn btn-dark d-flex align-items-center gap-2 rounded-pill px-3 py-2 btn-profile">
+      <i class="bi bi-person-circle fs-5 texto-verde"></i>
+      <span class="d-none d-sm-block fw-medium">Mi Perfil</span>
+    </button>
+    <button class="btn btn-outline-danger d-flex align-items-center gap-2 rounded-pill px-3 py-2 btn-logout"
+      (click)="cerrarSesion()">
+      <i class="bi bi-box-arrow-right fs-5"></i>
+      <span class="d-none d-sm-block fw-medium">Salir</span>
+    </button>
+  </div>
+
+</nav>
+
+<div class="offcanvas offcanvas-start" tabindex="-1"
+  id="sidebarOffcanvas" aria-labelledby="sidebarOffcanvasLabel">
+
+  <div class="offcanvas-header" style="border-bottom: 1px solid var(--borde-oscuro);">
+    <div class="d-flex align-items-center gap-2" id="sidebarOffcanvasLabel">
+      <img src="Logo.png" alt="RutinaFit Logo" height="32">
+      <span class="fs-5 fw-bold text-white">Rutina<span class="texto-verde">Fit</span></span>
+    </div>
+    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Cerrar"></button>
+  </div>
+
+  <div class="offcanvas-body p-0">
+    <app-sidebar></app-sidebar>
+  </div>
+
+</div>

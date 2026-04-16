@@ -28,7 +28,6 @@ public class UsuarioService {
     private final SolicitudRepository solicitudRepository;
     private final PasswordEncoder encoder;
 
-
     // LISTAR (Solo admins deberían poder hacer esto habitualmente)
     public List<UsuarioResponse> findAll() {
         return usuarioRepository.findAll().stream().map(u -> usuarioMapper.pasarADTO(u)).toList();
@@ -79,7 +78,8 @@ public class UsuarioService {
             throw new RuntimeException("Solo los entrenadores pueden consultar su lista de alumnos.");
         }
 
-        return usuarioRepository.findByEntrenadorId(entrenadorId).stream().map(u -> usuarioMapper.pasarADTO(u)).toList();
+        return usuarioRepository.findByEntrenadorId(entrenadorId).stream().map(u -> usuarioMapper.pasarADTO(u))
+                .toList();
     }
 
     // Dejar de ser Entrenador o dejar de ser Alumno de un entrenador
@@ -111,11 +111,11 @@ public class UsuarioService {
         String antigua = datos.get("antigua");
         String nueva = datos.get("nueva");
 
-        if(antigua.isBlank() || nueva.isBlank()){
+        if (antigua.isBlank() || nueva.isBlank()) {
             throw new RuntimeException("Faltan datos obligatorios");
         }
 
-        if(!securityUtils.validarPassword(nueva)){
+        if (!securityUtils.validarPassword(nueva)) {
             throw new RuntimeException("La contraseña no cumple con los requisitos");
         }
 
@@ -128,22 +128,27 @@ public class UsuarioService {
     }
 
     // Recuperar contraseña, se debe introducir el email y la nueva contraseña
-    public void recuperarPassword(Map<String, String> datos){
+    public void recuperarPassword(Map<String, String> datos) {
         String email = datos.get("email");
         String password = datos.get("password");
+        String passwordConfirmacion = datos.get("passwordConfirmacion");
 
-        if(password.isBlank() || email.isBlank()){
+        if (password.isBlank() || email.isBlank() || passwordConfirmacion.isBlank()) {
             throw new RuntimeException("Faltan datos obligatorios");
         }
 
-        if(!securityUtils.validarPassword(password)){
+        if (!securityUtils.validarPassword(password)) {
             throw new RuntimeException("La contraseña no cumple con los requisitos");
+        }
+
+        if (!password.equals(passwordConfirmacion)) {
+            throw new RuntimeException("Las contraseñas no coinciden");
         }
 
         Usuario usuario = usuarioRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Usuario no econtrado"));
 
         usuario.setPassword(encoder.encode(password));
-        usuarioRepository.save(usuario);   
+        usuarioRepository.save(usuario);
     }
 }

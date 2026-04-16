@@ -1,6 +1,148 @@
-<div class="container py-5 text-center text-white">
-  <h1>Hola Mundo desde Rutinas 💪</h1>
-  <p class="text-muted mt-3">Página de rutinas en construcción...</p>
-  <p>{{userData?.sub}}</p>
-  <button class="btn btn-danger" (click)="cerrarSesion()">Cerrar Sesión</button>
+<div class="container-fluid py-2">
+
+  <div class="row align-items-center mb-4">
+    <div class="col-12 col-md-5 mb-3 mb-md-0">
+      <h2 class="fw-bold mb-0 text-white">Mis Rutinas</h2>
+    </div>
+    <div class="col-12 col-md-7 d-flex flex-column flex-md-row justify-content-md-end gap-3 align-items-md-center">
+      <div class="input-group search-bar w-100">
+        <span class="input-group-text grupo-icono border-end-0">
+          <i class="bi bi-search"></i>
+        </span>
+        <input
+          type="text"
+          class="form-control campo-formulario border-start-0 ps-0 shadow-none text-white"
+          placeholder="Buscar Rutina"
+          [(ngModel)]="busqueda"
+        >
+      </div>
+      <button
+        class="btn btn-verde fw-bold d-flex align-items-center justify-content-center gap-2 w-100"
+        data-bs-toggle="modal"
+        data-bs-target="#modalNuevaRutina"
+      >
+        <i class="bi bi-plus-circle"></i> Crear Rutina
+      </button>
+    </div>
+  </div>
+
+  <!-- Tarjetas -->
+  <div class="row g-4">
+
+    @for (rutina of rutinasFiltradas(); track rutina.id) {
+      <div class="col-12 col-md-6 col-xl-4 col-xxl-3 d-flex">
+        <div class="card w-100 border-0 r-card">
+
+          <!-- Imagen -->
+          <button class="card-img-btn w-100 border-0 p-0" (click)="verDetalle(rutina)">
+            <div class="card-img-placeholder d-flex align-items-center justify-content-center">
+              <img [src]="rutina.imagen || '/Logo.png'" [alt]="rutina.nombre" class="card-img-cover">
+            </div>
+          </button>
+
+          <!-- Cuerpo -->
+          <div class="card-body d-flex align-items-center p-3 gap-2">
+            <div class="flex-grow-1">
+              <h5 class="card-title fw-bold text-white mb-1">{{ rutina.nombre }}</h5>
+              <p class="card-text small mb-0" style="color: #b0b0b0;">
+                {{ rutina.descripcion }}
+              </p>
+            </div>
+            <button class="boton btn-borrar flex-shrink-0" (click)="eliminarRutina(rutina.id)">
+              <i class="bi bi-trash fs-5"></i>
+            </button>
+            <button class="boton btn-editar flex-shrink-0"
+                data-bs-toggle="modal"
+                data-bs-target="#modalNuevaRutina"
+                (click)="abrirModalEditar(rutina)">
+              <i class="bi bi-pencil-square"></i>
+            </button>
+          </div>
+
+        </div>
+      </div>
+    } @empty {
+      <div class="col-12 text-center py-5">
+        <i class="bi bi-search" style="font-size: 3rem; color: #b0b0b0;"></i>
+        <h5 class="text-white mt-3">No se encontraron rutinas</h5>
+        <p style="color: #b0b0b0;">Prueba a buscar con otro nombre.</p>
+      </div>
+    }
+
+    <!-- Nueva Rutina -->
+    <div class="col-12 col-md-6 col-xl-4 col-xxl-3 d-flex">
+      <div
+        class="card r-card-nueva w-100 d-flex flex-column align-items-center justify-content-center"
+        data-bs-toggle="modal"
+        data-bs-target="#modalNuevaRutina"
+        (click)="abrirModalCrear()"
+      >
+        <div class="btn-plus-round">
+          <i class="bi bi-plus"></i>
+        </div>
+        <span class="fw-bold text-white fs-5 mt-3">Nueva Rutina</span>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ==================== MODAL: AÑADIR RUTINA ==================== -->
+<div class="modal fade" id="modalNuevaRutina" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 p-3" style="background-color: #1a2315; box-shadow: 0 0 0 1px #2e431e;">
+
+      <div class="modal-header border-0 pb-1">
+        <h5 class="modal-title fw-bold text-white d-flex align-items-center gap-2">
+          <i class="bi bi-plus-circle" style="color: var(--verde-principal);"></i> 
+          {{ rutinaEditandoId ? 'Editar Rutina' : 'Añadir nueva Rutina' }}
+        </h5>
+        <button type="button" class="btn-close btn-close-white opacity-50" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <form #formRutina="ngForm" (ngSubmit)="guardarRutina(formRutina)" novalidate>
+
+        <div class="modal-body pb-4">
+
+          <div class="mb-4">
+            <label class="form-label ms-1" style="color: #a0a0a0; font-size: 0.70rem; font-weight: bold; letter-spacing: 0.5px;">NOMBRE DE RUTINA</label>
+            <input
+              type="text"
+              name="nombre"
+              class="form-control"
+              style="background-color: #121c12; border: 1px solid #243824; color: white;"
+              placeholder="e.g. Upper Body Power"
+              [(ngModel)]="nuevaRutinaNombre"
+              required
+              #campoNombre="ngModel"
+            >
+            @if (campoNombre.invalid && campoNombre.touched) {
+              <p class="text-danger small mt-1 mb-0">El nombre es obligatorio.</p>
+            }
+          </div>
+
+          <div class="mb-2">
+            <label class="form-label ms-1" style="color: #a0a0a0; font-size: 0.70rem; font-weight: bold; letter-spacing: 0.5px;">DESCRIPCIÓN</label>
+            <textarea
+              name="descripcion"
+              class="form-control"
+              rows="4"
+              style="background-color: #121c12; border: 1px solid #243824; color: white; resize: none;"
+              placeholder="Descripción de la rutina"
+              [(ngModel)]="nuevaRutinaDescripcion"
+            ></textarea>
+          </div>
+
+        </div>
+
+        <div class="modal-footer border-0 pt-0 d-flex gap-2 justify-content-between flex-nowrap">
+          <button type="button" class="btn w-50 py-2" style="background-color: #294017; color: var(--verde-principal); font-weight: bold;" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-verde w-50 py-2" [disabled]="formRutina.invalid">
+            {{ rutinaEditandoId ? 'Guardar Cambios' : 'Crear Rutina' }}
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </div>
 </div>

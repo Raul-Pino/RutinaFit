@@ -1,8 +1,11 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, OnInit } from '@angular/core';
 import { NgClass } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { Router } from '@angular/router';
 import { environment } from '../../../environments/environment';
+import { AuthService } from '../../core/auth.service';
+import { cerrarModalGlobal } from '../../core/bootstrap-utils';
 
 declare const bootstrap: any;
 
@@ -12,8 +15,16 @@ declare const bootstrap: any;
   templateUrl: './home.html',
   styleUrl: './home.scss',
 })
-export class Home {
+export class Home implements OnInit {
   private http = inject(HttpClient);
+  private router = inject(Router);
+  private authService = inject(AuthService);
+
+  ngOnInit(): void {
+    if (this.authService.isLoggedIn()) {
+      this.router.navigate(['/rutinas']);
+    }
+  }
 
   // ==============================
   // ESTADO DE VISIBILIDAD DE CONTRASEÑAS
@@ -22,30 +33,22 @@ export class Home {
   mostrarPassRecuperar = false;
 
   // ==============================
-  // CAMPOS DEL FORMULARIO DE LOGIN
+  // CAMPOS DEL FORMULARIO
   // ==============================
   loginEmail = '';
   loginContrasena = '';
 
-  // ==============================
-  // CAMPOS DEL FORMULARIO DE REGISTRO
-  // ==============================
   registroNombre = '';
   registroEmail = '';
   registroContrasena = '';
   registroContrasenaRepetida = '';
 
-  // ==============================
-  // CAMPOS DEL FORMULARIO DE RECUPERAR CONTRASEÑA
-  // ==============================
   recuperarEmail = '';
   recuperarContrasena = '';
   recuperarContrasenaConf = '';
 
   // ==============================
-  // MENSAJES DE ERROR Y ÉXITO (Signals)
-  // Angular 21 es zoneless: los signals notifican el cambio directamente
-  // a la vista sin necesidad de zone.js, NgZone ni ChangeDetectorRef.
+  // MENSAJES DE ERROR
   // ==============================
   errorLogin    = signal('');
   errorRegistro = signal('');
@@ -62,18 +65,15 @@ export class Home {
   }
 
   private cerrarModal(id: string): void {
-    // Blur ANTES de hide para evitar el warning de aria-hidden con foco activo
     (document.activeElement as HTMLElement)?.blur();
     this.obtenerModal(id)?.hide();
   }
 
-  // Abre un modal y limpia todos los formularios/errores
   mostrarModal(id: string): void {
     this.limpiarFormularios();
     this.obtenerModal(id)?.show();
   }
 
-  // Cambia entre modales: cierra el actual y abre el siguiente
   cambiarModal(cerrar: string, abrir: string): void {
     this.cerrarModal(cerrar);
     setTimeout(() => this.mostrarModal(abrir), 400);
@@ -97,11 +97,12 @@ export class Home {
 
     const body = { email: this.loginEmail, password: this.loginContrasena };
 
-    this.http.post<{ token: string }>(`${environment.apiUrl}/login`, body)
+    this.http.post<{ token: string }>(`${environment.apiUrl}/auth/login`, body)
       .subscribe({
-        next: (data) => {
+        next: async (data) => {
           localStorage.setItem('token', data.token);
-          window.location.href = '/rutinas';
+          await cerrarModalGlobal('modalLogin');
+          this.router.navigate(['/rutinas']);
         },
         error: (err: HttpErrorResponse) => {
           if (err.status === 0) {
@@ -139,11 +140,12 @@ export class Home {
     const body = { username: this.registroNombre, email: this.registroEmail, password: this.registroContrasena };
 
 
-    this.http.post<{ token: string }>(`${environment.apiUrl}/register`, body)
+    this.http.post<{ token: string }>(`${environment.apiUrl}/auth/register`, body)
       .subscribe({
-        next: (data) => {
+        next: async (data) => {
           localStorage.setItem('token', data.token);
-          window.location.href = '/rutinas';
+          await cerrarModalGlobal('modalRegistro');
+          this.router.navigate(['/rutinas']);
         },
         error: (err: HttpErrorResponse) => {
           if (err.status === 0) {
@@ -179,8 +181,26 @@ export class Home {
       return;
     }
 
-    // TODO: llamar al back-end aquí
-    this.errorRecuperar.set('Ese email no está registrado en el sistema.');
+    const body = { email: this.recuperarEmail, password: this.recuperarContrasena, passwordConfirmacion: this.recuperarContrasenaConf };
+
+    console.log(body);
+
+    this.http.post<{ token: string }>(`${environment.apiUrl}/usuarios/recuperar-password`, body)
+      .subscribe({
+        next: (data) => {
+          this.exitoRecuperar.set('Contraseña recuperada correctamente');
+          setTimeout(() => {
+            window.location.href = '';
+          }, 1000);
+        },
+        error: (err: HttpErrorResponse) => {
+          if (err.status === 0) {
+            this.errorRecuperar.set('No se pudo conectar con el servidor. Verifica tu conexión.');
+          } else {
+            this.errorRecuperar.set(err.error.error);
+          }
+        }
+      });
   }
 
   // ==============================
