@@ -3,7 +3,9 @@ package com.example.rutinafit.util;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.example.rutinafit.model.Usuario;
 import com.example.rutinafit.service.JwtService;
@@ -22,10 +24,18 @@ public class SecurityUtils {
      */
 
     public Long getUsuarioId(String authHeader) {
+        // Comprobar que es un Token válido
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            throw new RuntimeException("Token JWT no encontrado o formato inválido");
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Token JWT no encontrado o formato inválido");
         }
+        
         String token = authHeader.substring(7);
+        
+        // 3. Validar que no está caducado
+        if (jwtService.validarYObtenerUsuario(token) == null){
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "El token es inválido o ha expirado");
+        }
+
         return jwtService.obtenerId(token);
     }
 

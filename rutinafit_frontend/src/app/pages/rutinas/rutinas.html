@@ -2,7 +2,7 @@
 
   <div class="row align-items-center mb-4">
     <div class="col-12 col-md-5 mb-3 mb-md-0">
-      <h2 class="fw-bold mb-0 text-white">Mis Rutinas</h2>
+      <h2 class="fw-bold mb-0 texto-verde">Mis Rutinas</h2>
     </div>
     <div class="col-12 col-md-7 d-flex flex-column flex-md-row justify-content-md-end gap-3 align-items-md-center">
       <div class="input-group search-bar w-100">
@@ -112,6 +112,7 @@
               class="form-control"
               style="background-color: #121c12; border: 1px solid #243824; color: white;"
               placeholder="e.g. Upper Body Power"
+              minlength="6"
               [(ngModel)]="nuevaRutinaNombre"
               required
               #campoNombre="ngModel"
@@ -134,6 +135,13 @@
           </div>
 
         </div>
+
+          @if (errorMensaje()) {
+            <div class="alert alert-danger d-flex align-items-center gap-2 py-2 px-3 mt-3" role="alert"
+            style="background-color: rgba(220,53,69,0.15); border: 1px solid rgba(220,53,69,0.4); border-radius: 0.5rem; color: #f66;">
+                        <i class="bi bi-exclamation-circle-fill"></i>
+                        <span>{{ errorMensaje() }}</span></div>
+          }
 
         <div class="modal-footer border-0 pt-0 d-flex gap-2 justify-content-between flex-nowrap">
           <button type="button" class="btn w-50 py-2" style="background-color: #294017; color: var(--verde-principal); font-weight: bold;" data-bs-dismiss="modal">Cancel</button>

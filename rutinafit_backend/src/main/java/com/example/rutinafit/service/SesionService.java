@@ -56,7 +56,7 @@ public class SesionService {
 
         // Valida que no exista una sesión con la misma fecha en la misma rutina
         if (sesionRepository.existsByRutinaIdAndFecha(rutinaId, dto.fecha())) {
-            throw new RuntimeException("Ya existe una sesión registrada para el día de hoy en esta rutina.");
+            throw new RuntimeException("Ya existe una sesión registrada para ese día en esta rutina.");
         }
 
         // Asignar los valores a la nueva sesión

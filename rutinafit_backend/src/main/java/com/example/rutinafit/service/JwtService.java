@@ -17,8 +17,8 @@ public class JwtService {
 
     public String generarToken(String username, String rol, String email, Long id) {
         long ahora = System.currentTimeMillis();
-        long expiracion = 1000 * 60 * 60; // 1 hora
-
+        long expiracion = 1000  * 60 * 60 * 24; // 24 horas
+        
         return Jwts.builder()
             .setSubject(username)
             .claim("rol", rol)

@@ -1,4 +1,3 @@
-// Importar Bootstrap completo (SCSS)
 @import 'bootstrap/scss/bootstrap';
 
 // ==============================
@@ -28,7 +27,6 @@ body {
 // CLASES DE BOTONES PERSONALIZADOS
 // ==============================
 
-// Botón verde sólido (llamada a la acción principal)
 .btn-verde {
   background-color: var(--verde-principal);
   border-color: var(--verde-principal);
@@ -41,7 +39,6 @@ body {
     background-color: var(--verde-oscuro);
     border-color: var(--verde-oscuro);
     color: #000;
-    // Eliminar sombra de foco para evitar el hover residual al cerrar el modal
     box-shadow: none;
     outline: none;
   }
@@ -49,11 +46,10 @@ body {
   &:active {
     background-color: var(--verde-oscuro) !important;
     border-color: var(--verde-oscuro) !important;
-    colour: #000 !important;
+    color: #000 !important;
   }
 }
 
-// Botón con borde verde (acción secundaria)
 .btn-contorno-verde {
   border: 1.5px solid var(--verde-principal);
   color: var(--verde-principal);
@@ -98,6 +94,41 @@ body {
   border: 1px solid var(--borde-oscuro);
 }
 
+.tarjeta-sesion {
+  height: 200px;
+}
+
+.r-card-nueva {
+  background-color: transparent !important;
+  border: 2px dashed var(--borde-oscuro) !important;
+  min-height: 200px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background-color: rgba(46, 67, 30, 0.2) !important;
+    border-color: var(--verde-principal) !important;
+  }
+
+  &:hover .btn-plus-round {
+    background-color: var(--verde-principal);
+    color: #000;
+  }
+}
+
+.btn-plus-round {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background-color: var(--borde-oscuro);
+  color: var(--verde-principal);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  transition: all 0.3s ease;
+}
+
 // ==============================
 // ESTILOS DE MODALES
 // ==============================
@@ -107,11 +138,9 @@ body {
   border: 1px solid var(--borde-oscuro);
   border-radius: 1rem;
   color: var(--texto-claro);
-  // Forzar overflow oculto para que la barra superior se adapte al border-radius
   overflow: hidden;
 }
 
-// Barra decorativa verde en la parte superior de los modales
 .barra-superior-modal {
   height: 5px;
   background-color: var(--verde-principal);
@@ -121,7 +150,6 @@ body {
 // ESTILOS DE CAMPOS DE FORMULARIO
 // ==============================
 
-// Campo de texto con estilo oscuro
 .campo-formulario {
   background-color: #1f3520;
   border: 1.5px solid var(--borde-oscuro);
@@ -141,7 +169,6 @@ body {
   }
 }
 
-// Icono prefijo del campo de formulario (dentro de input-group)
 .grupo-icono {
   background-color: #1f3520;
   border: 1.5px solid var(--borde-oscuro);
@@ -164,7 +191,15 @@ body {
   }
 }
 
-// Corrección: cuando el campo está dentro de un input-group, quitar el border-left
 .input-group .campo-formulario {
   border-left: none;
+}
+
+
+input[type="date"]::-webkit-calendar-picker-indicator, input[type="time"]::-webkit-calendar-picker-indicator{
+    cursor: pointer;
+    border-radius: 4px;
+    margin-right: 2px;
+    opacity: 0.9;
+    filter: invert(0.9);
 }

@@ -1,7 +1,7 @@
 import { Component, computed, signal, inject, OnInit } from '@angular/core';
 import { FormsModule, NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { AuthService } from '../../core/auth.service';
 import { cerrarModalGlobal } from '../../core/bootstrap-utils';
@@ -25,6 +25,7 @@ export class Rutinas implements OnInit {
   private authService = inject(AuthService);
   rutinas = signal<Rutina[]>([]);
   busqueda = signal('');
+  errorMensaje = signal('');
 
   // Propiedades crear/editar Rutina
   rutinaEditandoId: number | null = null;
@@ -93,7 +94,13 @@ export class Rutinas implements OnInit {
             await cerrarModalGlobal('modalNuevaRutina');
             form.resetForm();
           },
-          error: () => console.error('No se pudo actualizar la rutina')
+          error: (err: HttpErrorResponse) => {
+            if(err.status === 0){
+              this.errorMensaje.set('Hubo un problema al actualizar la rutina.');
+            }else{
+              this.errorMensaje.set(err.error.error);
+            }
+          }
         });
     } else {
       // CREAR
@@ -105,7 +112,13 @@ export class Rutinas implements OnInit {
             await cerrarModalGlobal('modalNuevaRutina');
             form.resetForm();
           },
-          error: () => console.error('No se pudo crear la rutina')
+          error: (err: HttpErrorResponse) => {
+            if(err.status === 0){
+              this.errorMensaje.set('Hubo un problema al guardar la rutina.');
+            }else{
+              this.errorMensaje.set(err.error.error);
+            }
+          }
         });
     }
   }
