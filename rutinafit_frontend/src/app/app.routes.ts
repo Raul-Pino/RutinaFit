@@ -4,9 +4,15 @@ import { Rutinas } from './pages/rutinas/rutinas';
 import { AuthLayoutComponent } from './layouts/auth-layout/auth-layout';
 import { Sesiones } from './pages/sesiones/sesiones';
 import { Ejercicios } from './pages/ejercicios/ejercicios';
+import { Login } from './pages/login/login';
+import { Registro } from './pages/registro/registro';
+import { RecuperarPassword } from './pages/recuperar/recuperar-password';
 
 export const routes: Routes = [
   { path: '', component: Home },
+  { path: 'login', component: Login },
+  { path: 'registro', component: Registro },
+  { path: 'recuperar-password', component: RecuperarPassword },
   {
     path: '', 
     component: AuthLayoutComponent,
@@ -18,4 +24,3 @@ export const routes: Routes = [
   },
   { path: '**', redirectTo: '' }
 ];
-

@@ -1,44 +1,32 @@
 <div>
-  <!-- ==================== NAVBAR ==================== -->
+  <!-- ==================== HEADER ==================== -->
   <nav class="navbar navbar-expand-lg navbar-home">
     <div class="container">
-      <!-- Logo -->
-      <a class="navbar-brand d-flex align-items-center gap-2" href="#">
+      <a class="navbar-brand d-flex align-items-center gap-2" routerLink="/">
         <img src="Logo.png" alt="RutinaFit Logo" height="36">
         <img src="Nombre.png" alt="RutinaFit" height="22" class="d-none d-sm-block">
       </a>
 
-      <!-- Botón hamburguesa -->
       <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarPrincipal"
         aria-controls="navbarPrincipal" aria-expanded="false" aria-label="Abrir menú"
         style="color: var(--verde-principal);">
         <span class="navbar-toggler-icon navbar-toggler-icon-verde"></span>
       </button>
 
-      <!-- Menú de navegación -->
       <div class="collapse navbar-collapse" id="navbarPrincipal">
         <ul class="navbar-nav mx-auto gap-lg-1">
-          <li class="nav-item">
-            <a class="nav-link text-white fw-medium" href="#caracteristicas">Características</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link text-white fw-medium" href="#como-funciona">Cómo funciona</a>
-          </li>
+          <li class="nav-item"><a class="nav-link text-white fw-medium" routerLink="/" fragment="caracteristicas">Características</a></li>
+          <li class="nav-item"><a class="nav-link text-white fw-medium" routerLink="/" fragment="como-funciona">Cómo funciona</a></li>
         </ul>
 
-        <!-- Botones de autenticación -->
         <div class="d-flex gap-2 mt-3 mt-lg-0">
-          <button class="btn btn-contorno-verde px-3" (click)="mostrarModal('modalLogin')">
-            Iniciar sesión
-          </button>
-          <button class="btn btn-verde px-3" (click)="mostrarModal('modalRegistro')">
-            Registrarse
-          </button>
+          <a class="btn btn-contorno-verde px-3" routerLink="/login">Iniciar sesión</a>
+          <a class="btn btn-verde px-3" routerLink="/registro">Registrarse</a>
         </div>
       </div>
     </div>
   </nav>
-
+  
   <!-- ==================== SECCIÓN HERO ==================== -->
   <section class="py-5 hero-section">
     <div class="container py-4">
@@ -50,7 +38,7 @@
           <p class="fs-5 mb-4 hero-subtitle">
             La plataforma definitiva para organizar tus rutinas, planificar sesiones intensas y registrar cada ejercicio con precisión profesional.
           </p>
-          <button class="btn btn-verde btn-lg px-4" (click)="mostrarModal('modalRegistro')">
+          <button class="btn btn-verde btn-lg px-4" routerLink="/registro">
             Empieza Gratis
           </button>
         </div>
@@ -159,7 +147,7 @@
     <div class="container">
       <div class="cta-bloque text-center p-5">
         <h2 class="fw-bold text-dark display-6 mb-3">¿Listo para llevar tu físico al siguiente nivel?</h2>
-        <button class="btn btn-dark btn-lg px-5 fw-bold" (click)="mostrarModal('modalRegistro')">
+        <button class="btn btn-dark btn-lg px-5 fw-bold" routerLink="/registro">
           Empieza Gratis Hoy
         </button>
       </div>
@@ -172,215 +160,4 @@
       <p class="footer-texto mb-0">© 2024 rutinaFit System Management. All rights reserved.</p>
     </div>
   </footer>
-</div>
-
-
-<!-- ==================== MODAL: INICIAR SESIÓN ==================== -->
-<div class="modal fade" id="modalLogin" tabindex="-1" aria-labelledby="tituloModalLogin" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <div class="barra-superior-modal"></div>
-      <div class="modal-body p-4 p-md-5">
-        <h4 class="fw-bold text-white text-center mb-4" id="tituloModalLogin">Iniciar Sesión</h4>
-
-        <!-- Alerta de error de login -->
-        @if (errorLogin()) {
-          <div class="alert alert-danger d-flex align-items-center gap-2 py-2 px-3 mb-3" role="alert"
-            style="background-color: rgba(220,53,69,0.15); border: 1px solid rgba(220,53,69,0.4); border-radius: 0.5rem; color: #f66;">
-            <i class="bi bi-exclamation-circle-fill"></i>
-            <span>{{ errorLogin() }}</span>
-          </div>
-        }
-
-        <!-- Email -->
-        <div class="mb-3">
-          <label class="form-label text-white">Email</label>
-          <div class="input-group">
-            <span class="input-group-text grupo-icono">
-              <i class="bi bi-envelope"></i>
-            </span>
-            <input type="email" class="form-control campo-formulario" placeholder="nombre@ejemplo.com"
-              [(ngModel)]="loginEmail" (keydown.enter)="iniciarSesion()">
-          </div>
-        </div>
-
-        <!-- Contraseña -->
-        <div class="mb-3">
-          <div class="d-flex justify-content-between align-items-center mb-1">
-            <label class="form-label text-white mb-0">Contraseña</label>
-            <a class="enlace-verde small" (click)="cambiarModal('modalLogin', 'modalRecuperar')">¿Olvidaste la Contraseña?</a>
-          </div>
-          <div class="input-group">
-            <span class="input-group-text grupo-icono">
-              <i class="bi bi-key"></i>
-            </span>
-            <input type="password" class="form-control campo-formulario"
-              placeholder="********" [(ngModel)]="loginContrasena" (keydown.enter)="iniciarSesion()">
-          </div>
-        </div>
-
-        <!-- Botón de acceso -->
-        <button class="btn btn-verde w-100 py-2 fw-bold mt-2" (click)="iniciarSesion()">Iniciar sesión</button>
-
-        <p class="text-center mt-3 mb-0 modal-pie">
-          ¿No tienes una cuenta?&nbsp;
-          <a class="enlace-verde" (click)="cambiarModal('modalLogin', 'modalRegistro')">Registrarse</a>
-        </p>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ==================== MODAL: REGISTRO ==================== -->
-<div class="modal fade" id="modalRegistro" tabindex="-1" aria-labelledby="tituloModalRegistro" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <div class="barra-superior-modal"></div>
-      <div class="modal-body p-4 p-md-5">
-        <!-- Logo -->
-        <div class="d-flex align-items-center gap-2 mb-3">
-          <img src="Logo.png" alt="Logo" height="32">
-          <span class="fw-bold text-white fs-5">Rutina<span class="texto-verde">Fit</span></span>
-        </div>
-        <h4 class="fw-bold text-white mb-1" id="tituloModalRegistro">Crear Cuenta</h4>
-        <p class="texto-verde mb-4 small">Únete a nuestra comunidad Fitness</p>
-
-        <!-- Alerta de error de registro -->
-        @if (errorRegistro()) {
-          <div class="alert alert-danger d-flex align-items-center gap-2 py-2 px-3 mb-3" role="alert"
-            style="background-color: rgba(220,53,69,0.15); border: 1px solid rgba(220,53,69,0.4); border-radius: 0.5rem; color: #f66;">
-            <i class="bi bi-exclamation-circle-fill"></i>
-            <span>{{ errorRegistro() }}</span>
-          </div>
-        }
-
-        <!-- Nombre de usuario -->
-        <div class="mb-3">
-          <label class="form-label text-white">Nombre de usuario</label>
-          <div class="input-group">
-            <span class="input-group-text grupo-icono"><i class="bi bi-person"></i></span>
-            <input type="text" class="form-control campo-formulario" placeholder="Nombre de usuario"
-              [(ngModel)]="registroNombre" (keydown.enter)="registrarse()">
-          </div>
-        </div>
-
-        <!-- Email -->
-        <div class="mb-3">
-          <label class="form-label text-white">Email</label>
-          <div class="input-group">
-            <span class="input-group-text grupo-icono"><i class="bi bi-envelope"></i></span>
-            <input type="email" class="form-control campo-formulario" placeholder="nombre@ejemplo.com"
-              [(ngModel)]="registroEmail" (keydown.enter)="registrarse()">
-          </div>
-        </div>
-
-        <!-- Contraseñas: apiladas en móvil gracias a col-12 col-sm-6 -->
-        <div class="row g-2 mb-3">
-          <div class="col-12 col-sm-6">
-            <label class="form-label text-white small">Contraseña</label>
-            <div class="input-group">
-              <input [type]="mostrarPassRegistro ? 'text' : 'password'" class="form-control campo-formulario"
-                placeholder="Contraseña" [(ngModel)]="registroContrasena" (keydown.enter)="registrarse()">
-              <button class="btn boton-toggle-ojo" type="button" (click)="mostrarPassRegistro = !mostrarPassRegistro">
-                <i class="bi" [ngClass]="mostrarPassRegistro ? 'bi-eye-slash' : 'bi-eye'"></i>
-              </button>
-            </div>
-          </div>
-          <div class="col-12 col-sm-6">
-            <label class="form-label text-white small">Repite la Contraseña</label>
-            <input type="password" class="form-control campo-formulario" placeholder="Contraseña"
-              [(ngModel)]="registroContrasenaRepetida" (keydown.enter)="registrarse()">
-          </div>
-        </div>
-
-        <!-- Botón crear cuenta -->
-        <button class="btn btn-verde w-100 py-2 fw-bold mt-2" (click)="registrarse()">
-          Crear Cuenta &nbsp;<i class="bi bi-arrow-right"></i>
-        </button>
-
-        <p class="text-center mt-3 mb-0 modal-pie">
-          ¿Ya tienes una cuenta?&nbsp;
-          <a class="enlace-verde" (click)="cambiarModal('modalRegistro', 'modalLogin')">Inicia Sesión</a>
-        </p>
-      </div>
-    </div>
-  </div>
-</div>
-
-
-<!-- ==================== MODAL: RECUPERAR CONTRASEÑA ==================== -->
-<div class="modal fade" id="modalRecuperar" tabindex="-1" aria-labelledby="tituloModalRecuperar" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-body p-4 p-md-5 position-relative">
-        <!-- Botón cerrar -->
-        <button type="button" class="btn-close btn-close-white position-absolute top-0 end-0 m-3"
-          data-bs-dismiss="modal" aria-label="Cerrar"></button>
-
-        <!-- Logo -->
-        <div class="d-flex align-items-center gap-2 mb-4">
-          <img src="Logo.png" alt="Logo" height="32">
-          <span class="fw-bold text-white fs-5">Rutina<span class="texto-verde">Fit</span></span>
-        </div>
-
-        <h4 class="fw-bold text-white mb-1" id="tituloModalRecuperar">Recuperar Contraseña</h4>
-        <p class="modal-subtitulo mb-4 small">Introduce los detalles en los campos de abajo para recuperar tu contraseña</p>
-
-        <!-- Alerta de error recuperación -->
-        @if (errorRecuperar()) {
-          <div class="alert alert-danger d-flex align-items-center gap-2 py-2 px-3 mb-3" role="alert"
-            style="background-color: rgba(220,53,69,0.15); border: 1px solid rgba(220,53,69,0.4); border-radius: 0.5rem; color: #f66;">
-            <i class="bi bi-exclamation-circle-fill"></i>
-            <span>{{ errorRecuperar() }}</span>
-          </div>
-        }
-
-        <!-- Alerta de éxito recuperación -->
-        @if (exitoRecuperar()) {
-          <div class="alert d-flex align-items-center gap-2 py-2 px-3 mb-3" role="alert"
-            style="background-color: rgba(118,255,3,0.12); border: 1px solid rgba(118,255,3,0.4); border-radius: 0.5rem; color: var(--verde-principal);">
-            <i class="bi bi-check-circle-fill"></i>
-            <span>{{ exitoRecuperar() }}</span>
-          </div>
-        }
-
-        <!-- Email -->
-        <div class="mb-3">
-          <label class="form-label text-white">Email</label>
-          <input type="email" class="form-control campo-formulario" placeholder="nombre@ejemplo.com"
-            [(ngModel)]="recuperarEmail" (keydown.enter)="recuperarContrasenaEnviar()">
-        </div>
-
-        <!-- Nueva Contraseña -->
-        <div class="mb-1">
-          <label class="form-label text-white">Nueva Contraseña</label>
-          <div class="input-group">
-            <input [type]="mostrarPassRecuperar ? 'text' : 'password'" class="form-control campo-formulario"
-              placeholder="••••••••" [(ngModel)]="recuperarContrasena" (keydown.enter)="recuperarContrasenaEnviar()">
-            <button class="btn boton-toggle-ojo" type="button" (click)="mostrarPassRecuperar = !mostrarPassRecuperar">
-              <i class="bi" [ngClass]="mostrarPassRecuperar ? 'bi-eye-slash' : 'bi-eye'"></i>
-            </button>
-          </div>
-        </div>
-        <p class="hint-contrasena mb-3">MÍNIMO 8 CARACTERES</p>
-
-        <!-- Repetir contraseña -->
-        <div class="mb-3">
-          <label class="form-label text-white">Repita la Contraseña</label>
-          <div class="input-group">
-            <input type="password" class="form-control campo-formulario"
-              placeholder="••••••••" [(ngModel)]="recuperarContrasenaConf" (keydown.enter)="recuperarContrasenaEnviar()">
-          </div>
-        </div>
-
-        <!-- Botón recuperar -->
-        <button class="btn btn-verde w-100 py-2 fw-bold" (click)="recuperarContrasenaEnviar()">Recuperar Contraseña</button>
-
-        <p class="text-center mt-3 mb-0 modal-pie">
-          ¿Ya tienes una cuenta?&nbsp;
-          <a class="enlace-verde" (click)="cambiarModal('modalRecuperar', 'modalLogin')">Inicia sesión</a>
-        </p>
-      </div>
-    </div>
-  </div>
 </div>

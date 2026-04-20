@@ -10,7 +10,9 @@ import com.example.rutinafit.util.SecurityUtils;
 
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -53,7 +55,7 @@ public class RutinaService {
                 .orElseThrow(() -> new RuntimeException("Rutina no encontrada"));
 
         if (rutina.getUsuario().getId() != usuarioId) {
-            throw new RuntimeException("No tienes permiso para ver esta rutina");
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No tienes permiso para ver esta rutina");
         }
         return new RutinaResponse(rutina.getId(), rutina.getNombre(), rutina.getDescripcion());
     }

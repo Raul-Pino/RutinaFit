@@ -1,8 +1,10 @@
 import { HttpHeaders } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
+import { Router } from '@angular/router';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
+  private router = inject(Router);
 
   getToken(): string | null {
     return localStorage.getItem('token');
@@ -31,5 +33,11 @@ export class AuthService {
     const token = this.getToken();
     if (!token) return new HttpHeaders();
     return new HttpHeaders({ 'Authorization': `Bearer ${token}` });
+  }
+
+  comprobarToken(): void{
+    const token = this.getToken();
+    if (!token) this.router.navigate(['']);
+
   }
 }

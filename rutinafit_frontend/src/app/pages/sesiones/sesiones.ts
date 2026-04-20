@@ -41,17 +41,21 @@ export class Sesiones implements OnInit {
   });
 
   ngOnInit(): void {
+    this.authService.comprobarToken();
     this.rutinaId = Number(this.route.snapshot.paramMap.get('id'));
     this.cargarSesiones();
   }
-
+  
   cargarSesiones(): void {
     this.http
-      .get<Sesion[]>(`${environment.apiUrl}/sesiones/rutina/${this.rutinaId}`, { headers: this.authService.getTokenHeader() })
-      .subscribe({
-        next: (data) => this.sesiones.set(data),
-        error: () => console.error('No se pudieron cargar las sesiones')
-      });
+    .get<Sesion[]>(`${environment.apiUrl}/sesiones/rutina/${this.rutinaId}`, { headers: this.authService.getTokenHeader() })
+    .subscribe({
+      next: async (data) => {
+        this.sesiones.set(data);
+        await this.ordenarPorFecha();
+      },
+      error: (e) => console.error('No se pudieron cargar las sesiones')
+    });
   }
 
   eliminarSesion(id: number): void {
@@ -85,6 +89,7 @@ export class Sesiones implements OnInit {
           this.sesiones.update(lista => [...lista, sesion]);
           await cerrarModalGlobal('modalNuevaSesion');
           form.resetForm();
+          this.ordenarPorFecha();
         },
           error: (err: HttpErrorResponse) => {
             if(err.status === 0){
@@ -102,6 +107,10 @@ export class Sesiones implements OnInit {
 
   volver(): void {
     this.router.navigate(['/rutinas']);
+  }
+
+  ordenarPorFecha(): void {
+    this.sesiones.update(lista => [...lista].sort((a, b) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime()));
   }
 
   cerrarModal(): void {

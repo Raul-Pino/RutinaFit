@@ -50,7 +50,7 @@ public class SecurityUtils {
         boolean esEntrenador = propietario.getEntrenador() != null && propietario.getEntrenador().getId() == solicitanteId;
 
         if (!esProietario && !esEntrenador) {
-            throw new RuntimeException("Acceso denegado: No eres el propietario ni el entrenador asignado");
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No tienes permiso para ver esta rutina");
         }
     }
 

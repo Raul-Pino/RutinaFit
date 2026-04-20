@@ -23,6 +23,7 @@ export class Rutinas implements OnInit {
   private http = inject(HttpClient);
   private router = inject(Router);
   private authService = inject(AuthService);
+
   rutinas = signal<Rutina[]>([]);
   busqueda = signal('');
   errorMensaje = signal('');
@@ -41,6 +42,7 @@ export class Rutinas implements OnInit {
   });
 
   ngOnInit(): void {
+    this.authService.comprobarToken();
     this.http
       .get<Rutina[]>(`${environment.apiUrl}/rutinas`, { headers: this.authService.getTokenHeader() })
       .subscribe({

@@ -14,7 +14,7 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    // 0. Manejar ResponseStatusException (para tokens inválidos, etc)
+    // 0. Manejar ResponseStatusException (para tokens inválidos)
     @ExceptionHandler(ResponseStatusException.class)
     public ResponseEntity<Map<String, String>> handleResponseStatusException(ResponseStatusException ex) {
         Map<String, String> response = new HashMap<>();
@@ -37,7 +37,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Map<String, String>> handleValidationExceptions(MethodArgumentNotValidException ex) {
         Map<String, String> errors = new HashMap<>();
         
-        // Extraemos el campo que falló y el mensaje (ej: "email": "formato inválido")
+        // Extrae el campo que falló y el mensaje (ej: "email": "formato inválido")
         ex.getBindingResult().getAllErrors().forEach((error) -> {
             String fieldName = ((FieldError) error).getField();
             String errorMessage = error.getDefaultMessage();

@@ -9,8 +9,10 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     return next(req).pipe(
         catchError((error: HttpErrorResponse) => {
         // Si el backend devuelve 401 o 403 el token es inválido o expiró
-        if (error.status === 401 || error.status === 403) {
+        if (error.status === 401) {
             localStorage.removeItem('token');
+            router.navigate(['']);
+        }else if (error.status === 403) {
             router.navigate(['']);
         }
         return throwError(() => error);
