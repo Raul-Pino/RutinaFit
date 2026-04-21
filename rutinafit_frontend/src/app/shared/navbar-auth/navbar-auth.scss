@@ -13,6 +13,13 @@
     border-color: var(--verde-principal);
     background-color: #1f3520;
   }
+
+  &.active {
+    background-color: rgba(116, 255, 3, 0.15);
+    color: var(--verde-principal);
+    font-weight: 700;
+    border-color: var(--verde-principal);
+  }
 }
 
 .btn-logout {

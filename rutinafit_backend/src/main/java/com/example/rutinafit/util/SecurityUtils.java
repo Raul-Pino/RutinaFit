@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.example.rutinafit.model.Usuario;
+import com.example.rutinafit.repository.UsuarioRepository;
 import com.example.rutinafit.service.JwtService;
 
 import lombok.RequiredArgsConstructor;
@@ -18,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 public class SecurityUtils {
 
     private final JwtService jwtService;
+    private final UsuarioRepository usuarioRepository;
 
     /**
      * Valida si existe el token o si es válido el token
@@ -32,7 +34,8 @@ public class SecurityUtils {
         String token = authHeader.substring(7);
         
         // 3. Validar que no está caducado
-        if (jwtService.validarYObtenerUsuario(token) == null){
+        if (jwtService.validarYObtenerUsuario(token) == null || 
+            usuarioRepository.findById(jwtService.obtenerId(token)).isEmpty()){
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "El token es inválido o ha expirado");
         }
 

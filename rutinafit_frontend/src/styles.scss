@@ -170,10 +170,10 @@ body {
 }
 
 .grupo-icono {
-  background-color: #1f3520;
-  border: 1.5px solid var(--borde-oscuro);
-  border-right: none;
-  color: #5a7a5a;
+  background-color: rgba(118, 255, 3, 0.05);
+  border: 1px solid rgba(118, 255, 3, 0.15);
+  color: var(--texto-suave);
+  border-radius: 0.5rem 0 0 0.5rem;
 }
 
 // Botón para mostrar/ocultar contraseña (icono ojo)

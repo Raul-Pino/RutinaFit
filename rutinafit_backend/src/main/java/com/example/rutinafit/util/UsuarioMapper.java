@@ -21,7 +21,7 @@ public class UsuarioMapper {
         //}else{
             
         //}
-        return new UsuarioResponse(u.getId(), u.getUsername(), u.getEmail(), u.getRol(),fotoPerfil);
+        return new UsuarioResponse(u.getId(), u.getUsername(), u.getEmail(), u.getRol(),fotoPerfil, u.isEsEntrenador());
     }
 
 }

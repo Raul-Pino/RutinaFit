@@ -7,6 +7,7 @@ import { Ejercicios } from './pages/ejercicios/ejercicios';
 import { Login } from './pages/login/login';
 import { Registro } from './pages/registro/registro';
 import { RecuperarPassword } from './pages/recuperar/recuperar-password';
+import { Perfil } from './pages/perfil/perfil';
 
 export const routes: Routes = [
   { path: '', component: Home },
@@ -19,7 +20,8 @@ export const routes: Routes = [
     children: [
       { path: 'rutinas', component: Rutinas },
       { path: 'sesiones/:id', component: Sesiones},
-      { path: 'sesion/:id', component: Ejercicios}
+      { path: 'sesion/:id', component: Ejercicios},
+      { path: 'perfil', component: Perfil}
     ]
   },
   { path: '**', redirectTo: '' }

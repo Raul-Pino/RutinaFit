@@ -104,14 +104,14 @@ public class UsuarioService {
         usuarioRepository.save(alumno);
     }
 
-    // Cambiar contraseña, se debe introducir la contraseña antigua y la nueva
+    // Cambiar contraseña, se debe introducir la contraseña actual y la nueva
     public void cambiarPassword(Long id, Map<String, String> datos) {
         Usuario usuario = usuarioRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
-        String antigua = datos.get("antigua");
-        String nueva = datos.get("nueva");
+        String actual = datos.get("passwordActual");
+        String nueva = datos.get("passwordNueva");
 
-        if (antigua.isBlank() || nueva.isBlank()) {
+        if (actual.isBlank() || nueva.isBlank()) {
             throw new RuntimeException("Faltan datos obligatorios");
         }
 
@@ -119,7 +119,7 @@ public class UsuarioService {
             throw new RuntimeException("La contraseña no cumple con los requisitos");
         }
 
-        if (!encoder.matches(antigua, usuario.getPassword())) {
+        if (!encoder.matches(actual, usuario.getPassword())) {
             throw new RuntimeException("La contraseña es incorrecta");
         }
 

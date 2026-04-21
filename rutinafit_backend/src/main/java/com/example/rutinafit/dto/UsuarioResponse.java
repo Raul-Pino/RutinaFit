@@ -5,5 +5,6 @@ public record UsuarioResponse(
     String username,
     String email,
     String rol,
-    String fotoPerfil
+    String fotoPerfil,
+    Boolean esEntrenador
 ) {}

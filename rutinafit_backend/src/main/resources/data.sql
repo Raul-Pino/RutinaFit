@@ -98,10 +98,10 @@ CREATE TABLE solicitudes (
 -- =======================================================
 -- NOTA: La contraseña es '123456' en texto plano. 
 -- Si usas BCrypt en el backend, estos logins fallarán hasta que uses hashes reales.
-INSERT INTO usuarios (username, email, password, rol, es_entrenador, nivel_suscripcion) VALUES 
-('admin', 'admin@correo.com', '$2a$10$dmkVr.E0jsbk5.rq0IxZAe/QdQPsTDXoy3DRo1StFdPB676e4Ve4S', 'ADMIN', 'FALSE', 'TIER2'),
-('entrenador', 'entrenador@correo.com', '$2a$10$dmkVr.E0jsbk5.rq0IxZAe/QdQPsTDXoy3DRo1StFdPB676e4Ve4S', 'ENTRENADOR', 'TRUE', 'TIER1'),
-('usuario', 'usuario@correo.com', '$2a$10$dmkVr.E0jsbk5.rq0IxZAe/QdQPsTDXoy3DRo1StFdPB676e4Ve4S', 'USER', 'FALSE','GRATIS');
+INSERT INTO usuarios (username, email, password, rol, es_entrenador, nivel_suscripcion, entrenador_id) VALUES 
+('admin', 'admin@correo.com', '$2a$10$dmkVr.E0jsbk5.rq0IxZAe/QdQPsTDXoy3DRo1StFdPB676e4Ve4S', 'ADMIN', 'FALSE', 'TIER2', NULL),
+('entrenador', 'entrenador@correo.com', '$2a$10$dmkVr.E0jsbk5.rq0IxZAe/QdQPsTDXoy3DRo1StFdPB676e4Ve4S', 'ENTRENADOR', 'TRUE', 'TIER1', NULL),
+('usuario', 'usuario@correo.com', '$2a$10$dmkVr.E0jsbk5.rq0IxZAe/QdQPsTDXoy3DRo1StFdPB676e4Ve4S', 'USER', 'FALSE','GRATIS', 2);
 
 -- =======================================================
 -- 2. CATÁLOGO DE EJERCICIOS (Info)

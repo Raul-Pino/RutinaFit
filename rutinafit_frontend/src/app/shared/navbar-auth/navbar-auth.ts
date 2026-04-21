@@ -1,11 +1,11 @@
 import { Component, inject } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { SidebarComponent } from '../sidebar/sidebar';
 import { AuthService } from '../../core/auth.service';
 
 @Component({
   selector: 'app-navbar-auth',
-  imports: [SidebarComponent],
+  imports: [SidebarComponent, RouterLink, RouterLinkActive],
   templateUrl: './navbar-auth.html',
   styleUrl: './navbar-auth.scss',
 })
@@ -15,6 +15,5 @@ export class NavbarAuthComponent {
 
   cerrarSesion(): void {
     this.authService.cerrarSesion();
-    this.router.navigate(['/']);
   }
 }

@@ -27,6 +27,7 @@ export class AuthService {
 
   cerrarSesion(): void {
     localStorage.removeItem('token');
+    this.router.navigate(['']);
   }
 
   getTokenHeader(): HttpHeaders {
