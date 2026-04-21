@@ -49,11 +49,8 @@ public class AuthService {
 
                 // 6. Generar el Token JWT
                 // (Nota: Asegúrate de usar la versión de JwtService que acepta el ID)
-                String token = jwtService.generarToken(
-                                usuarioGuardado.getUsername(),
-                                usuarioGuardado.getRol(),
-                                usuarioGuardado.getEmail(),
-                                usuarioGuardado.getId());
+                String token = generarToken(usuarioGuardado);
+
 
                 // 7. Devolver respuesta
                 return AuthResponse.builder()
@@ -74,12 +71,7 @@ public class AuthService {
                 }
 
                 // 3. Generar Token
-                String token = jwtService.generarToken(
-                        usuario.getUsername(),
-                        usuario.getRol(),
-                        usuario.getEmail(),
-                        usuario.getId()
-                );
+                String token = generarToken(usuario);
 
                 return AuthResponse.builder().token(token).build();
         }
@@ -97,7 +89,7 @@ public class AuthService {
                 // 2. Extraer el email del token antiguo
                 String email = jwtService.obtenerEmail(oldToken);
                 if (email == null) {
-                throw new RuntimeException("Error al procesar el token");
+                        throw new RuntimeException("Error al procesar el token");
                 }
 
                 // 3. Buscar el usuario en la BD
@@ -105,15 +97,21 @@ public class AuthService {
                         .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
                 // 4. Generar un token nuevo
-                String newToken = jwtService.generarToken(
-                        usuario.getUsername(),
-                        usuario.getRol(),
-                        usuario.getEmail(),
-                        usuario.getId()
-                );
+                String newToken = generarToken(usuario);
 
                 return AuthResponse.builder()
                         .token(newToken)
                         .build();
+        }
+
+
+        private String generarToken(Usuario u){
+                return jwtService.generarToken(
+                        u.getUsername(),
+                        u.getRol(),
+                        u.getEmail(),
+                        u.getId(),
+                        u.isEsEntrenador()
+                );
         }
 }

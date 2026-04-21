@@ -103,6 +103,7 @@ INSERT INTO usuarios (username, email, password, rol, es_entrenador, nivel_suscr
 ('entrenador', 'entrenador@correo.com', '$2a$10$dmkVr.E0jsbk5.rq0IxZAe/QdQPsTDXoy3DRo1StFdPB676e4Ve4S', 'ENTRENADOR', 'TRUE', 'TIER1', NULL),
 ('usuario', 'usuario@correo.com', '$2a$10$dmkVr.E0jsbk5.rq0IxZAe/QdQPsTDXoy3DRo1StFdPB676e4Ve4S', 'USER', 'FALSE','GRATIS', 2);
 
+INSERT INTO solicitudes (remitente_id, destinatario_id, tipo, estado) VALUES (3, 2, 'ENTRENAMIENTO', 'ACEPTADA');
 -- =======================================================
 -- 2. CATÁLOGO DE EJERCICIOS (Info)
 -- =======================================================

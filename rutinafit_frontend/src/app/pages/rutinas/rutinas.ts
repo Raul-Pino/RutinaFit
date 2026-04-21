@@ -43,7 +43,11 @@ export class Rutinas implements OnInit {
 
   ngOnInit(): void {
     this.authService.comprobarToken();
-    this.http
+    this.cargarRutinas();
+  }
+
+  cargarRutinas(): void {
+        this.http
       .get<Rutina[]>(`${environment.apiUrl}/rutinas`, { headers: this.authService.getTokenHeader() })
       .subscribe({
         next: (data) => this.rutinas.set(data),
@@ -86,7 +90,6 @@ export class Rutinas implements OnInit {
 
     if (this.rutinaEditandoId) {
       // EDITAR
-      console.log(this.rutinaEditandoId);
 
       this.http
         .put<Rutina>(`${environment.apiUrl}/rutinas/${this.rutinaEditandoId}`, body, { headers: this.authService.getTokenHeader() })
@@ -106,6 +109,7 @@ export class Rutinas implements OnInit {
         });
     } else {
       // CREAR
+
       this.http
         .post<Rutina>(`${environment.apiUrl}/rutinas`, body, { headers: this.authService.getTokenHeader() })
         .subscribe({

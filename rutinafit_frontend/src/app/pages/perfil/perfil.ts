@@ -96,6 +96,7 @@ export class Perfil {
             this.editSuccess.set('Perfil actualizado correctamente');
             this.loadingEdit.set(false);
             setTimeout(() => this.editSuccess.set(''), 5000);
+            this.refrescarToken();
             },
             error: (err: HttpErrorResponse) => {
             this.loadingEdit.set(false);
@@ -186,5 +187,19 @@ export class Perfil {
 
     volver(): void {
         this.router.navigate(['/rutinas']);
+    }
+
+    refrescarToken(): void{
+        this.http.post<any>(`${environment.apiUrl}/auth/refresh-token`, {}, { headers: this.authService.getTokenHeader() })
+        .subscribe({
+            next: (data) => {
+                console.log(data);
+                this.authService.refrescarToken(data.token);
+                window.location.reload(); // Recargar para actualizar el nombre en el navbar y demás componentes
+            },
+            error: (err: HttpErrorResponse) => {
+                console.error('Error al refrescar token', err);
+            }
+        });
     }
 }

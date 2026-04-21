@@ -21,7 +21,7 @@ public class EjercicioInfo {
     private Long id;
 
     @Min(1)
-    @Max(100)
+    @Max(10)
     @Column(nullable = false)
     private int codigo;
 

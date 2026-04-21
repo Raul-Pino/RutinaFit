@@ -72,7 +72,9 @@
     <div class="modal-content">
       <div class="barra-superior-modal"></div>
       <div class="modal-header border-0">
-        <h5 class="modal-title fw-bold texto-verde" id="modalNuevaSesionLabel">Añadir Nueva Sesión</h5>
+        <h5 class="modal-title fw-bold text-white d-flex align-items-center gap-2">
+          <i class="bi bi-plus-circle" style="color: var(--verde-principal);"></i> 
+          Añadir Nueva Sesión</h5>
         <button type="button" class="btn-close btn-close-white" (click)="cerrarModal()" aria-label="Close"></button>
       </div>
       <form #formSesion="ngForm" (ngSubmit)="guardarSesion(formSesion)">
@@ -89,9 +91,9 @@
                         <span>{{ errorMensaje() }}</span></div>
           }
         </div>
-        <div class="modal-footer border-0">
-          <button type="button" class="btn btn-outline-light" (click)="cerrarModal()">Cancelar</button>
-          <button type="submit" class="btn btn-verde" [disabled]="formSesion.invalid">Guardar</button>
+        <div class="modal-footer border-0 pt-0 d-flex gap-2 justify-content-between flex-nowrap">
+          <button type="button" class="btn w-50 py-2 btn btn-danger" (click)="cerrarModal()">Cancelar</button>
+          <button type="submit" class="btn btn-verde w-50 py-2" [disabled]="formSesion.invalid">Guardar</button>
         </div>
       </form>
     </div>

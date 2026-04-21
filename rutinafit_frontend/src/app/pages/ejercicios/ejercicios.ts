@@ -2,7 +2,6 @@ import { Component, computed, signal, inject, OnInit } from '@angular/core';
 import { FormsModule, NgForm } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
-import { Location } from '@angular/common';
 import { environment } from '../../../environments/environment';
 import { AuthService } from '../../core/auth.service';
 import { cerrarModalGlobal } from '../../core/bootstrap-utils';
@@ -34,14 +33,13 @@ export class Ejercicios implements OnInit {
     private http = inject(HttpClient);
     private route = inject(ActivatedRoute);
     private authService = inject(AuthService);
-    private location = inject(Location);
+    private router = inject(Router);
 
     sesionId!: number;
     ejercicios = signal<Ejercicio[]>([]);
     catalogoEjercicios = signal<EjercicioInfo[]>([]);
     busqueda = signal('');
 
-    // Estado para la edición y reactividad del selector
     ejercicioEditandoId: number | null = null;
     ejercicioInfoSeleccionadoId = signal<number | null>(null);
 
@@ -167,7 +165,7 @@ export class Ejercicios implements OnInit {
     }
 
     volver(): void {
-        this.location.back();
+        this.router.navigate(['/sesiones', this.sesionId]);
     }
 
     cerrarModal(): void {

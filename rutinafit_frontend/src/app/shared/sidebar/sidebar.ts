@@ -18,9 +18,11 @@ export class SidebarComponent implements OnInit, OnDestroy {
   private routerSub?: Subscription;
 
   rol: string | null = null;
+  esEntrenador: boolean = false;
 
   ngOnInit(): void {
     this.rol = this.authService.getRol();
+    this.esEntrenador = this.authService.esEntrenador();
 
     this.routerSub = this.router.events
       .pipe(filter(e => e instanceof NavigationStart))

@@ -4,6 +4,8 @@ import com.example.rutinafit.model.EstadoSolicitud;
 import com.example.rutinafit.model.Solicitud;
 import com.example.rutinafit.model.TipoSolicitud;
 
+import jakarta.transaction.Transactional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -22,8 +24,8 @@ public interface SolicitudRepository extends JpaRepository<Solicitud, Long> {
 
     // @Transactional // Operación para borrar solicitudes pendientes después de 30 días
     // void deleteByFechaCreacionBefore(LocalDateTime fecha);
-
-    @Modifying
+    @Transactional
+    @Modifying(clearAutomatically = true)
     @Query("DELETE FROM Solicitud s WHERE s.tipo = :tipo AND " +
         "((s.remitente.id = :u1 AND s.destinatario.id = :u2) OR " +
         " (s.remitente.id = :u2 AND s.destinatario.id = :u1))")

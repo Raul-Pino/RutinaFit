@@ -6,7 +6,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
 public record EjercicioInfoRequest(
-    @Min(1) @Max(100)
+    @Min(1) @Max(10)
     int codigo,
     
     @NotBlank(message = "El nombre del ejercicio es obligatorio")

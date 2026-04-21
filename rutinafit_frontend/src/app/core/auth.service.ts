@@ -14,12 +14,35 @@ export class AuthService {
     return !!this.getToken();
   }
 
+
+  esEntrenador(): boolean{
+    const token = this.getToken();
+    if (!token) return false;
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      return payload.esEntrenador ?? false;
+    } catch {
+      return false;
+    }
+  }
+
   getRol(): string | null {
     const token = this.getToken();
     if (!token) return null;
     try {
       const payload = JSON.parse(atob(token.split('.')[1]));
-      return payload.rol ?? payload.role ?? payload.roles?.[0] ?? null;
+      return payload.rol ?? null;
+    } catch {
+      return null;
+    }
+  }
+
+  getNombre(): string | null{
+    const token = this.getToken();
+    if (!token) return null;
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      return payload.sub ?? null;
     } catch {
       return null;
     }
@@ -39,6 +62,16 @@ export class AuthService {
   comprobarToken(): void{
     const token = this.getToken();
     if (!token) this.router.navigate(['']);
+  }
 
+  esAdmin(): void{
+    this.comprobarToken();
+    if (this.getRol() !== 'ADMIN') {
+      this.router.navigate(['']);
+    }
+  }
+
+  refrescarToken(nuevoToken: string): void {
+    localStorage.setItem('token', nuevoToken);
   }
 }

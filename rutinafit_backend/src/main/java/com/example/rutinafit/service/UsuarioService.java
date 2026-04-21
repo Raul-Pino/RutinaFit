@@ -61,6 +61,14 @@ public class UsuarioService {
         Usuario usuario = usuarioRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
+        if(usuario.isEsEntrenador() && !dto.esEntrenador()) {
+            // Si el usuario era entrenador y ahora no lo es, se eliminan las relaciones con sus alumnos
+            List<Usuario> alumnos = usuarioRepository.findByEntrenadorId(usuario.getId());
+            for (Usuario alumno : alumnos) {
+                this.dejarEntrenador(alumno.getId(), userId);
+            }
+        }
+
         usuario.setUsername(dto.username());
         usuario.setEmail(dto.email());
         usuario.setEsEntrenador(dto.esEntrenador());
@@ -87,14 +95,16 @@ public class UsuarioService {
     public void dejarEntrenador(Long alumnoId, Long solicitanteId) {
         Usuario alumno = usuarioRepository.findById(alumnoId)
                 .orElseThrow(() -> new RuntimeException("Alumno no encontrado"));
+        
+        if(alumno == null) return;
 
         Usuario entrenador = alumno.getEntrenador();
         if (entrenador == null) {
             throw new RuntimeException("Este usuario no tiene un entrenador asignado");
         }
 
-        // Si no es el alumno y ni el entrenador salta un error
-        if (alumno.getId() != solicitanteId && entrenador.getId() != solicitanteId) {
+        // Si no es el alumno ni el entrenador salta un error
+        if (!alumno.getId().equals(solicitanteId) && !entrenador.getId().equals(solicitanteId)) {
             throw new RuntimeException("No tienes permiso para romper esta relación");
         }
 

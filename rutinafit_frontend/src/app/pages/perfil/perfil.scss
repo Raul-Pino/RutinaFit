@@ -32,31 +32,6 @@
   }
 }
 
-.campo-formulario {
-  background-color: rgba(118, 255, 3, 0.05);
-  border: 1px solid rgba(118, 255, 3, 0.15);
-  color: var(--texto-claro) !important;
-  transition: all 0.3s ease;
-  border-radius: 0.5rem;
-
-  &::placeholder {
-    color: var(--texto-suave);
-  }
-
-  &:focus {
-    background-color: rgba(118, 255, 3, 0.1);
-    border-color: var(--verde-principal);
-    box-shadow: 0 0 0 3px rgba(118, 255, 3, 0.15);
-    color: var(--texto-claro);
-  }
-
-  &:disabled {
-    background-color: rgba(118, 255, 3, 0.02);
-    color: var(--texto-suave);
-    cursor: not-allowed;
-  }
-}
-
 .checkbox-personalizado {
   width: 20px;
   height: 20px;

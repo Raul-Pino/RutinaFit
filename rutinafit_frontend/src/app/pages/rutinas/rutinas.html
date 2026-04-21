@@ -48,14 +48,14 @@
                 {{ rutina.descripcion }}
               </p>
             </div>
-            <button class="boton btn-borrar flex-shrink-0" (click)="eliminarRutina(rutina.id)">
-              <i class="bi bi-trash fs-5"></i>
-            </button>
             <button class="boton btn-editar flex-shrink-0"
                 data-bs-toggle="modal"
                 data-bs-target="#modalNuevaRutina"
                 (click)="abrirModalEditar(rutina)">
               <i class="bi bi-pencil-square"></i>
+            </button>
+            <button class="boton btn-borrar flex-shrink-0" (click)="eliminarRutina(rutina.id)">
+              <i class="bi bi-trash fs-5"></i>
             </button>
           </div>
 
@@ -90,8 +90,8 @@
 <!-- ==================== MODAL: AÑADIR RUTINA ==================== -->
 <div class="modal fade" id="modalNuevaRutina" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content border-0 p-3" style="background-color: #1a2315; box-shadow: 0 0 0 1px #2e431e;">
-
+    <div class="modal-content">
+      <div class="barra-superior-modal"></div>
       <div class="modal-header border-0 pb-1">
         <h5 class="modal-title fw-bold text-white d-flex align-items-center gap-2">
           <i class="bi bi-plus-circle" style="color: var(--verde-principal);"></i> 
@@ -105,12 +105,11 @@
         <div class="modal-body pb-4">
 
           <div class="mb-4">
-            <label class="form-label ms-1" style="color: #a0a0a0; font-size: 0.70rem; font-weight: bold; letter-spacing: 0.5px;">NOMBRE DE RUTINA</label>
+            <label class="form-label text-light fw-bold">NOMBRE DE RUTINA</label>
             <input
               type="text"
               name="nombre"
-              class="form-control"
-              style="background-color: #121c12; border: 1px solid #243824; color: white;"
+              class="form-control campo-formulario"
               placeholder="e.g. Upper Body Power"
               minlength="6"
               [(ngModel)]="nuevaRutinaNombre"
@@ -123,12 +122,11 @@
           </div>
 
           <div class="mb-2">
-            <label class="form-label ms-1" style="color: #a0a0a0; font-size: 0.70rem; font-weight: bold; letter-spacing: 0.5px;">DESCRIPCIÓN</label>
+            <label class="fform-label text-light fw-bold">DESCRIPCIÓN</label>
             <textarea
               name="descripcion"
-              class="form-control"
+              class="form-control campo-formulario"
               rows="4"
-              style="background-color: #121c12; border: 1px solid #243824; color: white; resize: none;"
               placeholder="Descripción de la rutina"
               [(ngModel)]="nuevaRutinaDescripcion"
             ></textarea>
@@ -144,7 +142,7 @@
           }
 
         <div class="modal-footer border-0 pt-0 d-flex gap-2 justify-content-between flex-nowrap">
-          <button type="button" class="btn w-50 py-2" style="background-color: #294017; color: var(--verde-principal); font-weight: bold;" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn w-50 py-2 btn btn-danger" data-bs-dismiss="modal">Cancel</button>
           <button type="submit" class="btn btn-verde w-50 py-2" [disabled]="formRutina.invalid">
             {{ rutinaEditandoId ? 'Guardar Cambios' : 'Crear Rutina' }}
           </button>
