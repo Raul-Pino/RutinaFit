@@ -113,6 +113,7 @@ public class EjercicioService {
                         e.getEjercicioInfo().getNombre(), 
                         e.getParam1(), 
                         e.getParam2(), 
+                        e.getEjercicioInfo().getDescripcion(),
                         e.getEjercicioInfo().getCodigo());
     }
 }

@@ -2,6 +2,7 @@ import { Component, computed, signal, inject, OnInit } from '@angular/core';
 import { FormsModule, NgForm } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
+import { Location } from '@angular/common';
 import { environment } from '../../../environments/environment';
 import { AuthService } from '../../core/auth.service';
 import { cerrarModalGlobal } from '../../core/bootstrap-utils';
@@ -10,16 +11,16 @@ interface EjercicioInfo {
     id: number;
     codigo: number; // 1: Fuerza, 2: Cardio
     nombre: string;
-    descripcion: string;
 }
 
 interface Ejercicio {
     id: number;
     param1: number; // Peso o Distancia
     param2: number; // Repeticiones o Tiempo
-    ejercicioInfoId: number;
     nombreEjercicio?: string;
+    codigoEjercicio: number;
     codigoTipo?: number;
+    descripcion: string;
 }
 
 @Component({
@@ -34,6 +35,11 @@ export class Ejercicios implements OnInit {
     private route = inject(ActivatedRoute);
     private authService = inject(AuthService);
     private router = inject(Router);
+    private location = inject(Location);
+
+    // Propiedades alumno
+    alumnoId: number | null = null;
+    alumnoUsername = '';
 
     sesionId!: number;
     ejercicios = signal<Ejercicio[]>([]);
@@ -55,27 +61,20 @@ export class Ejercicios implements OnInit {
         return this.catalogoEjercicios().find(e => e.id === Number(id)) || null;
     });
 
-    ejerciciosMapeados = computed(() => {
-        const catalogo = this.catalogoEjercicios();
-        return this.ejercicios().map(ej => {
-        const info = catalogo.find(c => c.id === ej.ejercicioInfoId);
-        return {
-            ...ej,
-            nombreEjercicio: info?.nombre || ej.nombreEjercicio || 'Ejercicio Desconocido',
-            codigoEjercicio: info?.codigo || ej.codigoTipo || 0
-        };
-        });
-    });
-
     ejerciciosFiltrados = computed(() => {
         const filtro = this.busqueda().toLowerCase();
-        return this.ejerciciosMapeados().filter((ej) =>
+        return this.ejercicios().filter((ej) =>
         ej.nombreEjercicio?.toLowerCase().includes(filtro)
         );
     });
 
     ngOnInit(): void {
-        this.sesionId = Number(this.route.snapshot.paramMap.get('id'));
+        this.alumnoId = Number(this.route.snapshot.paramMap.get('alumnoId'));
+        this.sesionId = Number(this.route.snapshot.paramMap.get('sesionId'));
+        
+        if(this.alumnoId){
+            this.cargarNombreAlumno();
+        }
         this.cargarCatalogo();
         this.cargarEjercicios();
     }
@@ -85,6 +84,14 @@ export class Ejercicios implements OnInit {
         .subscribe({
             next: (data) => this.catalogoEjercicios.set(data),
             error: () => console.error('No se pudo cargar el catálogo de ejercicios')
+        });
+    }
+
+    cargarNombreAlumno(): void {
+        this.http.get(`${environment.apiUrl}/ejercicios/${this.alumnoId}/propietario`, { headers: this.authService.getTokenHeader() })
+        .subscribe({
+            next: (data: any) => this.alumnoUsername = data.propietario,
+            error: (e) => console.error('No se pudo cargar el alumno', e)
         });
     }
 
@@ -102,7 +109,7 @@ export class Ejercicios implements OnInit {
         this.http.delete(`${environment.apiUrl}/ejercicios/${id}`, { headers: this.authService.getTokenHeader() })
         .subscribe({
             next: () => {
-            this.ejercicios.update(lista => lista.filter(e => e.id !== id));
+            this.ejercicios.set(this.ejercicios().filter(e => e.id !== id));
             },
             error: () => console.error('No se pudo eliminar la serie')
         });
@@ -121,11 +128,11 @@ export class Ejercicios implements OnInit {
     abrirModalEditar(ejercicio: Ejercicio): void {
         this.ejercicioEditandoId = ejercicio.id;
         this.nuevoEjercicio = {
-            ejercicioInfoId: ejercicio.ejercicioInfoId,
+            ejercicioInfoId: ejercicio.codigoEjercicio,
             param1: ejercicio.param1,
             param2: ejercicio.param2
         };
-        this.ejercicioInfoSeleccionadoId.set(ejercicio.ejercicioInfoId);
+        this.ejercicioInfoSeleccionadoId.set(ejercicio.codigoEjercicio);
     }
 
     guardarEjercicio(form: NgForm): void {
@@ -165,10 +172,19 @@ export class Ejercicios implements OnInit {
     }
 
     volver(): void {
-        this.router.navigate(['/sesiones', this.sesionId]);
+        this.location.back();
     }
 
     cerrarModal(): void {
         cerrarModalGlobal('modalNuevoEjercicio');
     }
+
+    // getDescripcion(ejercicio: Ejercicio): string{
+    //     console.log(ejercicio)
+    //     console.log(this.catalogoEjercicios());
+    //     const ejercicioInfo = this.catalogoEjercicios().find(e => e.id === ejercicio.codigoEjercicio);
+    //     console.log(ejercicioInfo);
+    //     if(ejercicioInfo) return ejercicioInfo.descripcion;
+    //     return 'Descripción no disponible';
+    // }
 }

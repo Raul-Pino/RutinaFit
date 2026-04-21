@@ -12,8 +12,10 @@ import com.example.rutinafit.util.UsuarioMapper;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Map;
@@ -105,7 +107,7 @@ public class UsuarioService {
 
         // Si no es el alumno ni el entrenador salta un error
         if (!alumno.getId().equals(solicitanteId) && !entrenador.getId().equals(solicitanteId)) {
-            throw new RuntimeException("No tienes permiso para romper esta relación");
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No tienes permiso para romper esta relación");
         }
 
         solicitudRepository.borrarSolicitud(entrenador.getId(), alumno.getId(), TipoSolicitud.ENTRENAMIENTO);
@@ -160,5 +162,14 @@ public class UsuarioService {
 
         usuario.setPassword(encoder.encode(password));
         usuarioRepository.save(usuario);
+    }
+
+    public String getPropietario(Long alumnoId, Long usuarioId) {
+        Usuario usuario = usuarioRepository.findById(alumnoId)
+            .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        securityUtils.validarAcceso(usuario, usuarioId);
+        
+        return usuario.getUsername();
     }
 }

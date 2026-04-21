@@ -2,7 +2,7 @@ import { Component, computed, signal, inject, OnInit } from '@angular/core';
 import { FormsModule, NgForm } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { DatePipe } from '@angular/common';
+import { DatePipe, Location } from '@angular/common';
 import { environment } from '../../../environments/environment';
 import { AuthService } from '../../core/auth.service';
 import { cerrarModalGlobal } from '../../core/bootstrap-utils';
@@ -25,6 +25,7 @@ export class Sesiones implements OnInit {
   private router = inject(Router);
   private route = inject(ActivatedRoute);
   private authService = inject(AuthService);
+  private location = inject(Location);
 
   sesiones = signal<Sesion[]>([]);
   busqueda = signal('');
@@ -33,6 +34,10 @@ export class Sesiones implements OnInit {
   errorMensaje = signal('');
   nuevaSesionFecha = '';
 
+  // Propiedades alumno
+  alumnoId: number | null = null;
+  alumnoUsername = '';
+
   sesionesFiltradas = computed(() => {
     const filtro = this.busqueda().toLowerCase();
     return this.sesiones().filter((sesion) =>
@@ -40,9 +45,14 @@ export class Sesiones implements OnInit {
     );
   });
 
-  ngOnInit(): void {
+  ngOnInit(): void {   
+    this.alumnoId = Number(this.route.snapshot.paramMap.get('alumnoId'));
+    this.rutinaId = Number(this.route.snapshot.paramMap.get('rutinaId'));
     this.authService.comprobarToken();
-    this.rutinaId = Number(this.route.snapshot.paramMap.get('id'));
+
+    if(this.alumnoId){
+      this.cargarNombreAlumno();
+    }
     this.cargarSesiones();
   }
   
@@ -56,6 +66,14 @@ export class Sesiones implements OnInit {
       },
       error: (e) => console.error('No se pudieron cargar las sesiones')
     });
+  }
+
+  cargarNombreAlumno(): void {
+      this.http.get(`${environment.apiUrl}/sesiones/${this.alumnoId}/propietario`, { headers: this.authService.getTokenHeader() })
+      .subscribe({
+        next: (data: any) => this.alumnoUsername = data.propietario,
+        error: (e) => console.error('No se pudo cargar el alumno', e)
+      });
   }
 
   eliminarSesion(id: number): void {
@@ -102,11 +120,11 @@ export class Sesiones implements OnInit {
   }
 
   verDetalle(sesion: Sesion): void {
-    this.router.navigate(['/sesion', sesion.id]);
+    this.router.navigate([`/sesion/${this.alumnoId}/${sesion.id}`]);
   }
 
   volver(): void {
-    this.router.navigate(['/rutinas']);
+    this.location.back();
   }
 
   ordenarPorFecha(): void {

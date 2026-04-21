@@ -3,6 +3,7 @@ package com.example.rutinafit.controller;
 import com.example.rutinafit.dto.RutinaRequest;
 import com.example.rutinafit.dto.RutinaResponse;
 import com.example.rutinafit.service.RutinaService;
+import com.example.rutinafit.service.UsuarioService;
 import com.example.rutinafit.util.SecurityUtils;
 
 import jakarta.validation.Valid;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/rutinas")
@@ -27,6 +29,7 @@ import java.util.List;
 @CrossOrigin(origins = "*")
 public class RutinaController {
 
+    private final UsuarioService usuarioService;
     private final RutinaService rutinaService;
     private final SecurityUtils securityUtils;
 
@@ -114,5 +117,16 @@ public class RutinaController {
             @RequestHeader("Authorization") String authHeader) {
         Long usuarioId = securityUtils.getUsuarioId(authHeader);
         return ResponseEntity.ok(rutinaService.findByUsuarioId(usuarioId, alumnoId));
+    }
+
+    /**
+     * Devuelve el nombre del propietario de la rutina
+     */
+    @GetMapping("/{alumnoId}/propietario")
+    public ResponseEntity<?> verPropietario(
+            @PathVariable Long alumnoId,
+            @RequestHeader("Authorization") String authHeader) {
+        Long usuarioId = securityUtils.getUsuarioId(authHeader);
+        return ResponseEntity.ok(Map.of("propietario", usuarioService.getPropietario(alumnoId, usuarioId)));
     }
 }

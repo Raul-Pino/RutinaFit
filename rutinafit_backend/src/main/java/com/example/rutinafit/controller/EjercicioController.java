@@ -3,6 +3,7 @@ package com.example.rutinafit.controller;
 import com.example.rutinafit.dto.EjercicioRequest;
 import com.example.rutinafit.dto.EjercicioResponse;
 import com.example.rutinafit.service.EjercicioService;
+import com.example.rutinafit.service.UsuarioService;
 import com.example.rutinafit.util.SecurityUtils;
 
 import jakarta.validation.Valid;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/ejercicios")
@@ -27,6 +29,7 @@ import java.util.List;
 @CrossOrigin(origins = "*")
 public class EjercicioController {
 
+    private final UsuarioService usuarioService;
     private final EjercicioService ejercicioService;
     private final SecurityUtils securityUtils;
 
@@ -82,5 +85,16 @@ public class EjercicioController {
         Long usuarioId = securityUtils.getUsuarioId(authHeader);
         ejercicioService.delete(usuarioId, id);
         return ResponseEntity.noContent().build();
+    }
+
+    /**
+     * Devuelve el nombre del propietario de la rutina
+     */
+    @GetMapping("/{alumnoId}/propietario")
+    public ResponseEntity<?> verPropietario(
+            @PathVariable Long alumnoId,
+            @RequestHeader("Authorization") String authHeader) {
+        Long usuarioId = securityUtils.getUsuarioId(authHeader);
+        return ResponseEntity.ok(Map.of("propietario", usuarioService.getPropietario(alumnoId, usuarioId)));
     }
 }

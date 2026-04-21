@@ -1,6 +1,6 @@
 import { Component, computed, signal, inject, OnInit } from '@angular/core';
 import { FormsModule, NgForm } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { AuthService } from '../../core/auth.service';
@@ -21,12 +21,17 @@ interface Rutina {
 })
 export class Rutinas implements OnInit {
   private http = inject(HttpClient);
+  private route = inject(ActivatedRoute);
   private router = inject(Router);
   private authService = inject(AuthService);
 
   rutinas = signal<Rutina[]>([]);
   busqueda = signal('');
   errorMensaje = signal('');
+
+  // Propiedades alumno
+  alumnoId: number | null = null;
+  alumnoUsername = '';
 
   // Propiedades crear/editar Rutina
   rutinaEditandoId: number | null = null;
@@ -42,16 +47,37 @@ export class Rutinas implements OnInit {
   });
 
   ngOnInit(): void {
+    this.alumnoId = Number(this.route.snapshot.paramMap.get('alumnoId'));
     this.authService.comprobarToken();
-    this.cargarRutinas();
+
+    if(this.alumnoId){
+      this.cargarRutinasAlumno();
+    }else{
+      this.cargarRutinas();
+    }
   }
 
   cargarRutinas(): void {
-        this.http
+      this.http
       .get<Rutina[]>(`${environment.apiUrl}/rutinas`, { headers: this.authService.getTokenHeader() })
       .subscribe({
         next: (data) => this.rutinas.set(data),
         error: () => console.error('No se pudieron cargar las rutinas')
+      });
+  }
+
+  cargarRutinasAlumno(): void {
+      this.http
+      .get<Rutina[]>(`${environment.apiUrl}/rutinas/alumnos/${this.alumnoId}`, { headers: this.authService.getTokenHeader() })
+      .subscribe({
+        next: (data) => this.rutinas.set(data),
+        error: () => console.error('No se pudieron cargar las rutinas')
+      });
+
+      this.http.get(`${environment.apiUrl}/rutinas/${this.alumnoId}/propietario`, { headers: this.authService.getTokenHeader() })
+      .subscribe({
+        next: (data: any) => this.alumnoUsername = data.propietario,
+        error: (e) => console.error('No se pudo cargar el alumno', e)
       });
   }
 
@@ -87,12 +113,19 @@ export class Rutinas implements OnInit {
       nombre: this.nuevaRutinaNombre,
       descripcion: this.nuevaRutinaDescripcion
     };
+    let apiUrl = '';
+    
+    if(this.alumnoId && !this.rutinaEditandoId){
+      apiUrl = `${environment.apiUrl}/rutinas/alumnos/${this.alumnoId}`;
+    }else{
+      apiUrl = `${environment.apiUrl}/rutinas`;
+    }
 
     if (this.rutinaEditandoId) {
       // EDITAR
 
       this.http
-        .put<Rutina>(`${environment.apiUrl}/rutinas/${this.rutinaEditandoId}`, body, { headers: this.authService.getTokenHeader() })
+        .put<Rutina>(`${apiUrl}/${this.rutinaEditandoId}`, body, { headers: this.authService.getTokenHeader() })
         .subscribe({
           next: async (rutinaActualizada) => {
             this.rutinas.update(lista => lista.map(r => r.id === this.rutinaEditandoId ? rutinaActualizada : r));
@@ -111,7 +144,7 @@ export class Rutinas implements OnInit {
       // CREAR
 
       this.http
-        .post<Rutina>(`${environment.apiUrl}/rutinas`, body, { headers: this.authService.getTokenHeader() })
+        .post<Rutina>(`${apiUrl}`, body, { headers: this.authService.getTokenHeader() })
         .subscribe({
           next: async (rutina) => {
             this.rutinas.update(lista => [...lista, rutina]);
@@ -130,7 +163,7 @@ export class Rutinas implements OnInit {
   }
 
   verDetalle(rutina: Rutina): void {
-    this.router.navigate(['/sesiones', rutina.id]);
+    this.router.navigate([`/sesiones/${this.alumnoId}/${rutina.id}`]);
   }
 
 }

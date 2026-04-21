@@ -1,11 +1,16 @@
-<div class="container py-4">
   <!-- Cabecera -->
   <div class="d-flex justify-content-between align-items-center mb-4">
     <div class="d-flex align-items-center">
       <button class="btn btn-verde me-3" (click)="volver()">
         <i class="bi bi-arrow-left"></i> Volver
       </button>
-      <h2 class="d-inline-block m-0 texto-verde fw-bold">Historial de Sesiones</h2>
+
+      @if( alumnoId ){
+        <h2 class="d-inline-block m-0 texto-verde fw-bold">Historial de Sesiones de {{ alumnoUsername }}</h2>
+      } @else {
+        <h2 class="d-inline-block m-0 texto-verde fw-bold">Historial de Sesiones</h2>
+      }
+
     </div>
     <button class="btn btn-verde" data-bs-toggle="modal" data-bs-target="#modalNuevaSesion" (click)="abrirModalCrear()">
       <i class="bi bi-plus-lg"></i> Nueva Sesión
@@ -64,7 +69,6 @@
       </div>
     </div>
   </div>
-</div>
 
 <!-- ==================== MODAL: AÑADIR SESIÓN ==================== -->
 <div class="modal fade" id="modalNuevaSesion" tabindex="-1" aria-labelledby="modalNuevaSesionLabel" aria-hidden="true">

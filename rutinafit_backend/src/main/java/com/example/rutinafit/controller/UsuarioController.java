@@ -91,14 +91,14 @@ public class UsuarioController {
     }
 
     /**
-     * Eliminar entrenador
+     * Eliminar entrenador/alumno
      */
-    @PostMapping("/entrenador/quitar/{alumnoId}")
+    @PostMapping("/entrenador/eliminar/{alumnoId}")
     public ResponseEntity<?> quitarEntrenador(@PathVariable Long alumnoId,
             @RequestHeader("Authorization") String authHeader) {
         Long solicitanteId = securityUtils.getUsuarioId(authHeader);
         usuarioService.dejarEntrenador(alumnoId, solicitanteId);
-        return ResponseEntity.ok("Relación de entrenamiento finalizada");
+        return ResponseEntity.ok(Map.of("message", "Relación de entrenamiento finalizada"));
     }
 
     /**

@@ -9,6 +9,7 @@ import { Registro } from './pages/registro/registro';
 import { RecuperarPassword } from './pages/recuperar/recuperar-password';
 import { Perfil } from './pages/perfil/perfil';
 import { Admin } from './pages/admin/admin';
+import { Alumnos } from './pages/alumnos/alumnos';
 
 export const routes: Routes = [
   { path: '', component: Home },
@@ -20,10 +21,14 @@ export const routes: Routes = [
     component: AuthLayoutComponent,
     children: [
       { path: 'rutinas', component: Rutinas },
-      { path: 'sesiones/:id', component: Sesiones},
-      { path: 'sesion/:id', component: Ejercicios},
+      { path: 'rutinas/:alumnoId', component: Rutinas },
+      { path: 'sesiones/:rutinaId', component: Sesiones},
+      { path: 'sesiones/:alumnoId/:rutinaId', component: Sesiones},
+      { path: 'sesion/:sesionId', component: Ejercicios},
+      { path: 'sesion/:alumnoId/:sesionId', component: Ejercicios},
       { path: 'perfil', component: Perfil},
-      { path: 'admin', component: Admin}
+      { path: 'admin', component: Admin},
+      { path: 'alumnos', component: Alumnos}
     ]
   },
   { path: '**', redirectTo: '' }

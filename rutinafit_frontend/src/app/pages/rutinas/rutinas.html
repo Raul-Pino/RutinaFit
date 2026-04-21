@@ -1,8 +1,10 @@
-<div class="container-fluid py-2">
-
   <div class="row align-items-center mb-4">
     <div class="col-12 col-md-5 mb-3 mb-md-0">
-      <h2 class="fw-bold mb-0 texto-verde">Mis Rutinas</h2>
+      @if (alumnoId){
+        <h2 class="fw-bold mb-0 texto-verde">Rutinas de {{ alumnoUsername }}</h2>
+      }@else {
+        <h2 class="fw-bold mb-0 texto-verde">Mis Rutinas</h2>
+      }
     </div>
     <div class="col-12 col-md-7 d-flex flex-column flex-md-row justify-content-md-end gap-3 align-items-md-center">
       <div class="input-group search-bar w-100">
@@ -11,7 +13,7 @@
         </span>
         <input
           type="text"
-          class="form-control campo-formulario border-start-0 ps-0 shadow-none text-white"
+          class="form-control campo-formulario border-start-0 shadow-none text-white"
           placeholder="Buscar Rutina"
           [(ngModel)]="busqueda"
         >
@@ -85,7 +87,6 @@
     </div>
 
   </div>
-</div>
 
 <!-- ==================== MODAL: AÑADIR RUTINA ==================== -->
 <div class="modal fade" id="modalNuevaRutina" tabindex="-1" aria-hidden="true">
