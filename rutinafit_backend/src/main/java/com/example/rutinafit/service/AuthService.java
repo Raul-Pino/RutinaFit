@@ -111,7 +111,8 @@ public class AuthService {
                         u.getRol(),
                         u.getEmail(),
                         u.getId(),
-                        u.isEsEntrenador()
+                        u.isEsEntrenador(),
+                        u.getEntrenador() != null ? u.getEntrenador().getId() : null
                 );
         }
 }

@@ -10,6 +10,9 @@ import { RecuperarPassword } from './pages/recuperar/recuperar-password';
 import { Perfil } from './pages/perfil/perfil';
 import { Admin } from './pages/admin/admin';
 import { Alumnos } from './pages/alumnos/alumnos';
+import { Buscar } from './pages/buscar/buscar';
+import { Solicitudes } from './pages/solicitudes/solicitudes';
+import { Social } from './pages/social/social';
 
 export const routes: Routes = [
   { path: '', component: Home },
@@ -28,7 +31,11 @@ export const routes: Routes = [
       { path: 'sesion/:alumnoId/:sesionId', component: Ejercicios},
       { path: 'perfil', component: Perfil},
       { path: 'admin', component: Admin},
-      { path: 'alumnos', component: Alumnos}
+      { path: 'alumnos', component: Alumnos},
+      { path: 'buscar', component: Buscar},
+      { path: 'solicitudes', component: Solicitudes},
+      { path: 'social', component: Social}
+    
     ]
   },
   { path: '**', redirectTo: '' }

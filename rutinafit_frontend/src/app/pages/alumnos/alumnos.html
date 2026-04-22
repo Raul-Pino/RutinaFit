@@ -1,6 +1,6 @@
-<!-- Header con Título, Buscador y Botón -->
+<!-- Header con Título, Buscador -->
 <div class="alumnos-header">
-<h1>Gestión de Alumnos</h1>
+<h2 class="fw-bold mb-0 texto-verde">Gestión de Alumnos</h2>
 
 <div class="header-controls">
     <!-- Buscador -->
@@ -11,7 +11,7 @@
     <input
         type="text"
         class="form-control campo-formulario border-start-0 shadow-none text-white"
-        placeholder="Buscar Rutina"
+        placeholder="Buscar alumno"
         [(ngModel)]="busqueda"
     >
     </div>
@@ -34,7 +34,7 @@
                 <td>
                     <div class="alumno-info">
                         <img 
-                        [src]="alumno.fotoPerfil || 'assets/default-avatar.png'" 
+                        [src]="alumno.fotoPerfil" 
                         [alt]="alumno.username"
                         class="avatar"
                         >
@@ -74,28 +74,3 @@
         </tbody>
     </table>
 </div>
-
-<!-- VARIABLES A CREAR EN EL TS -->
-<!--
-INTERFACES/MODELOS:
-- Alumno: { id: number, nombre: string, email: string, avatar?: string }
-
-SIGNALS (Señales):
-- alumnos() signal<Alumno[]> → lista completa de alumnos del servidor
-- alumnosFiltrados() signal<Alumno[]> → alumnos después de aplicar filtro de búsqueda
-- searchTerm() signal<string> → término de búsqueda actual
-
-MÉTODOS:
-- cargarAlumnos() void → GET /api/alumnos y cargar en signal
-- filtrarAlumnos() void → filtrar alumnos por nombre o email según searchTerm()
-- abrirModalNuevoAlumno() void → abrir modal para crear nuevo alumno
-- verRutinas(alumnoId: number) void → navegar a la página de rutinas del alumno
-- eliminarAlumno(alumnoId: number) void → mostrar confirmación y DELETE /api/alumnos/{id}
-
-SERVICIOS:
-- alumnosService.getAll() → GET /api/alumnos
-- alumnosService.delete(id) → DELETE /api/alumnos/{id}
-
-CICLO DE VIDA:
-- ngOnInit() → cargarAlumnos()
--->

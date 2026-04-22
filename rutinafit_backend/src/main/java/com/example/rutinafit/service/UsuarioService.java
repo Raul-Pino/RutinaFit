@@ -1,5 +1,6 @@
 package com.example.rutinafit.service;
 
+import com.example.rutinafit.dto.UsuarioBuscarResponse;
 import com.example.rutinafit.dto.UsuarioResponse;
 import com.example.rutinafit.dto.UsuarioUpdateRequest;
 import com.example.rutinafit.model.TipoSolicitud;
@@ -29,6 +30,8 @@ public class UsuarioService {
     private final UsuarioRepository usuarioRepository;
     private final SolicitudRepository solicitudRepository;
     private final PasswordEncoder encoder;
+    private final AmistadService amistadService;
+    
 
     // LISTAR (Solo admins deberían poder hacer esto habitualmente)
     public List<UsuarioResponse> findAll() {
@@ -43,11 +46,17 @@ public class UsuarioService {
     }
 
     // Buscar por Nombre de usuario
-    public List<UsuarioResponse> buscarUsuarios(String nombre) {
-        return usuarioRepository.findByUsernameContainingIgnoreCase(nombre)
-                .stream()
-                .map(u -> usuarioMapper.pasarADTO(u))
+    public List<UsuarioBuscarResponse> buscarUsuarios(Long id) {
+        return usuarioRepository.findAll().stream()
+                .filter(u -> !u.getRol().equals("ADMIN") && !u.getId().equals(id)) // No mostrar a los admins ni a uno mismo
+                .map(u -> usuarioMapper.pasarABuscarDTO(u, amistadService.sonAmigos(id, u.getId())))
                 .toList();
+    }
+
+    public UsuarioResponse buscarUsuarioPorId(Long id) {
+        Usuario u = usuarioRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        return usuarioMapper.pasarADTO(u);
     }
 
     // ELIMINAR (Admin elimina usuario o usuario se da de baja)

@@ -44,4 +44,8 @@ public class AmistadService {
         
         amistadRepository.delete(amistad);
     }
+
+    public boolean sonAmigos(Long u1, Long u2){
+        return amistadRepository.sonAmigos(u1, u2);
+    }
 }

@@ -1,6 +1,6 @@
 import { Component, computed, signal, inject, OnInit } from '@angular/core';
 import { FormsModule, NgForm } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { Location } from '@angular/common';
 import { environment } from '../../../environments/environment';
@@ -34,7 +34,6 @@ export class Ejercicios implements OnInit {
     private http = inject(HttpClient);
     private route = inject(ActivatedRoute);
     private authService = inject(AuthService);
-    private router = inject(Router);
     private location = inject(Location);
 
     // Propiedades alumno
@@ -69,6 +68,8 @@ export class Ejercicios implements OnInit {
     });
 
     ngOnInit(): void {
+        this.authService.comprobarToken();
+
         this.alumnoId = Number(this.route.snapshot.paramMap.get('alumnoId'));
         this.sesionId = Number(this.route.snapshot.paramMap.get('sesionId'));
         
@@ -178,13 +179,4 @@ export class Ejercicios implements OnInit {
     cerrarModal(): void {
         cerrarModalGlobal('modalNuevoEjercicio');
     }
-
-    // getDescripcion(ejercicio: Ejercicio): string{
-    //     console.log(ejercicio)
-    //     console.log(this.catalogoEjercicios());
-    //     const ejercicioInfo = this.catalogoEjercicios().find(e => e.id === ejercicio.codigoEjercicio);
-    //     console.log(ejercicioInfo);
-    //     if(ejercicioInfo) return ejercicioInfo.descripcion;
-    //     return 'Descripción no disponible';
-    // }
 }

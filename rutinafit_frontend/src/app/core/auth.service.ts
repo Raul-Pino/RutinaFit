@@ -1,10 +1,13 @@
-import { HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Router } from '@angular/router';
+import { environment } from '../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private router = inject(Router);
+  private http = inject(HttpClient);
+
 
   getToken(): string | null {
     return localStorage.getItem('token');
@@ -14,38 +17,25 @@ export class AuthService {
     return !!this.getToken();
   }
 
+  getEntrenador(): number | null{
+      return this.buscarEnToken('entrenador');
+    }
 
   esEntrenador(): boolean{
-    const token = this.getToken();
-    if (!token) return false;
-    try {
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      return payload.esEntrenador ?? false;
-    } catch {
-      return false;
-    }
+    if(this.buscarEnToken('esEntrenador')) return true;
+    return false;
   }
 
   getRol(): string | null {
-    const token = this.getToken();
-    if (!token) return null;
-    try {
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      return payload.rol ?? null;
-    } catch {
-      return null;
-    }
+    return this.buscarEnToken('rol');
+  }
+
+  getId(): number | null {
+    return this.buscarEnToken('id');
   }
 
   getNombre(): string | null{
-    const token = this.getToken();
-    if (!token) return null;
-    try {
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      return payload.sub ?? null;
-    } catch {
-      return null;
-    }
+    return this.buscarEnToken('sub');
   }
 
   cerrarSesion(): void {
@@ -71,7 +61,29 @@ export class AuthService {
     }
   }
 
-  refrescarToken(nuevoToken: string): void {
-    localStorage.setItem('token', nuevoToken);
+  refrescarToken(): void{
+      this.http.post<any>(`${environment.apiUrl}/auth/refresh-token`, {}, { headers: this.getTokenHeader() })
+      .subscribe({
+          next: (data) => {
+              console.log(data);
+              localStorage.setItem('token', data.token);
+              window.location.reload(); // Recargar para actualizar el nombre en el navbar y demás componentes
+          },
+          error: (err: HttpErrorResponse) => {
+              console.error('Error al refrescar token', err);
+          }
+      });
+  }
+
+
+  private buscarEnToken(clave: string): any {
+      const token = this.getToken();
+      if (!token) return null;
+      try {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        return payload[clave] ?? null;
+      } catch {
+        return null;
+      }
   }
 }

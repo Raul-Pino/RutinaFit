@@ -1,5 +1,6 @@
 package com.example.rutinafit.controller;
 
+import com.example.rutinafit.dto.UsuarioBuscarResponse;
 import com.example.rutinafit.dto.UsuarioResponse;
 import com.example.rutinafit.dto.UsuarioUpdateRequest;
 import com.example.rutinafit.service.JwtService;
@@ -23,7 +24,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -73,11 +73,21 @@ public class UsuarioController {
     }
 
     /**
-     * Buscar usuario por nombre
+     * Buscar usuarios
      */
     @GetMapping("/buscar")
-    public ResponseEntity<List<UsuarioResponse>> buscar(@RequestParam String username) {
-        return ResponseEntity.ok(usuarioService.buscarUsuarios(username));
+    public ResponseEntity<List<UsuarioBuscarResponse>> buscar(@RequestHeader("Authorization") String authHeader) {
+        Long myId = securityUtils.getUsuarioId(authHeader);
+        return ResponseEntity.ok(usuarioService.buscarUsuarios(myId));
+    }
+
+    /**
+     * Buscar un usuario con un ID específica
+     */
+    @GetMapping("/buscar/{id}")
+    public ResponseEntity<UsuarioResponse> buscarPorId(@PathVariable Long id, @RequestHeader("Authorization") String authHeader) {
+        Long myId = securityUtils.getUsuarioId(authHeader);
+        return ResponseEntity.ok(usuarioService.buscarUsuarioPorId(id));
     }
 
     /**

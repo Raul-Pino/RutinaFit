@@ -2,6 +2,7 @@ package com.example.rutinafit.util;
 
 import org.springframework.stereotype.Component;
 
+import com.example.rutinafit.dto.UsuarioBuscarResponse;
 import com.example.rutinafit.dto.UsuarioResponse;
 import com.example.rutinafit.model.Usuario;
 
@@ -22,6 +23,12 @@ public class UsuarioMapper {
             
         //}
         return new UsuarioResponse(u.getId(), u.getUsername(), u.getEmail(), u.getRol(),fotoPerfil, u.isEsEntrenador());
+    }
+
+    public UsuarioBuscarResponse pasarABuscarDTO(Usuario u, boolean esAmigo){
+        String fotoPerfil = "https://ui-avatars.com/api/?name=" + u.getUsername() + 
+                                "&background=random&color=fff&size=128";
+        return new UsuarioBuscarResponse(u.getId(), u.getUsername(), u.getEmail(), u.getRol(),fotoPerfil, u.isEsEntrenador(), esAmigo);
     }
 
 }
