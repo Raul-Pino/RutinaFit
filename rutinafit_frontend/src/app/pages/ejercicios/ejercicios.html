@@ -40,25 +40,13 @@
                 <div class="card-text flex-grow-1 text-light mt-2">
                     <div class="d-flex justify-content-between mb-1">
                     <span class="opacity-75">
-                        {{
-                        ejercicio.codigoEjercicio === 1
-                            ? 'Peso (kg):'
-                            : ejercicio.codigoEjercicio === 2
-                            ? 'Distancia (km):'
-                            : 'Param 1:'
-                        }}
+                        {{ getParam1(ejercicio.codigoTipo ?? 0) }}
                     </span>
                     <span class="fw-bold">{{ ejercicio.param1 }}</span>
                     </div>
                     <div class="d-flex justify-content-between">
                     <span class="opacity-75">
-                        {{
-                        ejercicio.codigoEjercicio === 1
-                            ? 'Repeticiones:'
-                            : ejercicio.codigoEjercicio === 2
-                            ? 'Tiempo (min):'
-                            : 'Param 2:'
-                        }}
+                        {{ getParam2(ejercicio.codigoTipo ?? 0) }}
                     </span>
                     <span class="fw-bold">{{ ejercicio.param2 }}</span>
                     </div>
@@ -121,7 +109,7 @@ aria-hidden="true"
             <div class="barra-superior-modal"></div>
             <div class="modal-header border-0">
             <h5 class="modal-title fw-bold text-white d-flex align-items-center gap-2">
-                <i class="bi bi-plus-circle" style="color: var(--verde-principal);"></i> 
+                <i class="bi bi-plus-circle texto-verde"></i> 
                 {{ ejercicioEditandoId ? 'Editar Serie' : 'Añadir Serie' }}</h5>
             <button
                 type="button"
@@ -153,9 +141,7 @@ aria-hidden="true"
                 @if (ejercicioSeleccionado()) {
                 <div class="row g-3">
                     <div class="col-6">
-                    <label class="form-label text-light fw-bold">{{
-                        ejercicioSeleccionado()?.codigo === 1 ? 'Peso (kg)' : 'Distancia (km)'
-                    }}</label>
+                    <label class="form-label text-light fw-bold">{{ getParam1(ejercicioSeleccionado()?.codigo ?? 0) }}</label>
                     <input
                         type="number"
                         class="form-control campo-formulario"
@@ -167,9 +153,7 @@ aria-hidden="true"
                     />
                     </div>
                     <div class="col-6">
-                    <label class="form-label text-light fw-bold">{{
-                        ejercicioSeleccionado()?.codigo === 1 ? 'Repeticiones' : 'Tiempo (min)'
-                    }}</label>
+                    <label class="form-label text-light fw-bold">{{ getParam2(ejercicioSeleccionado()?.codigo ?? 0) }}</label>
                     <input
                         type="number"
                         class="form-control campo-formulario"

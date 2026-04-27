@@ -28,8 +28,8 @@ export class Admin implements OnInit {
 
     catalogoEjercicios = signal<EjercicioInfo[]>([]);
     busqueda = signal('');
-    errorForm = signal('');
-    errorBorrar = signal('');
+    msgError = signal('');
+    msgExito = signal('')
 
     // Propiedades crear/editar Ejercicio
     ejercicioEditandoId: number | null = null;
@@ -83,11 +83,11 @@ export class Admin implements OnInit {
         this.http.delete(`${environment.apiUrl}/ejercicios-info/${id}`, { headers: this.authService.getTokenHeader() })
         .subscribe({
             next: () => {
-                this.catalogoEjercicios.set(this.catalogoEjercicios().filter((ej) => ej.id !== id));
+                this.cargarCatalogo();
             },
             error: (e) => {
                 console.error('No se pudo eliminar el ejercicio', e)
-                this.errorBorrar.set('No se pudo eliminar el ejercicio. Inténtalo de nuevo más tarde.');
+                alert('No se pudo eliminar el ejercicio. Inténtalo de nuevo más tarde.');
             }
         });
     }
@@ -115,17 +115,13 @@ export class Admin implements OnInit {
                 put<EjercicioInfo>(`${environment.apiUrl}/ejercicios-info/${this.ejercicioEditandoId}`, body, { headers: this.authService.getTokenHeader() })
                 .subscribe({
                     next: (data) => {
-                        const index = this.catalogoEjercicios().findIndex(e => e.id === this.ejercicioEditandoId);
-                        if (index !== -1) {
-                            const actualizada = [...this.catalogoEjercicios()];
-                            actualizada[index] = data;
-                            this.catalogoEjercicios.set(actualizada);
-                        }
+                        this.cargarCatalogo();
                         this.cancelarFormulario();
+                        this.msgExito.set('Ejercicio actualizado correctamente.');
                     },
                     error: (e) => {
                         console.error('No se pudo actualizar el ejercicio', e);
-                        this.errorForm.set('No se pudo actualizar el ejercicio. Inténtalo de nuevo más tarde.');
+                        this.msgError.set('No se pudo actualizar el ejercicio. Inténtalo de nuevo más tarde.');
                     }
                 });
 
@@ -136,14 +132,16 @@ export class Admin implements OnInit {
                 post<EjercicioInfo>(`${environment.apiUrl}/ejercicios-info`, body, { headers: this.authService.getTokenHeader() })
                 .subscribe({
                     next: (data) => {
-                        this.catalogoEjercicios.update(lista => [...lista, data]);
+                        this.cargarCatalogo();
                         this.cancelarFormulario();
+                        this.msgExito.set('Ejercicio creado correctamente.');
                     },
                     error: (e) => {
                         console.error('No se pudo crear el ejercicio', e);
-                        this.errorForm.set('No se pudo crear el ejercicio. Inténtalo de nuevo más tarde.');
+                        this.msgError.set('No se pudo crear el ejercicio. Inténtalo de nuevo más tarde.');
                     }
                 });
-        }
+            }
+            setTimeout(() => {this.msgError.set(''); this.msgExito.set('') }, 2000);
     }
 }

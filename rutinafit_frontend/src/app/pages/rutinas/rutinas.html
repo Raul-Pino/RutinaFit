@@ -46,7 +46,7 @@
           <div class="card-body d-flex align-items-center p-3 gap-2">
             <div class="flex-grow-1">
               <h5 class="card-title fw-bold text-white mb-1">{{ rutina.nombre }}</h5>
-              <p class="card-text small mb-0" style="color: #b0b0b0;">
+              <p class="card-text small mb-0 texto-secundario">
                 {{ rutina.descripcion }}
               </p>
             </div>
@@ -65,9 +65,9 @@
       </div>
     } @empty {
       <div class="col-12 text-center py-5">
-        <i class="bi bi-search" style="font-size: 3rem; color: #b0b0b0;"></i>
+        <i class="bi bi-search icono-vacio"></i>
         <h5 class="text-white mt-3">No se encontraron rutinas</h5>
-        <p style="color: #b0b0b0;">Prueba a buscar con otro nombre.</p>
+        <p class="texto-secundario">Prueba a buscar con otro nombre.</p>
       </div>
     }
 
@@ -95,7 +95,7 @@
       <div class="barra-superior-modal"></div>
       <div class="modal-header border-0 pb-1">
         <h5 class="modal-title fw-bold text-white d-flex align-items-center gap-2">
-          <i class="bi bi-plus-circle" style="color: var(--verde-principal);"></i> 
+          <i class="bi bi-plus-circle texto-verde"></i> 
           {{ rutinaEditandoId ? 'Editar Rutina' : 'Añadir nueva Rutina' }}
         </h5>
         <button type="button" class="btn-close btn-close-white opacity-50" data-bs-dismiss="modal" aria-label="Close"></button>

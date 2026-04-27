@@ -15,16 +15,14 @@
             </div>
 
             @if (editError()) {
-              <div class="alert alert-danger d-flex align-items-center gap-2 py-2 px-3 mb-3" role="alert"
-                style="background-color: rgba(220,53,69,0.15); border: 1px solid rgba(220,53,69,0.4); border-radius: 0.5rem; color: #f66;">
+              <div class="alert alert-danger d-flex align-items-center gap-2 py-2 px-3 mb-3 alerta-error" role="alert">
                 <i class="bi bi-exclamation-circle-fill"></i>
                 <span>{{ editError() }}</span>
               </div>
             }
 
             @if (editSuccess()) {
-              <div class="alert alert-success d-flex align-items-center gap-2 py-2 px-3 mb-3" role="alert"
-                style="background-color: rgba(34,139,34,0.15); border: 1px solid rgba(34,139,34,0.4); border-radius: 0.5rem; color: #5af;">
+              <div class="alert alert-success d-flex align-items-center gap-2 py-2 px-3 mb-3 alerta-exito" role="alert">
                 <i class="bi bi-check-circle-fill"></i>
                 <span>{{ editSuccess() }}</span>
               </div>
@@ -112,16 +110,14 @@
             </div>
 
             @if (passwordError()) {
-              <div class="alert alert-danger d-flex align-items-center gap-2 py-2 px-3 mb-3" role="alert"
-                style="background-color: rgba(220,53,69,0.15); border: 1px solid rgba(220,53,69,0.4); border-radius: 0.5rem; color: #f66;">
+              <div class="alert alert-danger d-flex align-items-center gap-2 py-2 px-3 mb-3 alerta-error" role="alert">
                 <i class="bi bi-exclamation-circle-fill"></i>
                 <span>{{ passwordError() }}</span>
               </div>
             }
 
             @if (passwordSuccess()) {
-              <div class="alert alert-success d-flex align-items-center gap-2 py-2 px-3 mb-3" role="alert"
-                style="background-color: rgba(34,139,34,0.15); border: 1px solid rgba(34,139,34,0.4); border-radius: 0.5rem; color: #5af;">
+              <div class="alert alert-success d-flex align-items-center gap-2 py-2 px-3 mb-3 alerta-exito" role="alert">
                 <i class="bi bi-check-circle-fill"></i>
                 <span>{{ passwordSuccess() }}</span>
               </div>
@@ -178,7 +174,7 @@
       </div>
 
       <div class="col-lg-12 mb-3 d-flex align-items-end">
-        <div class="card tarjeta-oscura shadow-lg border-0 w-100" style="border-left: 4px solid #dc3545;">
+        <div class="card tarjeta-oscura shadow-lg border-0 w-100 card-peligro">
           <div class="card-body p-4 p-md-5">
             <div class="d-flex align-items-center gap-2 mb-3">
               <i class="bi bi-exclamation-triangle-fill text-danger fs-5"></i>
@@ -190,8 +186,7 @@
             </p>
 
             @if (deleteError()) {
-              <div class="alert alert-danger d-flex align-items-center gap-2 py-2 px-3 mb-3" role="alert"
-                style="background-color: rgba(220,53,69,0.15); border: 1px solid rgba(220,53,69,0.4); border-radius: 0.5rem; color: #f66;">
+              <div class="alert alert-danger d-flex align-items-center gap-2 py-2 px-3 mb-3 alerta-error" role="alert">
                 <i class="bi bi-exclamation-circle-fill"></i>
                 <span>{{ deleteError() }}</span>
               </div>

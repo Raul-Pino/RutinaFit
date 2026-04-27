@@ -5,7 +5,7 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { DatePipe, Location } from '@angular/common';
 import { environment } from '../../../environments/environment';
 import { AuthService } from '../../core/auth.service';
-import { cerrarModalGlobal } from '../../core/bootstrap-utils';
+import { cerrarComponenteBS } from '../../core/bootstrap-utils';
 
 interface Sesion {
   id: number;
@@ -105,7 +105,7 @@ export class Sesiones implements OnInit {
       .subscribe({
         next: async (sesion) => {
           this.sesiones.update(lista => [...lista, sesion]);
-          await cerrarModalGlobal('modalNuevaSesion');
+          await cerrarComponenteBS('modalNuevaSesion');
           form.resetForm();
           this.ordenarPorFecha();
         },
@@ -132,6 +132,6 @@ export class Sesiones implements OnInit {
   }
 
   cerrarModal(): void {
-    cerrarModalGlobal('modalNuevaSesion');
+    cerrarComponenteBS('modalNuevaSesion');
   }
 }

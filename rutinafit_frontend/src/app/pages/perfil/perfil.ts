@@ -95,8 +95,7 @@ export class Perfil {
             next: (data) => {
             this.editSuccess.set('Perfil actualizado correctamente');
             this.loadingEdit.set(false);
-            setTimeout(() => this.editSuccess.set(''), 5000);
-            this.authService.refrescarToken();
+            setTimeout(() => this.authService.refrescarToken(), 2000);
             },
             error: (err: HttpErrorResponse) => {
             this.loadingEdit.set(false);
@@ -179,6 +178,7 @@ export class Perfil {
             this.authService.cerrarSesion();
             },
             error: (err: HttpErrorResponse) => {
+            console.log(err);
             this.loadingDelete.set(false);
             this.deleteError.set('Error al eliminar la cuenta');
             }

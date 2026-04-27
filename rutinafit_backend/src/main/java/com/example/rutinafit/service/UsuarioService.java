@@ -1,8 +1,10 @@
 package com.example.rutinafit.service;
 
+import com.example.rutinafit.dto.SolicitudResponse;
 import com.example.rutinafit.dto.UsuarioBuscarResponse;
 import com.example.rutinafit.dto.UsuarioResponse;
 import com.example.rutinafit.dto.UsuarioUpdateRequest;
+import com.example.rutinafit.model.Solicitud;
 import com.example.rutinafit.model.TipoSolicitud;
 import com.example.rutinafit.model.Usuario;
 import com.example.rutinafit.repository.SolicitudRepository;
@@ -31,7 +33,6 @@ public class UsuarioService {
     private final SolicitudRepository solicitudRepository;
     private final PasswordEncoder encoder;
     private final AmistadService amistadService;
-    
 
     // LISTAR (Solo admins deberían poder hacer esto habitualmente)
     public List<UsuarioResponse> findAll() {
@@ -48,7 +49,8 @@ public class UsuarioService {
     // Buscar por Nombre de usuario
     public List<UsuarioBuscarResponse> buscarUsuarios(Long id) {
         return usuarioRepository.findAll().stream()
-                .filter(u -> !u.getRol().equals("ADMIN") && !u.getId().equals(id)) // No mostrar a los admins ni a uno mismo
+                .filter(u -> !u.getRol().equals("ADMIN") && !u.getId().equals(id)) // No mostrar a los admins ni a uno
+                                                                                   // mismo
                 .map(u -> usuarioMapper.pasarABuscarDTO(u, amistadService.sonAmigos(id, u.getId())))
                 .toList();
     }
@@ -64,6 +66,31 @@ public class UsuarioService {
         if (!usuarioRepository.existsById(id)) {
             throw new RuntimeException("Usuario no encontrado");
         }
+        List<Usuario> alumnos = usuarioRepository.findByEntrenadorId(id);
+        for (Usuario alumno : alumnos) {
+            this.dejarEntrenador(alumno.getId(), id);
+        }
+
+        List<Usuario> entrenadores = usuarioRepository.findByEntrenadorId(id);
+        for (Usuario entrenador : entrenadores) {
+            this.dejarEntrenador(id, entrenador.getId());
+        }
+
+        List<UsuarioResponse> amigos = amistadService.listarMisAmigos(id);
+        for (UsuarioResponse amigo : amigos) {
+            amistadService.eliminarAmistad(amigo.id(), id);
+        }
+
+        List<Solicitud> solicitudes = solicitudRepository.findByRemitenteId(id);
+        for (Solicitud solicitud : solicitudes) {
+            solicitudRepository.delete(solicitud);
+        }
+
+        List<Solicitud> solicitudes2 = solicitudRepository.findByDestinatarioId(id);
+        for (Solicitud solicitud : solicitudes2) {
+            solicitudRepository.delete(solicitud);
+        }
+
         usuarioRepository.deleteById(id);
     }
 
@@ -72,8 +99,9 @@ public class UsuarioService {
         Usuario usuario = usuarioRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
-        if(usuario.isEsEntrenador() && !dto.esEntrenador()) {
-            // Si el usuario era entrenador y ahora no lo es, se eliminan las relaciones con sus alumnos
+        if (usuario.isEsEntrenador() && !dto.esEntrenador()) {
+            // Si el usuario era entrenador y ahora no lo es, se eliminan las relaciones con
+            // sus alumnos
             List<Usuario> alumnos = usuarioRepository.findByEntrenadorId(usuario.getId());
             for (Usuario alumno : alumnos) {
                 this.dejarEntrenador(alumno.getId(), userId);
@@ -106,8 +134,9 @@ public class UsuarioService {
     public void dejarEntrenador(Long alumnoId, Long solicitanteId) {
         Usuario alumno = usuarioRepository.findById(alumnoId)
                 .orElseThrow(() -> new RuntimeException("Alumno no encontrado"));
-        
-        if(alumno == null) return;
+
+        if (alumno == null)
+            return;
 
         Usuario entrenador = alumno.getEntrenador();
         if (entrenador == null) {
@@ -175,10 +204,10 @@ public class UsuarioService {
 
     public String getPropietario(Long alumnoId, Long usuarioId) {
         Usuario usuario = usuarioRepository.findById(alumnoId)
-            .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
         securityUtils.validarAcceso(usuario, usuarioId);
-        
+
         return usuario.getUsername();
     }
 }

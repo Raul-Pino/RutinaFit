@@ -1,29 +1,39 @@
-declare const bootstrap: any;
+declare var bootstrap: any; 
 
-export function cerrarModalGlobal(idModal: string): Promise<void> {
+export function cerrarComponenteBS(id: string): Promise<void> {
   return new Promise(resolve => {
-    const modalEl = document.getElementById(idModal);
-    if (!modalEl) {
+    const el = document.getElementById(id);
+    
+    if (!el) {
+      limpiarResiduos();
       resolve();
       return;
     }
 
-    const instance = bootstrap.Modal.getOrCreateInstance(modalEl);
+    const isOffcanvas = el.classList.contains('offcanvas');
+    const instance = isOffcanvas 
+      ? bootstrap.Offcanvas.getOrCreateInstance(el) 
+      : bootstrap.Modal.getOrCreateInstance(el);
 
-    const limpiezaEmergencia = () => {
-      document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
-      document.body.classList.remove('modal-open');
-      document.body.style.overflow = '';
-      document.body.style.paddingRight = '';
+    const limpieza = () => {
+      el.removeEventListener('hidden.bs.modal', limpieza);
+      el.removeEventListener('hidden.bs.offcanvas', limpieza);
+      limpiarResiduos();
       resolve();
     };
 
-    modalEl.addEventListener('hidden.bs.modal', limpiezaEmergencia, { once: true });
-    instance.hide();
+    el.addEventListener('hidden.bs.modal', limpieza, { once: true });
+    el.addEventListener('hidden.bs.offcanvas', limpieza, { once: true });
 
-    setTimeout(() => {
-      modalEl.removeEventListener('hidden.bs.modal', limpiezaEmergencia);
-      limpiezaEmergencia();
-    }, 400);
+    instance.hide();
+    setTimeout(limpieza, 450);
   });
+}
+
+function limpiarResiduos() {
+  document.querySelectorAll('.modal-backdrop, .offcanvas-backdrop')
+    .forEach(el => el.remove());
+  document.body.style.overflow = '';
+  document.body.style.paddingRight = '';
+  document.body.classList.remove('modal-open', 'offcanvas-open');
 }

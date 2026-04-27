@@ -4,7 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { AuthService } from '../../core/auth.service';
-import { cerrarModalGlobal } from '../../core/bootstrap-utils';
+import { cerrarComponenteBS } from '../../core/bootstrap-utils';
 
 interface Rutina {
   id: number;
@@ -129,7 +129,7 @@ export class Rutinas implements OnInit {
         .subscribe({
           next: async (rutinaActualizada) => {
             this.rutinas.update(lista => lista.map(r => r.id === this.rutinaEditandoId ? rutinaActualizada : r));
-            await cerrarModalGlobal('modalNuevaRutina');
+            await cerrarComponenteBS('modalNuevaRutina');
             form.resetForm();
           },
           error: (err: HttpErrorResponse) => {
@@ -148,7 +148,7 @@ export class Rutinas implements OnInit {
         .subscribe({
           next: async (rutina) => {
             this.rutinas.update(lista => [...lista, rutina]);
-            await cerrarModalGlobal('modalNuevaRutina');
+            await cerrarComponenteBS('modalNuevaRutina');
             form.resetForm();
           },
           error: (err: HttpErrorResponse) => {

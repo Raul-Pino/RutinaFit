@@ -114,6 +114,8 @@ public class EjercicioService {
                         e.getParam1(), 
                         e.getParam2(), 
                         e.getEjercicioInfo().getDescripcion(),
-                        e.getEjercicioInfo().getCodigo());
+                        e.getEjercicioInfo().getCodigo(),
+                        e.getEjercicioInfo().getId()
+                    );
     }
 }

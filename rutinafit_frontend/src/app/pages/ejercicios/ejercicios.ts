@@ -5,7 +5,9 @@ import { HttpClient } from '@angular/common/http';
 import { Location } from '@angular/common';
 import { environment } from '../../../environments/environment';
 import { AuthService } from '../../core/auth.service';
-import { cerrarModalGlobal } from '../../core/bootstrap-utils';
+import { cerrarComponenteBS } from '../../core/bootstrap-utils';
+import { PrimerParametro } from './primerParametro';
+import { SegundoParametro } from './segundoParametro';
 
 interface EjercicioInfo {
     id: number;
@@ -17,9 +19,9 @@ interface Ejercicio {
     id: number;
     param1: number; // Peso o Distancia
     param2: number; // Repeticiones o Tiempo
-    nombreEjercicio?: string;
-    codigoEjercicio: number;
-    codigoTipo?: number;
+    nombreEjercicio: string;
+    idEjercicioInfo: number;
+    codigoTipo: number | null;
     descripcion: string;
 }
 
@@ -127,13 +129,15 @@ export class Ejercicios implements OnInit {
     }
 
     abrirModalEditar(ejercicio: Ejercicio): void {
+        console.log(ejercicio);
+        console.log(this.catalogoEjercicios());
         this.ejercicioEditandoId = ejercicio.id;
         this.nuevoEjercicio = {
-            ejercicioInfoId: ejercicio.codigoEjercicio,
+            ejercicioInfoId: ejercicio.idEjercicioInfo,
             param1: ejercicio.param1,
             param2: ejercicio.param2
         };
-        this.ejercicioInfoSeleccionadoId.set(ejercicio.codigoEjercicio);
+        this.ejercicioInfoSeleccionadoId.set(ejercicio.idEjercicioInfo);
     }
 
     guardarEjercicio(form: NgForm): void {
@@ -151,7 +155,7 @@ export class Ejercicios implements OnInit {
             .subscribe({
                 next: async (ejercicio) => {
                 this.ejercicios.update(lista => lista.map(e => e.id === this.ejercicioEditandoId ? ejercicio : e));
-                await cerrarModalGlobal('modalNuevoEjercicio');
+                await cerrarComponenteBS('modalNuevoEjercicio');
                 form.resetForm();
                 this.ejercicioInfoSeleccionadoId.set(null);
                 },
@@ -163,7 +167,7 @@ export class Ejercicios implements OnInit {
             .subscribe({
                 next: async (ejercicio) => {
                 this.ejercicios.update(lista => [...lista, ejercicio]);
-                await cerrarModalGlobal('modalNuevoEjercicio');
+                await cerrarComponenteBS('modalNuevoEjercicio');
                 form.resetForm();
                 this.ejercicioInfoSeleccionadoId.set(null);
                 },
@@ -177,6 +181,16 @@ export class Ejercicios implements OnInit {
     }
 
     cerrarModal(): void {
-        cerrarModalGlobal('modalNuevoEjercicio');
+        cerrarComponenteBS('modalNuevoEjercicio');
+    }
+
+
+
+    getParam1(id: number): string{
+        return PrimerParametro[id] || 'Parámetro 1';
+    }
+
+    getParam2(id: number): string{
+        return SegundoParametro[id] || 'Parámetro 2';
     }
 }

@@ -65,7 +65,6 @@ export class AuthService {
       this.http.post<any>(`${environment.apiUrl}/auth/refresh-token`, {}, { headers: this.getTokenHeader() })
       .subscribe({
           next: (data) => {
-              console.log(data);
               localStorage.setItem('token', data.token);
               window.location.reload(); // Recargar para actualizar el nombre en el navbar y demás componentes
           },
