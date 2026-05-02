@@ -29,7 +29,7 @@ public class EjercicioInfoService {
         info.setCodigo(dto.codigo());
         info.setNombre(dto.nombre());
         info.setDescripcion(dto.descripcion());
-        
+        info.setEnlaceExplicacion(dto.enlaceExplicacion());
         return transformarADto(ejercicioInfoRepository.save(info));
     }
 
@@ -43,6 +43,7 @@ public class EjercicioInfoService {
         existente.setNombre(dto.nombre());
         existente.setDescripcion(dto.descripcion());
         existente.setCodigo(dto.codigo());
+        existente.setEnlaceExplicacion(dto.enlaceExplicacion());
 
         return transformarADto(ejercicioInfoRepository.save(existente));
     }
@@ -68,7 +69,7 @@ public class EjercicioInfoService {
 
 
     private EjercicioInfoResponse transformarADto(EjercicioInfo e) {
-        return new EjercicioInfoResponse(e.getId(), e.getCodigo(), e.getNombre(), e.getDescripcion());
+        return new EjercicioInfoResponse(e.getId(), e.getCodigo(), e.getNombre(), e.getDescripcion(),e.getEnlaceExplicacion());
     }
 
 

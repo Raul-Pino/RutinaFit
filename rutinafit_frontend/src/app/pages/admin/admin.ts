@@ -12,6 +12,7 @@ interface EjercicioInfo {
     codigo: number; // 1: Fuerza, 2: Cardio
     nombre: string;
     descripcion: string;
+    enlaceExplicacion: string;
 }
 
 @Component({
@@ -34,7 +35,8 @@ export class Admin implements OnInit {
     // Propiedades crear/editar Ejercicio
     ejercicioEditandoId: number | null = null;
     nuevoEjercicioNombre = '';
-    nuevoEjercicioDescripcion = '';
+    nuevoEjercicioEnlace = '';
+    nuevoEjercicioDescripcion: string | null = null;
     nuevoEjercicioCodigo = 0;
 
     
@@ -73,6 +75,7 @@ export class Admin implements OnInit {
         this.ejercicioEditandoId = ejercicio.id;
         this.nuevoEjercicioNombre = ejercicio.nombre;
         this.nuevoEjercicioDescripcion = ejercicio.descripcion;
+        this.nuevoEjercicioEnlace = ejercicio.enlaceExplicacion;
         this.nuevoEjercicioCodigo = ejercicio.codigo;
     }
 
@@ -95,7 +98,8 @@ export class Admin implements OnInit {
     cancelarFormulario(): void{
         this.ejercicioEditandoId = null;
         this.nuevoEjercicioNombre = '';
-        this.nuevoEjercicioDescripcion = '';
+        this.nuevoEjercicioDescripcion = null;
+        this.nuevoEjercicioEnlace = '';
         this.nuevoEjercicioCodigo = 0;
     }
 
@@ -105,6 +109,7 @@ export class Admin implements OnInit {
         const body = {
         nombre: this.nuevoEjercicioNombre,
         descripcion: this.nuevoEjercicioDescripcion,
+        enlaceExplicacion: this.nuevoEjercicioEnlace,
         codigo: this.nuevoEjercicioCodigo
         };
 

@@ -501,6 +501,23 @@ input[type="date"]::-webkit-calendar-picker-indicator, input[type="time"]::-webk
         font-size: 1rem;
       }
     }
+
+    &.btn-outline-explicacion {
+      border-color: #e9e633;
+      color: #e9e633;
+      padding: 0.5rem 0.75rem;
+
+      &:hover {
+        background-color: #e9e633;
+        border-color: #e9e633;
+        color: #000000;
+      }
+
+      i {
+        margin: 0;
+        font-size: 1rem;
+      }
+    }
   }
 
   @media (max-width: 576px) {

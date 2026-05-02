@@ -24,6 +24,8 @@ export class Buscar implements OnInit {
     private http = inject(HttpClient);
     private authService = inject(AuthService);
 
+    esEntrenador = signal(false);
+
     usuarios = signal<Usuario[]>([]);
     busqueda = signal('');
 
@@ -34,8 +36,13 @@ export class Buscar implements OnInit {
     entrenador: number | null = null;
 
     usuariosFiltrados = computed(() => {
+        let filtrados = this.usuarios();
+        if(this.esEntrenador()){
+            filtrados = filtrados.filter(usuario => usuario.esEntrenador);
+        }
+
         const filtro = this.busqueda().toLowerCase();
-        return this.usuarios().filter((usuario) =>
+        return filtrados.filter((usuario) =>
         usuario.username.toLowerCase().includes(filtro)
         );
     });

@@ -4,5 +4,6 @@ public record EjercicioInfoResponse(
     Long id,
     int codigo,
     String nombre,
-    String descripcion
+    String descripcion,
+    String enlaceExplicacion
 ) {}

@@ -7,5 +7,6 @@ public record EjercicioResponse(
     Double param2, // Repeticiones o tiempo
     String descripcion,
     int codigoTipo ,
-    Long idEjercicioInfo // EjercicioInfo
+    Long idEjercicioInfo, // EjercicioInfo
+    String enlaceExplicacion
 ) {}

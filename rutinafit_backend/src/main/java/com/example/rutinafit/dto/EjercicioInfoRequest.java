@@ -14,5 +14,7 @@ public record EjercicioInfoRequest(
     String nombre,
     
     @Size(max = 100)
-    String descripcion
+    String descripcion,
+
+    String enlaceExplicacion
 ) {}

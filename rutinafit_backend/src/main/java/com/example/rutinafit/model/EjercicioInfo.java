@@ -32,5 +32,7 @@ public class EjercicioInfo {
     @Length(max = 100)
     @Column(length = 100)
     private String descripcion;
-    
+
+    @Column(nullable = true, name = "enlace_explicacion", length = 255)
+    private String enlaceExplicacion;
 }

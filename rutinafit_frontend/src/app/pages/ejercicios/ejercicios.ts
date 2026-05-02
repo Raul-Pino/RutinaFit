@@ -23,6 +23,7 @@ interface Ejercicio {
     idEjercicioInfo: number;
     codigoTipo: number | null;
     descripcion: string;
+    enlaceExplicacion: string;
 }
 
 @Component({
@@ -174,6 +175,10 @@ export class Ejercicios implements OnInit {
                 error: () => console.error('No se pudo guardar la serie')
             });
         }
+    }
+
+    visitarEnlace(enlace: string): void{
+        window.open(enlace, '_blank');
     }
 
     volver(): void {

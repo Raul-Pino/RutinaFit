@@ -29,6 +29,7 @@
                     <tr>
                         <th>NOMBRE</th>
                         <th>DESCRIPCIÓN</th>
+                        <th>ENLACE</th>
                         <th>CÓDIGO</th>
                         <th>ACCIONES</th>
                     </tr>
@@ -38,6 +39,7 @@
                         <tr>
                             <td>{{ ejercicio.nombre }}</td>
                             <td>{{ ejercicio.descripcion }}</td>
+                            <td>{{ ejercicio.enlaceExplicacion }}</td>
                             <td><span class="codigo-badge">{{ ejercicio.codigo }}</span></td>
                             <td>
                                 <button class="btn btn-sm btn-link text-decoration-none" title="Editar" (click)="editarEjercicio(ejercicio)">
@@ -95,7 +97,17 @@
                 >
                 </div>
             </div>
-
+                <div class="mb-4">
+                <label for="enlaceEjercicio" class="form-label">Enlace de Explicación</label>
+                <input 
+                    type="text"
+                    class="form-control form-control-dark" 
+                    id="enlaceEjercicio"
+                    placeholder="Enlace de la explicación..."
+                    name="enlace"
+                    [(ngModel)]="nuevoEjercicioEnlace"
+                >
+                </div>
             <div class="mb-4">
                 <label for="descripcionEjercicio" class="form-label">Breve Descripción</label>
                 <textarea 
