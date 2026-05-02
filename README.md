@@ -70,7 +70,7 @@ La primera vez descarga las imágenes de Docker y compila el proyecto, puede tar
 ## Comandos útiles
 
 ```bash
-Levantar el proyecto
+# Levantar el proyecto
 docker compose up --build
 
 # Levantar en segundo plano
