@@ -3,6 +3,7 @@ package com.example.rutinafit.controller;
 import com.example.rutinafit.dto.SesionRequest;
 import com.example.rutinafit.dto.SesionResponse;
 import com.example.rutinafit.service.SesionService;
+import com.example.rutinafit.service.UsuarioService;
 import com.example.rutinafit.util.SecurityUtils;
 
 import lombok.RequiredArgsConstructor;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/sesiones")
@@ -25,6 +27,7 @@ import java.util.List;
 @CrossOrigin(origins = "*")
 public class SesionController {
 
+    private final UsuarioService usuarioService;
     private final SesionService sesionService;
     private final SecurityUtils securityUtils;
 
@@ -64,6 +67,18 @@ public class SesionController {
         Long usuarioId = securityUtils.getUsuarioId(authHeader);
         sesionService.delete(usuarioId, id);
         return ResponseEntity.noContent().build();
+    }
+
+    /**
+     * Devuelve el nombre de usuario del propietario de la sesión
+     */
+    @GetMapping("/{alumnoId}/propietario")
+    public ResponseEntity<?> getPropietario(
+            @PathVariable Long alumnoId,
+            @RequestHeader("Authorization") String authHeader) {
+        
+        Long usuarioId = securityUtils.getUsuarioId(authHeader);
+        return ResponseEntity.ok(Map.of("propietario", usuarioService.getPropietario(alumnoId, usuarioId)));
     }
 
 }

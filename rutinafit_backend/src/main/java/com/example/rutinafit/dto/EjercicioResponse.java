@@ -2,8 +2,10 @@ package com.example.rutinafit.dto;
 
 public record EjercicioResponse(
     Long id,
-    String nombreEjercicio, // EjercicioInfo
+    String nombreEjercicio,
     Double param1, // Peso o distancia
     Double param2, // Repeticiones o tiempo
-    int codigoTipo // EjercicioInfo
+    String descripcion,
+    int codigoTipo ,
+    Long idEjercicioInfo // EjercicioInfo
 ) {}

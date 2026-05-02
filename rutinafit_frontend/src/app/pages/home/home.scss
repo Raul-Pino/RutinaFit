@@ -1,0 +1,96 @@
+// ==============================
+// NAVBAR
+// ==============================
+
+.navbar-toggler-icon-verde {
+  filter: invert(80%) sepia(100%) saturate(500%) hue-rotate(50deg);
+}
+
+// ==============================
+// SECCIÓN HERO
+// ==============================
+.hero-section {
+  background: linear-gradient(135deg, #0d1a0d 0%, #0a2010 100%);
+}
+
+.hero-subtitle {
+  color: var(--texto-suave);
+}
+
+// ==============================
+// SECCIÓN ESTADÍSTICAS
+// ==============================
+.stats-section {
+  background-color: #0f200f;
+}
+
+.stats-label {
+  color: #ffffff;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  opacity: 0.85;
+}
+
+// ==============================
+// SECCIÓN CARACTERÍSTICAS
+// ==============================
+.seccion-caracteristicas {
+  background-color: var(--fondo-principal);
+}
+
+.caracteristica-descripcion {
+  color: var(--texto-suave);
+  font-size: 0.9rem;
+}
+
+// ==============================
+// SECCIÓN CÓMO FUNCIONA
+// ==============================
+.como-funciona-section {
+  background-color: #0b1a0b;
+}
+
+.paso-descripcion {
+  color: var(--texto-suave);
+  font-size: 0.9rem;
+}
+
+.paso-numero {
+  width: 48px;
+  height: 48px;
+  background-color: var(--verde-principal);
+  color: #000;
+  font-size: 1.25rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  margin-bottom: 0.75rem;
+}
+
+// ==============================
+// SECCIÓN CTA FINAL
+// ==============================
+.cta-section {
+  background-color: var(--fondo-principal);
+}
+
+.cta-bloque {
+  background-color: var(--verde-principal);
+  border-radius: 1rem;
+}
+
+// ==============================
+// FOOTER
+// ==============================
+.footer-home {
+  background-color: #060f06;
+  border-top: 1px solid var(--borde-oscuro);
+}
+
+.footer-texto {
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 0.875rem;
+}

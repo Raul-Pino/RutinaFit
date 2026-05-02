@@ -17,6 +17,7 @@ import com.example.rutinafit.model.Usuario;
 import com.example.rutinafit.repository.AmistadRepository;
 import com.example.rutinafit.repository.SolicitudRepository;
 import com.example.rutinafit.repository.UsuarioRepository;
+import com.example.rutinafit.util.UsuarioMapper;
 
 @Service
 @RequiredArgsConstructor
@@ -24,6 +25,7 @@ public class SolicitudService {
     private final SolicitudRepository solicitudRepository;
     private final UsuarioRepository usuarioRepository;
     private final AmistadRepository amistadRepository;
+    private final UsuarioMapper usuarioMapper;
 
     @Transactional
     public void enviarSolicitud(Long remitenteId, SolicitudRequest dto) {
@@ -33,7 +35,13 @@ public class SolicitudService {
                 .orElseThrow(() -> new RuntimeException("Destinatario no encontrado"));
         
         boolean existe = solicitudRepository.existsByUsuariosYTipo(remitenteId, dto.destinatarioId(), dto.tipo());
-        if (existe) {
+        if (existe){
+            Solicitud sol = solicitudRepository.findByUsuariosYTipo(remitenteId, dto.destinatarioId(), dto.tipo())
+                    .orElseThrow(() -> new RuntimeException("Error al verificar solicitudes existentes"));
+
+            if (sol.getEstado() == EstadoSolicitud.ACEPTADA && dto.tipo() == TipoSolicitud.ENTRENAMIENTO){
+                throw new RuntimeException("Un alumno no puede entrenar a su entrenador.");
+            }
             throw new RuntimeException("Ya existe una solicitud pendiente o activa entre vosotros");
         }
 
@@ -88,17 +96,21 @@ public class SolicitudService {
             // Añadimos al usuario a la lista del entrenador
             alumno.setEntrenador(entrenador);
             usuarioRepository.save(alumno);
-        }
 
-        if (sol.getTipo() == TipoSolicitud.AMISTAD) {
+            sol.setEstado(EstadoSolicitud.ACEPTADA);
+            solicitudRepository.save(sol);
+
+            // Eliminamos el resto de solicitudes de entrenamiento pendientes entre el mismo alumno y otros entrenadores
+            solicitudRepository.deleteByIdRemitenteTipoandEstado(alumno.getId(), TipoSolicitud.ENTRENAMIENTO, EstadoSolicitud.PENDIENTE);
+        }else if (sol.getTipo() == TipoSolicitud.AMISTAD) {
             Amistad nuevaAmistad = new Amistad();
             nuevaAmistad.setUsuario1(sol.getRemitente());
             nuevaAmistad.setUsuario2(sol.getDestinatario());
             amistadRepository.save(nuevaAmistad);
-        }
 
-        sol.setEstado(EstadoSolicitud.ACEPTADA);
-        solicitudRepository.save(sol);
+            sol.setEstado(EstadoSolicitud.ACEPTADA);
+            solicitudRepository.save(sol);
+        }
     }
 
     public List<SolicitudResponse> obtenerSolicitudesPendientes(Long usuarioId) {
@@ -106,7 +118,7 @@ public class SolicitudService {
                     .stream()
                     .map(s -> new SolicitudResponse(
                         s.getId(), 
-                        s.getRemitente().getUsername(), 
+                        usuarioMapper.pasarADTO(s.getRemitente()),
                         s.getTipo().name(), 
                         s.getFechaCreacion()))
                     .toList();

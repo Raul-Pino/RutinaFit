@@ -9,6 +9,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -39,7 +40,7 @@ public class SolicitudController {
         @RequestHeader("Authorization") String authHeader){
         Long remitenteId = securityUtils.getUsuarioId(authHeader);
         solicitudService.enviarSolicitud(remitenteId, dto);
-        return ResponseEntity.ok("Solicitud procesada");
+        return ResponseEntity.ok(Map.of("Message", "Solicitud procesada"));
     }
 
     /**

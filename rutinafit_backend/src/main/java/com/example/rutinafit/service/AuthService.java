@@ -32,7 +32,7 @@ public class AuthService {
                 if (usuarioRepository.existsByEmail(request.email())) {
                         throw new RuntimeException("El email ya está registrado");
                 }
-                if(!securityUtils.validarPassword(request.password())){
+                if (!securityUtils.validarPassword(request.password())) {
                         throw new RuntimeException("La contraseña no cumple con los requisitos");
                 }
 
@@ -49,11 +49,7 @@ public class AuthService {
 
                 // 6. Generar el Token JWT
                 // (Nota: Asegúrate de usar la versión de JwtService que acepta el ID)
-                String token = jwtService.generarToken(
-                                usuarioGuardado.getUsername(),
-                                usuarioGuardado.getRol(),
-                                usuarioGuardado.getEmail(),
-                                usuarioGuardado.getId());
+                String token = generarToken(usuarioGuardado);
 
                 // 7. Devolver respuesta
                 return AuthResponse.builder()
@@ -67,19 +63,14 @@ public class AuthService {
         public AuthResponse login(LoginRequest request) {
                 // 1. Buscar usuario por email
                 Usuario usuario = usuarioRepository.findByEmail(request.email())
-                        .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+                                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
-                if(!encoder.matches(request.password(), usuario.getPassword())){
+                if (!encoder.matches(request.password(), usuario.getPassword())) {
                         throw new RuntimeException("Contraseña incorrecta");
                 }
 
                 // 3. Generar Token
-                String token = jwtService.generarToken(
-                        usuario.getUsername(),
-                        usuario.getRol(),
-                        usuario.getEmail(),
-                        usuario.getId()
-                );
+                String token = generarToken(usuario);
 
                 return AuthResponse.builder().token(token).build();
         }
@@ -90,30 +81,35 @@ public class AuthService {
         public AuthResponse refreshToken(String authHeader) {
                 // 1. Limpiar el prefijo "Bearer "
                 if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-                throw new RuntimeException("Token inválido");
+                        throw new RuntimeException("Token inválido");
                 }
                 String oldToken = authHeader.substring(7);
 
                 // 2. Extraer el email del token antiguo
-                String email = jwtService.obtenerEmail(oldToken);
-                if (email == null) {
-                throw new RuntimeException("Error al procesar el token");
+                Long id = jwtService.obtenerId(oldToken);
+                if (id == null) {
+                        throw new RuntimeException("Error al procesar el token");
                 }
 
                 // 3. Buscar el usuario en la BD
-                Usuario usuario = usuarioRepository.findByEmail(email)
-                        .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+                Usuario usuario = usuarioRepository.findById(id)
+                                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
                 // 4. Generar un token nuevo
-                String newToken = jwtService.generarToken(
-                        usuario.getUsername(),
-                        usuario.getRol(),
-                        usuario.getEmail(),
-                        usuario.getId()
-                );
+                String newToken = generarToken(usuario);
 
                 return AuthResponse.builder()
-                        .token(newToken)
-                        .build();
+                                .token(newToken)
+                                .build();
+        }
+
+        private String generarToken(Usuario u) {
+                return jwtService.generarToken(
+                                u.getUsername(),
+                                u.getRol(),
+                                u.getEmail(),
+                                u.getId(),
+                                u.isEsEntrenador(),
+                                u.getEntrenador() != null ? u.getEntrenador().getId() : null);
         }
 }

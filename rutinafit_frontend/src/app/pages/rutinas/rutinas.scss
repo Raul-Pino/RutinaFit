@@ -1,0 +1,106 @@
+.search-bar {
+  @media (min-width: 768px) {
+    max-width: 380px;
+  }
+}
+
+@media (min-width: 768px) {
+  .btn-crear-rutina,
+  [data-bs-target="#modalNuevaRutina"].btn-verde {
+    width: auto !important;
+    white-space: nowrap;
+  }
+}
+
+.r-card {
+  border-radius: 12px;
+  overflow: hidden;
+  background-color: #141c1b;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.4) !important;
+  }
+
+  .card-img-btn {
+    display: block;
+    background: transparent;
+    cursor: pointer;
+    border-radius: 0;
+    overflow: hidden;
+
+    &:focus {
+      outline: none;
+      box-shadow: none;
+    }
+  }
+
+  .card-img-placeholder {
+    height: 240px;
+    background-color: #1a2420;
+    overflow: hidden;
+
+    .card-img-cover {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0.9;
+      transition: transform 0.3s ease, opacity 0.3s ease;
+    }
+  }
+
+  &:hover .card-img-cover {
+    transform: scale(1.05);
+    opacity: 1;
+  }
+
+  .boton {
+    background: transparent;
+    border: none;
+    color: #888;
+    transition: color 0.2s;
+    padding: 4px;
+    line-height: 1;
+
+    &.btn-borrar:hover {
+      color: #dc3545;
+    }
+
+    &.btn-editar:hover {
+      color: var(--verde-principal);
+    }
+  }
+}
+
+.r-card-nueva {
+  border: 2px dashed #2e4320 !important;
+  background-color: transparent !important;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-height: 310px;
+
+  &:hover {
+    border-color: var(--verde-principal) !important;
+    background-color: rgba(118, 255, 3, 0.04) !important;
+  }
+
+  .btn-plus-round {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background-color: #243824;
+    color: var(--verde-principal);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.6rem;
+    transition: all 0.2s ease;
+  }
+
+  &:hover .btn-plus-round {
+    background-color: var(--verde-principal);
+    color: #000;
+  }
+}

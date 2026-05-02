@@ -1,0 +1,98 @@
+<!-- Header con Título, Buscador y Botón -->
+<div class="alumnos-header">
+<h2 class="fw-bold mb-0 texto-verde">Buscar Persona</h2>
+
+<div class="header-controls">
+    <!-- Buscador -->
+    <div class="input-group search-bar w-100">
+    <span class="input-group-text grupo-icono border-end-0">
+        <i class="bi bi-search"></i>
+    </span>
+    <input
+        type="text"
+        class="form-control campo-formulario border-start-0 shadow-none text-white"
+        placeholder="Buscar Persona"
+        [(ngModel)]="busqueda"
+    >
+    </div>
+
+</div>
+</div>
+
+        @if (msgError()) {
+            <div class="alert alert-danger d-flex align-items-center gap-2 py-2 px-3 mb-3" role="alert"
+            style="background-color: rgba(220,53,69,0.15); border: 1px solid rgba(220,53,69,0.4); border-radius: 0.5rem; color: #f66;">
+            <i class="bi bi-exclamation-circle-fill"></i>
+            <span>{{ msgError() }}</span>
+            </div>
+        }
+
+        @if (msgExito()) {
+            <div class="alert alert-success d-flex align-items-center gap-2 py-2 px-3 mb-3" role="alert"
+            style="background-color: rgba(34,139,34,0.15); border: 1px solid rgba(34,139,34,0.4); border-radius: 0.5rem; color: #5af;">
+            <i class="bi bi-check-circle-fill"></i>
+            <span>{{ msgExito() }}</span>
+            </div>
+        }
+
+
+<!-- Tabla de Usuarios -->
+<div class="alumnos-tabla">
+    <table class="tabla-alumnos">
+        <thead>
+            <tr>
+                <th>Usuario</th>
+                <th class="text-end" >ACCIONES</th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (usuario of usuariosFiltrados(); track usuario.id) {
+                @if( !usuario.esAmigo || (usuario.esEntrenador && !entrenador) ) {
+                    <tr>
+                        <td>
+                            <div class="alumno-info">
+                                <img 
+                                [src]="usuario.fotoPerfil" 
+                                [alt]="usuario.username"
+                                class="avatar"
+                                >
+                                <div class="alumno-details">
+                                    <p class="nombre">{{ usuario.username }}</p>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="acciones">
+                                @if( usuario.esEntrenador && !entrenador ){
+                                    <button 
+                                        class="btn btn-outline-trainer btn-sm"
+                                        (click)="enviarSolicitudEntrenador(usuario.id)"
+                                        title="Enviar solicitud entrenador"
+                                        >
+                                        <i class="bi bi-person-badge-fill"></i>Enviar solicitud entrenador
+                                    </button>
+                                }
+                                @if( !usuario.esAmigo ){
+                                    <button 
+                                        class="btn btn-outline-success btn-sm"
+                                        (click)="enviarSolicitudAmistad(usuario.id)"
+                                        title="Enviar solicitud amistad"
+                                        >
+                                        <i class="bi bi-person-fill-add"></i>Enviar solicitud amistad
+                                    </button>
+                                }
+                            </div>
+                        </td>
+                    </tr>
+                }
+            }
+            @if (usuariosFiltrados().length === 0) {
+            <tr>
+                <td colspan="2" class="texto-vacio text-center">
+                    <i class="bi bi-search"></i> <p>No se encontraron resultados</p>
+                </td>
+            </tr>
+            }
+        </tbody>
+    </table>
+</div>

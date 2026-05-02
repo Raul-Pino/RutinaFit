@@ -1,0 +1,15 @@
+.main-content-bg {
+  background-color: var(--fondo-principal);
+}
+
+.auth-sidebar {
+  width: 250px;
+  flex-shrink: 0;
+  background-color: #060f06;
+  border-right: 1px solid var(--borde-oscuro);
+}
+
+.auth-sidebar-logo {
+  flex-shrink: 0;
+  border-bottom: 1px solid var(--borde-oscuro);
+}

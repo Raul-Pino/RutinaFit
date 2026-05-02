@@ -1,7 +1,10 @@
 package com.example.rutinafit.service;
 
+import com.example.rutinafit.dto.SolicitudResponse;
+import com.example.rutinafit.dto.UsuarioBuscarResponse;
 import com.example.rutinafit.dto.UsuarioResponse;
 import com.example.rutinafit.dto.UsuarioUpdateRequest;
+import com.example.rutinafit.model.Solicitud;
 import com.example.rutinafit.model.TipoSolicitud;
 import com.example.rutinafit.model.Usuario;
 import com.example.rutinafit.repository.SolicitudRepository;
@@ -12,8 +15,10 @@ import com.example.rutinafit.util.UsuarioMapper;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Map;
@@ -27,7 +32,7 @@ public class UsuarioService {
     private final UsuarioRepository usuarioRepository;
     private final SolicitudRepository solicitudRepository;
     private final PasswordEncoder encoder;
-
+    private final AmistadService amistadService;
 
     // LISTAR (Solo admins deberían poder hacer esto habitualmente)
     public List<UsuarioResponse> findAll() {
@@ -42,11 +47,18 @@ public class UsuarioService {
     }
 
     // Buscar por Nombre de usuario
-    public List<UsuarioResponse> buscarUsuarios(String nombre) {
-        return usuarioRepository.findByUsernameContainingIgnoreCase(nombre)
-                .stream()
-                .map(u -> usuarioMapper.pasarADTO(u))
+    public List<UsuarioBuscarResponse> buscarUsuarios(Long id) {
+        return usuarioRepository.findAll().stream()
+                .filter(u -> !u.getRol().equals("ADMIN") && !u.getId().equals(id)) // No mostrar a los admins ni a uno
+                                                                                   // mismo
+                .map(u -> usuarioMapper.pasarABuscarDTO(u, amistadService.sonAmigos(id, u.getId())))
                 .toList();
+    }
+
+    public UsuarioResponse buscarUsuarioPorId(Long id) {
+        Usuario u = usuarioRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        return usuarioMapper.pasarADTO(u);
     }
 
     // ELIMINAR (Admin elimina usuario o usuario se da de baja)
@@ -54,6 +66,31 @@ public class UsuarioService {
         if (!usuarioRepository.existsById(id)) {
             throw new RuntimeException("Usuario no encontrado");
         }
+        List<Usuario> alumnos = usuarioRepository.findByEntrenadorId(id);
+        for (Usuario alumno : alumnos) {
+            this.dejarEntrenador(alumno.getId(), id);
+        }
+
+        List<Usuario> entrenadores = usuarioRepository.findByEntrenadorId(id);
+        for (Usuario entrenador : entrenadores) {
+            this.dejarEntrenador(id, entrenador.getId());
+        }
+
+        List<UsuarioResponse> amigos = amistadService.listarMisAmigos(id);
+        for (UsuarioResponse amigo : amigos) {
+            amistadService.eliminarAmistad(amigo.id(), id);
+        }
+
+        List<Solicitud> solicitudes = solicitudRepository.findByRemitenteId(id);
+        for (Solicitud solicitud : solicitudes) {
+            solicitudRepository.delete(solicitud);
+        }
+
+        List<Solicitud> solicitudes2 = solicitudRepository.findByDestinatarioId(id);
+        for (Solicitud solicitud : solicitudes2) {
+            solicitudRepository.delete(solicitud);
+        }
+
         usuarioRepository.deleteById(id);
     }
 
@@ -61,6 +98,15 @@ public class UsuarioService {
     public UsuarioResponse update(Long userId, UsuarioUpdateRequest dto) {
         Usuario usuario = usuarioRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        if (usuario.isEsEntrenador() && !dto.esEntrenador()) {
+            // Si el usuario era entrenador y ahora no lo es, se eliminan las relaciones con
+            // sus alumnos
+            List<Usuario> alumnos = usuarioRepository.findByEntrenadorId(usuario.getId());
+            for (Usuario alumno : alumnos) {
+                this.dejarEntrenador(alumno.getId(), userId);
+            }
+        }
 
         usuario.setUsername(dto.username());
         usuario.setEmail(dto.email());
@@ -79,7 +125,8 @@ public class UsuarioService {
             throw new RuntimeException("Solo los entrenadores pueden consultar su lista de alumnos.");
         }
 
-        return usuarioRepository.findByEntrenadorId(entrenadorId).stream().map(u -> usuarioMapper.pasarADTO(u)).toList();
+        return usuarioRepository.findByEntrenadorId(entrenadorId).stream().map(u -> usuarioMapper.pasarADTO(u))
+                .toList();
     }
 
     // Dejar de ser Entrenador o dejar de ser Alumno de un entrenador
@@ -88,14 +135,17 @@ public class UsuarioService {
         Usuario alumno = usuarioRepository.findById(alumnoId)
                 .orElseThrow(() -> new RuntimeException("Alumno no encontrado"));
 
+        if (alumno == null)
+            return;
+
         Usuario entrenador = alumno.getEntrenador();
         if (entrenador == null) {
             throw new RuntimeException("Este usuario no tiene un entrenador asignado");
         }
 
-        // Si no es el alumno y ni el entrenador salta un error
-        if (alumno.getId() != solicitanteId && entrenador.getId() != solicitanteId) {
-            throw new RuntimeException("No tienes permiso para romper esta relación");
+        // Si no es el alumno ni el entrenador salta un error
+        if (!alumno.getId().equals(solicitanteId) && !entrenador.getId().equals(solicitanteId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No tienes permiso para romper esta relación");
         }
 
         solicitudRepository.borrarSolicitud(entrenador.getId(), alumno.getId(), TipoSolicitud.ENTRENAMIENTO);
@@ -104,22 +154,22 @@ public class UsuarioService {
         usuarioRepository.save(alumno);
     }
 
-    // Cambiar contraseña, se debe introducir la contraseña antigua y la nueva
+    // Cambiar contraseña, se debe introducir la contraseña actual y la nueva
     public void cambiarPassword(Long id, Map<String, String> datos) {
         Usuario usuario = usuarioRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
-        String antigua = datos.get("antigua");
-        String nueva = datos.get("nueva");
+        String actual = datos.get("passwordActual");
+        String nueva = datos.get("passwordNueva");
 
-        if(antigua.isBlank() || nueva.isBlank()){
+        if (actual.isBlank() || nueva.isBlank()) {
             throw new RuntimeException("Faltan datos obligatorios");
         }
 
-        if(!securityUtils.validarPassword(nueva)){
+        if (!securityUtils.validarPassword(nueva)) {
             throw new RuntimeException("La contraseña no cumple con los requisitos");
         }
 
-        if (!encoder.matches(antigua, usuario.getPassword())) {
+        if (!encoder.matches(actual, usuario.getPassword())) {
             throw new RuntimeException("La contraseña es incorrecta");
         }
 
@@ -128,22 +178,36 @@ public class UsuarioService {
     }
 
     // Recuperar contraseña, se debe introducir el email y la nueva contraseña
-    public void recuperarPassword(Map<String, String> datos){
+    public void recuperarPassword(Map<String, String> datos) {
         String email = datos.get("email");
         String password = datos.get("password");
+        String passwordConfirmacion = datos.get("passwordConfirmacion");
 
-        if(password.isBlank() || email.isBlank()){
+        if (password.isBlank() || email.isBlank() || passwordConfirmacion.isBlank()) {
             throw new RuntimeException("Faltan datos obligatorios");
         }
 
-        if(!securityUtils.validarPassword(password)){
+        if (!securityUtils.validarPassword(password)) {
             throw new RuntimeException("La contraseña no cumple con los requisitos");
+        }
+
+        if (!password.equals(passwordConfirmacion)) {
+            throw new RuntimeException("Las contraseñas no coinciden");
         }
 
         Usuario usuario = usuarioRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Usuario no econtrado"));
 
         usuario.setPassword(encoder.encode(password));
-        usuarioRepository.save(usuario);   
+        usuarioRepository.save(usuario);
+    }
+
+    public String getPropietario(Long alumnoId, Long usuarioId) {
+        Usuario usuario = usuarioRepository.findById(alumnoId)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        securityUtils.validarAcceso(usuario, usuarioId);
+
+        return usuario.getUsername();
     }
 }

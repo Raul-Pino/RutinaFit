@@ -1,0 +1,38 @@
+.navbar-auth {
+  background-color: var(--fondo-principal);
+  border-bottom: 1px solid var(--borde-oscuro);
+}
+
+.btn-profile {
+  background-color: var(--fondo-tarjeta);
+  border: 1px solid var(--borde-oscuro);
+  color: var(--texto-claro);
+  transition: all 0.2s;
+
+  &:hover {
+    border-color: var(--verde-principal);
+    background-color: #1f3520;
+  }
+
+  &.active {
+    background-color: rgba(116, 255, 3, 0.15);
+    color: var(--verde-principal);
+    font-weight: 700;
+    border-color: var(--verde-principal);
+  }
+}
+
+.btn-logout {
+  border-color: #dc3545;
+  color: #dc3545;
+  transition: all 0.2s;
+
+  &:hover {
+    background-color: #dc3545;
+    color: white;
+  }
+}
+
+.offcanvas {
+  background-color: #060f06 !important;
+}

@@ -1,0 +1,76 @@
+<div class="container d-flex justify-content-center align-items-center min-vh-100 py-5 page-auth-wrapper">
+  <div class="card tarjeta-oscura w-100 shadow-lg border-0 card-auth">
+    <div class="barra-superior-modal"></div>
+    <div class="card-body p-4 p-md-5">
+      <!-- Logo -->
+      <div class="d-flex align-items-center mb-3 justify-content-between">
+      <button class="btn btn-verde" (click)="volver()">
+        <i class="bi bi-arrow-left"></i> Inicio
+      </button>
+      <div class="align-items-center gap-2 d-flex">
+        <img src="Logo.png" alt="Logo" height="32">
+        <span class="fw-bold text-white fs-5">Rutina<span class="texto-verde">Fit</span></span>
+      </div>
+      </div>
+      <h4 class="fw-bold text-white mb-1" id="tituloModalRegistro">Crear Cuenta</h4>
+      <p class="texto-verde mb-4 small">Únete a nuestra comunidad Fitness</p>
+
+      <!-- Alerta de error de registro -->
+      @if (errorRegistro()) {
+        <div class="alert alert-danger d-flex align-items-center gap-2 py-2 px-3 mb-3 alerta-error" role="alert">
+          <i class="bi bi-exclamation-circle-fill"></i>
+          <span>{{ errorRegistro() }}</span>
+        </div>
+      }
+
+      <!-- Nombre de usuario -->
+      <div class="mb-3">
+        <label class="form-label text-white">Nombre de usuario</label>
+        <div class="input-group">
+          <span class="input-group-text grupo-icono"><i class="bi bi-person"></i></span>
+          <input type="text" class="form-control campo-formulario" placeholder="Nombre de usuario"
+            [(ngModel)]="registroNombre" (keydown.enter)="registrarse()">
+        </div>
+      </div>
+
+      <!-- Email -->
+      <div class="mb-3">
+        <label class="form-label text-white">Email</label>
+        <div class="input-group">
+          <span class="input-group-text grupo-icono"><i class="bi bi-envelope"></i></span>
+          <input type="email" class="form-control campo-formulario" placeholder="nombre@ejemplo.com"
+            [(ngModel)]="registroEmail" (keydown.enter)="registrarse()">
+        </div>
+      </div>
+
+      <!-- Contraseñas -->
+      <div class="row g-2 mb-3">
+        <div class="col-12 col-sm-6">
+          <label class="form-label text-white small">Contraseña</label>
+          <div class="input-group">
+            <input [type]="mostrarPassRegistro ? 'text' : 'password'" class="form-control campo-formulario"
+              placeholder="Contraseña" [(ngModel)]="registroContrasena" (keydown.enter)="registrarse()">
+            <button class="btn boton-toggle-ojo" type="button" (click)="mostrarPassRegistro = !mostrarPassRegistro">
+              <i class="bi" [ngClass]="mostrarPassRegistro ? 'bi-eye-slash' : 'bi-eye'"></i>
+            </button>
+          </div>
+        </div>
+        <div class="col-12 col-sm-6">
+          <label class="form-label text-white small">Repite la Contraseña</label>
+          <input type="password" class="form-control campo-formulario" placeholder="Contraseña"
+            [(ngModel)]="registroContrasenaRepetida" (keydown.enter)="registrarse()">
+        </div>
+      </div>
+
+      <!-- Botón crear cuenta -->
+      <button class="btn btn-verde w-100 py-2 fw-bold mt-2" (click)="registrarse()">
+        Crear Cuenta &nbsp;<i class="bi bi-arrow-right"></i>
+      </button>
+
+      <p class="text-center mt-3 mb-0 modal-pie text-white">
+        ¿Ya tienes una cuenta?&nbsp;
+        <a class="enlace-verde" routerLink="/login">Iniciar Sesión</a>
+      </p>
+    </div>
+  </div>
+</div>

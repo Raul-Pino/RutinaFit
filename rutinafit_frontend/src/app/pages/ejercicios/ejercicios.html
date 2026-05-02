@@ -1,0 +1,181 @@
+<!-- Cabecera -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div class="d-flex align-items-center">
+            <button class="btn btn-verde me-3" (click)="volver()">
+            <i class="bi bi-arrow-left"></i> Volver
+            </button>
+
+            @if ( alumnoId ) {
+                <h2 class="d-inline-block m-0 texto-verde fw-bold">Ejercicios de la Sesión de {{ alumnoUsername }}</h2>
+            } @else {
+                <h2 class="d-inline-block m-0 texto-verde fw-bold">Ejercicios de la Sesión</h2>
+            }
+            
+        </div>
+        <button class="btn btn-verde" data-bs-toggle="modal" data-bs-target="#modalNuevoEjercicio" (click)="abrirModalCrear()">
+            <i class="bi bi-plus-lg"></i> Añadir Serie
+        </button>
+    </div>
+
+<!-- Buscador -->
+<div class="mb-4">
+    <input
+        type="text"
+        class="form-control campo-formulario w-100"
+        placeholder="Buscar serie por nombre de ejercicio..."
+        [ngModel]="busqueda()"
+        (ngModelChange)="busqueda.set($event)"
+    />
+</div>
+
+    <!-- Lista de Ejercicios -->
+    <div class="row g-4">
+        @for (ejercicio of ejerciciosFiltrados(); track ejercicio.id) {
+            <div class="col-12 col-md-6 col-lg-4">
+            <div class="card tarjeta-oscura h-100">
+                <div class="card-body d-flex flex-column">
+                <h5 class="card-title fw-bold texto-verde">
+                    {{ ejercicio.nombreEjercicio || 'Ejercicio Desconocido' }}
+                </h5>
+                <div class="card-text flex-grow-1 text-light mt-2">
+                    <div class="d-flex justify-content-between mb-1">
+                    <span class="opacity-75">
+                        {{ getParam1(ejercicio.codigoTipo ?? 0) }}
+                    </span>
+                    <span class="fw-bold">{{ ejercicio.param1 }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                    <span class="opacity-75">
+                        {{ getParam2(ejercicio.codigoTipo ?? 0) }}
+                    </span>
+                    <span class="fw-bold">{{ ejercicio.param2 }}</span>
+                    </div>
+                    <p class="mt-3">{{ ejercicio.descripcion || 'Descripción no disponible'}}</p>
+                </div>
+
+                <div class="d-flex gap-2 mt-3">
+                    <button
+                    class="btn btn-contorno-verde w-100"
+                    data-bs-toggle="modal"
+                    data-bs-target="#modalNuevoEjercicio"
+                    (click)="abrirModalEditar(ejercicio)"
+                    >
+                    <i class="bi bi-pencil"></i> Editar
+                    </button>
+                    <button
+                    class="btn btn-outline-danger w-100"
+                    (click)="eliminarEjercicio(ejercicio.id)"
+                    >
+                    <i class="bi bi-trash"></i> Eliminar
+                    </button>
+                </div>
+                </div>
+            </div>
+            </div>
+        } @empty {
+            <div class="col-12 text-center py-5 text-secondary">
+            <i class="bi bi-clipboard-x display-1 mb-3"></i>
+            <h4>No hay series registradas</h4>
+            <p>Añade tu primer ejercicio para empezar a entrenar.</p>
+            </div>
+        }
+
+        <!-- Nueva Serie (Tarjeta) -->
+        <div class="col-12 col-md-6 col-lg-4 d-flex">
+            <div
+            class="card r-card-nueva w-100 d-flex flex-column align-items-center justify-content-center"
+            data-bs-toggle="modal"
+            data-bs-target="#modalNuevoEjercicio"
+            (click)="abrirModalCrear()"
+            >
+            <div class="btn-plus-round">
+                <i class="bi bi-plus"></i>
+            </div>
+            <span class="fw-bold text-white fs-5 mt-3">Nueva Serie</span>
+            </div>
+        </div>
+    </div>
+
+<!-- ==================== MODAL: AÑADIR EJERCICIO ==================== -->
+<div
+class="modal fade"
+id="modalNuevoEjercicio"
+tabindex="-1"
+aria-labelledby="modalNuevoEjercicioLabel"
+aria-hidden="true"
+>
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="barra-superior-modal"></div>
+            <div class="modal-header border-0">
+            <h5 class="modal-title fw-bold text-white d-flex align-items-center gap-2">
+                <i class="bi bi-plus-circle texto-verde"></i> 
+                {{ ejercicioEditandoId ? 'Editar Serie' : 'Añadir Serie' }}</h5>
+            <button
+                type="button"
+                class="btn-close btn-close-white"
+                (click)="cerrarModal()"
+                aria-label="Close"
+            ></button>
+            </div>
+            <form #formEjercicio="ngForm" (ngSubmit)="guardarEjercicio(formEjercicio)">
+            <div class="modal-body border-0">
+                <!-- Selección de Ejercicio -->
+                <div class="mb-4">
+                <label class="form-label text-light fw-bold">Seleccionar Ejercicio</label>
+                <select
+                    class="form-select campo-formulario"
+                    name="ejercicioInfoId"
+                    [(ngModel)]="nuevoEjercicio.ejercicioInfoId"
+                    (ngModelChange)="ejercicioInfoSeleccionadoId.set($event)"
+                    required
+                >
+                    <option [ngValue]="null" disabled selected>Elige un ejercicio...</option>
+                    @for (info of catalogoEjercicios(); track info.id) {
+                    <option [value]="info.id">{{ info.nombre }}</option>
+                    }
+                </select>
+                </div>
+
+                <!-- solo se muestra si hay un ejercicio seleccionado -->
+                @if (ejercicioSeleccionado()) {
+                <div class="row g-3">
+                    <div class="col-6">
+                    <label class="form-label text-light fw-bold">{{ getParam1(ejercicioSeleccionado()?.codigo ?? 0) }}</label>
+                    <input
+                        type="number"
+                        class="form-control campo-formulario"
+                        name="param1"
+                        [(ngModel)]="nuevoEjercicio.param1"
+                        min="0"
+                        step="0.5"
+                        required
+                    />
+                    </div>
+                    <div class="col-6">
+                    <label class="form-label text-light fw-bold">{{ getParam2(ejercicioSeleccionado()?.codigo ?? 0) }}</label>
+                    <input
+                        type="number"
+                        class="form-control campo-formulario"
+                        name="param2"
+                        [(ngModel)]="nuevoEjercicio.param2"
+                        min="0"
+                        step="0.5"
+                        required
+                    />
+                    </div>
+                </div>
+                }
+            </div>
+                <div class="modal-footer border-0 pt-0 d-flex gap-2 justify-content-between flex-nowrap">
+                    <button type="button" class="btn w-50 py-2 btn btn-danger" (click)="cerrarModal()">
+                    Cancelar
+                    </button>
+                    <button type="submit" class="btn btn-verde w-50 py-2" [disabled]="formEjercicio.invalid">
+                    {{ ejercicioEditandoId ? 'Guardar Cambios' : 'Guardar Serie' }}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

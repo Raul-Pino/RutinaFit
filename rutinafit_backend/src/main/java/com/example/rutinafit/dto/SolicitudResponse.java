@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 
 public record SolicitudResponse(
     Long id,
-    String remitenteNombre,
+    UsuarioResponse remitente,
     String tipo,
     LocalDateTime fecha
 ){}

@@ -15,15 +15,17 @@ public class JwtService {
     private static final String SECRET_STRING = "secreto_super_seguro_que_tiene_que_ser_largo_123456";
     private final Key secretKey = Keys.hmacShaKeyFor(SECRET_STRING.getBytes());
 
-    public String generarToken(String username, String rol, String email, Long id) {
+    public String generarToken(String username, String rol, String email, Long id, boolean esEntrenador, Long entrenadorId) {
         long ahora = System.currentTimeMillis();
-        long expiracion = 1000 * 60 * 60; // 1 hora
-
+        long expiracion = 1000  * 60 * 60 * 24; // 24 horas
+        
         return Jwts.builder()
             .setSubject(username)
             .claim("rol", rol)
             .claim("email", email)
             .claim("id", id)
+            .claim("esEntrenador", esEntrenador)
+            .claim("entrenador", entrenadorId != null ? entrenadorId : false)
             .setIssuedAt(new Date(ahora))
             .setExpiration(new Date(ahora + expiracion))
             .signWith(secretKey)

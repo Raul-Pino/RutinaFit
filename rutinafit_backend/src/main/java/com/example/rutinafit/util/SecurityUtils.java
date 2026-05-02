@@ -3,9 +3,12 @@ package com.example.rutinafit.util;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.example.rutinafit.model.Usuario;
+import com.example.rutinafit.repository.UsuarioRepository;
 import com.example.rutinafit.service.JwtService;
 
 import lombok.RequiredArgsConstructor;
@@ -16,16 +19,26 @@ import lombok.RequiredArgsConstructor;
 public class SecurityUtils {
 
     private final JwtService jwtService;
+    private final UsuarioRepository usuarioRepository;
 
     /**
      * Valida si existe el token o si es válido el token
      */
 
     public Long getUsuarioId(String authHeader) {
+        // Comprobar que es un Token válido
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            throw new RuntimeException("Token JWT no encontrado o formato inválido");
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Token JWT no encontrado o formato inválido");
         }
+        
         String token = authHeader.substring(7);
+        
+        // 3. Validar que no está caducado
+        if (jwtService.validarYObtenerUsuario(token) == null || 
+            usuarioRepository.findById(jwtService.obtenerId(token)).isEmpty()){
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "El token es inválido o ha expirado");
+        }
+
         return jwtService.obtenerId(token);
     }
 
@@ -40,7 +53,7 @@ public class SecurityUtils {
         boolean esEntrenador = propietario.getEntrenador() != null && propietario.getEntrenador().getId() == solicitanteId;
 
         if (!esProietario && !esEntrenador) {
-            throw new RuntimeException("Acceso denegado: No eres el propietario ni el entrenador asignado");
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No tienes permiso para ver esta rutina");
         }
     }
 

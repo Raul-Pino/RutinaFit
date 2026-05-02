@@ -1,0 +1,76 @@
+<!-- Header con Título, Buscador -->
+<div class="alumnos-header">
+<h2 class="fw-bold mb-0 texto-verde">Gestión de Alumnos</h2>
+
+<div class="header-controls">
+    <!-- Buscador -->
+    <div class="input-group search-bar w-100">
+    <span class="input-group-text grupo-icono border-end-0">
+        <i class="bi bi-search"></i>
+    </span>
+    <input
+        type="text"
+        class="form-control campo-formulario border-start-0 shadow-none text-white"
+        placeholder="Buscar alumno"
+        [(ngModel)]="busqueda"
+    >
+    </div>
+
+</div>
+</div>
+
+<!-- Tabla de Alumnos -->
+<div class="alumnos-tabla">
+    <table class="tabla-alumnos">
+        <thead>
+            <tr>
+                <th>ALUMNO</th>
+                <th class="text-end" >ACCIONES</th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (alumno of alumnosFiltrados(); track alumno.id) {
+            <tr>
+                <td>
+                    <div class="alumno-info">
+                        <img 
+                        [src]="alumno.fotoPerfil" 
+                        [alt]="alumno.username"
+                        class="avatar"
+                        >
+                        <div class="alumno-details">
+                            <p class="nombre">{{ alumno.username }}</p>
+                            <p class="email">{{ alumno.email }}</p>
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    <div class="acciones">
+                        <button 
+                            class="btn btn-outline-success btn-sm"
+                            (click)="verRutinas(alumno.id)"
+                            title="Ver rutinas"
+                            >
+                            <i class="bi bi-eye-fill"></i> Ver Rutinas
+                        </button>
+                        <button 
+                            class="btn btn-outline-danger btn-sm"
+                            (click)="eliminarAlumno(alumno.id)"
+                            title="Eliminar alumno"
+                            >
+                            <i class="bi bi-trash-fill"></i>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+            }
+            @if (alumnosFiltrados().length === 0) {
+            <tr>
+                <td colspan="2" class="texto-vacio text-center">
+                    <i class="bi bi-search"></i> <p>No se encontraron alumnos</p>
+                </td>
+            </tr>
+            }
+        </tbody>
+    </table>
+</div>

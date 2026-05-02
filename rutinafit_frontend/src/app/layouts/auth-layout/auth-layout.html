@@ -1,0 +1,33 @@
+<div class="d-flex vw-100 vh-100 overflow-hidden">
+
+  <!-- ===== Barra lateral ===== -->
+  <aside class="auth-sidebar d-none d-md-flex flex-column h-100">
+    <div class="auth-sidebar-logo px-4 py-4 d-flex align-items-center gap-2">
+      <img src="Logo.png" alt="RutinaFit Logo" height="32">
+      <span class="fs-5 fw-bold text-white">Rutina<span class="texto-verde">Fit</span></span>
+    </div>
+    <app-sidebar class="flex-grow-1"></app-sidebar>
+  </aside>
+
+  <div class="flex-grow-1 d-flex flex-column h-100 overflow-hidden main-content-bg">
+
+    <app-navbar-auth></app-navbar-auth>
+
+    <div class="flex-grow-1 overflow-auto d-flex flex-column">
+
+      <main class="flex-grow-1 p-5">
+          <div class="container-fluid p-2">
+            <router-outlet></router-outlet>
+          </div>
+      </main>
+
+      <footer class="py-3 px-4 text-center footer-auth">
+        <p class="mb-0 small texto-secundario">
+          © 2026 RutinaFit System Management. All rights reserved.
+        </p>
+      </footer>
+
+    </div>
+  </div>
+
+</div>

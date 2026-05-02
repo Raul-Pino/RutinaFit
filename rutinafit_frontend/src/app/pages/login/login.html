@@ -1,0 +1,54 @@
+<div class="container d-flex justify-content-center align-items-center min-vh-100 py-5 page-auth-wrapper">
+  <div class="card tarjeta-oscura w-100 shadow-lg border-0 card-auth">
+    <div class="barra-superior-modal"></div>
+    <div class="card-body p-4 p-md-5">
+      <button class="btn btn-verde mb-3" (click)="volver()">
+        <i class="bi bi-arrow-left"></i> Inicio
+      </button>
+      <h4 class="fw-bold text-white text-center mb-4" id="tituloModalLogin">Iniciar Sesión</h4>
+
+      <!-- Alerta de error de login -->
+      @if (errorLogin()) {
+        <div class="alert alert-danger d-flex align-items-center gap-2 py-2 px-3 mb-3 alerta-error" role="alert">
+          <i class="bi bi-exclamation-circle-fill"></i>
+          <span>{{ errorLogin() }}</span>
+        </div>
+      }
+
+      <!-- Email -->
+      <div class="mb-3">
+        <label class="form-label text-white">Email</label>
+        <div class="input-group">
+          <span class="input-group-text grupo-icono">
+            <i class="bi bi-envelope"></i>
+          </span>
+          <input type="email" class="form-control campo-formulario" placeholder="nombre@ejemplo.com"
+            [(ngModel)]="loginEmail" (keydown.enter)="iniciarSesion()">
+        </div>
+      </div>
+
+      <!-- Contraseña -->
+      <div class="mb-3">
+        <div class="d-flex justify-content-between align-items-center mb-1">
+          <label class="form-label text-white mb-0">Contraseña</label>
+          <a class="enlace-verde small" routerLink="/recuperar-password">¿Olvidaste la Contraseña?</a>
+        </div>
+        <div class="input-group">
+          <span class="input-group-text grupo-icono">
+            <i class="bi bi-key"></i>
+          </span>
+          <input type="password" class="form-control campo-formulario"
+            placeholder="********" [(ngModel)]="loginContrasena" (keydown.enter)="iniciarSesion()">
+        </div>
+      </div>
+
+      <!-- Botón de acceso -->
+      <button class="btn btn-verde w-100 py-2 fw-bold mt-2" (click)="iniciarSesion()">Iniciar sesión</button>
+
+      <p class="text-center mt-3 mb-0 modal-pie text-white">
+        ¿No tienes una cuenta?&nbsp;
+        <a class="enlace-verde" routerLink="/registro">Registrarse</a>
+      </p>&nbsp;
+    </div>
+  </div>
+</div>
