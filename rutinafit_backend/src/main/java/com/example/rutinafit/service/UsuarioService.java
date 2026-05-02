@@ -1,6 +1,5 @@
 package com.example.rutinafit.service;
 
-import com.example.rutinafit.dto.SolicitudResponse;
 import com.example.rutinafit.dto.UsuarioBuscarResponse;
 import com.example.rutinafit.dto.UsuarioResponse;
 import com.example.rutinafit.dto.UsuarioUpdateRequest;
