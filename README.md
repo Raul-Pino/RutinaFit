@@ -5,7 +5,7 @@ Esta aplicación web es una plataforma integral diseñada para la gestión y el 
 ## Tecnologías
 
 - **Frontend**: Angular + Nginx
-- **Backend**: Spring Boot (Java 21)
+- **Backend**: Spring Boot (Java 25)
 - **Base de datos**: PostgreSQL 16
 - **Infraestructura**: Docker + Docker Compose
 
@@ -13,14 +13,14 @@ Esta aplicación web es una plataforma integral diseñada para la gestión y el 
 
 ## Requisitos previos
 
-- [Docker](https://docs.docker.com/get-docker/) instalado
-- [Docker Compose](https://docs.docker.com/compose/) (incluido en Docker Desktop)
+- [Docker](https://docs.docker.com/get-docker/)
+- [Docker Compose](https://docs.docker.com/compose/)
 - Git
 
 ## Para comprobar si están instalados
 
-- [Docker] docker --version
-- [Docker Compose] docker compose version
+- [Docker](https://docs.docker.com/get-docker/): docker --version
+- [Docker Compose](https://docs.docker.com/compose/): docker compose version
 
 ---
 
@@ -29,8 +29,8 @@ Esta aplicación web es una plataforma integral diseñada para la gestión y el 
 ### 1. Clona el repositorio
 
 ```bash
-git clone https://github.com/tuusuario/turepositorio.git
-cd NombreProyecto
+git clone https://github.com/Raul-Pino/RutinaFit.git
+cd RutinaFit
 ```
 
 ### 2. Crea el archivo de variables de entorno
