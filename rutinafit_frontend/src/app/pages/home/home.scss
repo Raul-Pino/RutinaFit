@@ -1,3 +1,7 @@
+section{
+  background-color: var(--fondo-principal);
+}
+
 // ==============================
 // NAVBAR
 // ==============================
@@ -35,10 +39,6 @@
 // ==============================
 // SECCIÓN CARACTERÍSTICAS
 // ==============================
-.seccion-caracteristicas {
-  background-color: var(--fondo-principal);
-}
-
 .caracteristica-descripcion {
   color: var(--texto-suave);
   font-size: 0.9rem;
@@ -47,10 +47,6 @@
 // ==============================
 // SECCIÓN CÓMO FUNCIONA
 // ==============================
-.como-funciona-section {
-  background-color: #0b1a0b;
-}
-
 .paso-descripcion {
   color: var(--texto-suave);
   font-size: 0.9rem;
@@ -71,12 +67,16 @@
 }
 
 // ==============================
-// SECCIÓN CTA FINAL
+// SECCIÓN TESTIMONIOS
 // ==============================
-.cta-section {
-  background-color: var(--fondo-principal);
+.testimonio{
+  color: var(--texto-suave);
+  font-size: 1rem;
 }
 
+// ==============================
+// SECCIÓN CTA FINAL
+// ==============================
 .cta-bloque {
   background-color: var(--verde-principal);
   border-radius: 1rem;
