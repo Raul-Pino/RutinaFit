@@ -33,6 +33,6 @@ public class EjercicioInfo {
     @Column(length = 100)
     private String descripcion;
 
-    @Column(nullable = true, name = "enlace_explicacion", length = 255)
-    private String enlaceExplicacion;
+    @Column(name = "enlace_explicacion", length = 255)
+    private String enlaceExplicacion = null;
 }

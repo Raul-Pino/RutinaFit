@@ -1,5 +1,6 @@
 package com.example.rutinafit.model;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import org.hibernate.validator.constraints.Length;
 
@@ -58,6 +59,12 @@ public class Usuario {
     @Column(nullable = false)
     private boolean esEntrenador = false;
 
+    @Column(unique = true)
+    private String token = null;
+
+    @Column(name = "token_expiracion")
+    private LocalDateTime tokenExpiracion = null;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "nivel_suscripcion")
     private NivelSuscripcion nivelSuscripcion = NivelSuscripcion.GRATIS;
@@ -65,7 +72,7 @@ public class Usuario {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "entrenador_id")
     @JsonBackReference(value = "usuario-entrenador")
-    @ToString.Exclude 
+    @ToString.Exclude
     private Usuario entrenador;
 
     @OneToMany(mappedBy = "entrenador")
@@ -77,5 +84,16 @@ public class Usuario {
     @JsonManagedReference(value = "usuario-rutina")
     @ToString.Exclude
     private List<Rutina> rutinas;
-}
 
+    public boolean isTokenValido() {
+        if (token == null || tokenExpiracion == null) {
+            return false;
+        }
+        return LocalDateTime.now().isBefore(tokenExpiracion);
+    }
+
+    public void limpiarToken() {
+        this.token = null;
+        this.tokenExpiracion = null;
+    }
+}

@@ -30,6 +30,13 @@
 		<java.version>25</java.version>
 	</properties>
 	<dependencies>
+		<!-- Dependencia de correo -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-mail</artifactId>
+		</dependency>
+
+
 		<!-- Pruebas unitarias -->
 		<dependency>
             <groupId>org.springframework.boot</groupId>

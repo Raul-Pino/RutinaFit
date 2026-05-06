@@ -85,7 +85,8 @@ public class UsuarioController {
      * Buscar un usuario con un ID específica
      */
     @GetMapping("/buscar/{id}")
-    public ResponseEntity<UsuarioResponse> buscarPorId(@PathVariable Long id, @RequestHeader("Authorization") String authHeader) {
+    public ResponseEntity<UsuarioResponse> buscarPorId(@PathVariable Long id,
+            @RequestHeader("Authorization") String authHeader) {
         Long myId = securityUtils.getUsuarioId(authHeader);
         return ResponseEntity.ok(usuarioService.buscarUsuarioPorId(id));
     }
@@ -131,6 +132,30 @@ public class UsuarioController {
             @RequestBody Map<String, String> datos) {
         usuarioService.recuperarPassword(datos);
         return ResponseEntity.ok(Map.of("message", "Se ha restablecido la contraseña"));
+    }
+
+    /**
+     * Genera un Token para recuperar la contraseña
+     */
+    @PostMapping("/generar-token")
+    public ResponseEntity<?> generarToken(
+            @RequestBody Map<String, String> body) {
+        String email = body.get("email").trim();
+        usuarioService.generarToken(email);
+        return ResponseEntity.ok(Map.of("message", "Se ha enviado un enlace para cambiar la contraseña"));
+    }
+
+    /**
+     * Comprueba que el Token existe
+     */
+    @GetMapping("/verificar-token/{token}")
+    public ResponseEntity<?> verificarToken(
+            @PathVariable String token) {
+        if (usuarioService.verificarToken(token)) {
+            return ResponseEntity.ok(Map.of("message", "Token válido"));
+        }
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body("Token inválido");
     }
 
     // ===============
