@@ -19,6 +19,7 @@ export const routes: Routes = [
   { path: 'login', component: Login },
   { path: 'registro', component: Registro },
   { path: 'recuperar-password', component: RecuperarPassword },
+  { path: 'recuperar-password/:token', component: RecuperarPassword },
   {
     path: '', 
     component: AuthLayoutComponent,

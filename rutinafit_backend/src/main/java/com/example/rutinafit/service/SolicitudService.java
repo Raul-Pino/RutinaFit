@@ -129,7 +129,7 @@ public class SolicitudService {
      * Cron: "segundo minuto hora día mes día-semana"
      * "0 0 3 * * *" = Todos los días a las 03:00:00 AM
      */
-    // Para pruebas cada 5 minútos: @Scheduled(fixedRate = 300000)
+    // Para pruebas cada 5 minutos: @Scheduled(fixedRate = 300000)
     // @Scheduled(cron = "0 0 3 * * *")
     // public void limpiarSolicitudesCaducadas() {
     //     LocalDateTime limite = LocalDateTime.now().minusDays(30);

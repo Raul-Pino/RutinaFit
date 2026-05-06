@@ -30,6 +30,8 @@ CREATE TABLE usuarios (
     password VARCHAR(255) NOT NULL,
     rol VARCHAR(255) NOT NULL,
     es_entrenador BOOLEAN DEFAULT FALSE,
+    token VARCHAR(255) DEFAULT NULL UNIQUE,
+    token_expiracion TIMESTAMP DEFAULT NULL,
     nivel_suscripcion VARCHAR(20) DEFAULT 'GRATIS', 
     entrenador_id BIGINT,
     CONSTRAINT fk_usuario_entrenador FOREIGN KEY (entrenador_id) REFERENCES usuarios(usuario_id)
@@ -105,8 +107,8 @@ INSERT INTO usuarios (username, email, password, rol, es_entrenador, nivel_suscr
 ('usuario', 'usuario@correo.com', '$2a$10$dmkVr.E0jsbk5.rq0IxZAe/QdQPsTDXoy3DRo1StFdPB676e4Ve4S', 'USER', 'FALSE','GRATIS', 2),
 ('prueba1', 'usuario1@correo.com', '$2a$10$dmkVr.E0jsbk5.rq0IxZAe/QdQPsTDXoy3DRo1StFdPB676e4Ve4S', 'USER', 'FALSE','GRATIS', 2),
 ('prueba2', 'usuario2@correo.com', '$2a$10$dmkVr.E0jsbk5.rq0IxZAe/QdQPsTDXoy3DRo1StFdPB676e4Ve4S', 'USER', 'FALSE','GRATIS', NULL),
-('prueba3', 'usuario3@correo.com', '$2a$10$dmkVr.E0jsbk5.rq0IxZAe/QdQPsTDXoy3DRo1StFdPB676e4Ve4S', 'USER', 'FALSE','GRATIS', NULL);
-
+('prueba3', 'usuario3@correo.com', '$2a$10$dmkVr.E0jsbk5.rq0IxZAe/QdQPsTDXoy3DRo1StFdPB676e4Ve4S', 'USER', 'FALSE','GRATIS', NULL),
+('usuarioPrueba', 'gexogi6301@inraud.com', '$2a$10$dmkVr.E0jsbk5.rq0IxZAe/QdQPsTDXoy3DRo1StFdPB676e4Ve4S', 'USER', 'FALSE','GRATIS', NULL);
 
 INSERT INTO solicitudes (remitente_id, destinatario_id, tipo, estado) VALUES (3, 2, 'ENTRENAMIENTO', 'ACEPTADA');
 INSERT INTO solicitudes (remitente_id, destinatario_id, tipo, estado) VALUES (4, 2, 'ENTRENAMIENTO', 'ACEPTADA');

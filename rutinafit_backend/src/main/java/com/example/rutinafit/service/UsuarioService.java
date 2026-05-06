@@ -19,8 +19,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -32,6 +34,7 @@ public class UsuarioService {
     private final SolicitudRepository solicitudRepository;
     private final PasswordEncoder encoder;
     private final AmistadService amistadService;
+    private final EmailService emailService;
 
     // LISTAR (Solo admins deberían poder hacer esto habitualmente)
     public List<UsuarioResponse> findAll() {
@@ -176,13 +179,13 @@ public class UsuarioService {
         usuarioRepository.save(usuario);
     }
 
-    // Recuperar contraseña, se debe introducir el email y la nueva contraseña
+    @Transactional
     public void recuperarPassword(Map<String, String> datos) {
-        String email = datos.get("email");
+        String token = datos.get("token");
         String password = datos.get("password");
         String passwordConfirmacion = datos.get("passwordConfirmacion");
 
-        if (password.isBlank() || email.isBlank() || passwordConfirmacion.isBlank()) {
+        if (password.isBlank() || token.isBlank() || passwordConfirmacion.isBlank()) {
             throw new RuntimeException("Faltan datos obligatorios");
         }
 
@@ -194,11 +197,38 @@ public class UsuarioService {
             throw new RuntimeException("Las contraseñas no coinciden");
         }
 
+        Usuario usuario = usuarioRepository.findByToken(token)
+                .orElseThrow(() -> new RuntimeException("Token no econtrado"));
+
+        if (!usuario.isTokenValido()) {
+            throw new RuntimeException("El token es invalido o ha expirado");
+        }
+
+        usuario.setPassword(encoder.encode(password));
+        usuario.limpiarToken();
+        usuarioRepository.save(usuario);
+    }
+
+    public void generarToken(String email) {
         Usuario usuario = usuarioRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Usuario no econtrado"));
 
-        usuario.setPassword(encoder.encode(password));
+        if (usuario.isTokenValido()) {
+            throw new RuntimeException("Ya existe un token activo. Por favor, espera 30 minutos.");
+        }
+
+        String token = UUID.randomUUID().toString();
+        usuario.setToken(token);
+        usuario.setTokenExpiracion(LocalDateTime.now().plusMinutes(30));
         usuarioRepository.save(usuario);
+
+        emailService.enviarRecuperarPassword(email, token);
+    }
+
+    public boolean verificarToken(String token) {
+        Usuario usuario = usuarioRepository.findByToken(token)
+                .orElseThrow(() -> new RuntimeException("Token no encontrado"));
+        return usuario.isTokenValido();
     }
 
     public String getPropietario(Long alumnoId, Long usuarioId) {
