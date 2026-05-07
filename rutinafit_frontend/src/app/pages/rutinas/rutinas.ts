@@ -1,4 +1,4 @@
-import { Component, computed, signal, inject, OnInit } from '@angular/core';
+import { Component, computed, signal, inject, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { FormsModule, NgForm } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
@@ -10,7 +10,7 @@ interface Rutina {
   id: number;
   nombre: string;
   descripcion: string;
-  imagen: string;
+  fotoRutina: string;
 }
 
 @Component({
@@ -25,6 +25,8 @@ export class Rutinas implements OnInit {
   private router = inject(Router);
   private authService = inject(AuthService);
 
+  @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
+
   rutinas = signal<Rutina[]>([]);
   busqueda = signal('');
   errorMensaje = signal('');
@@ -37,6 +39,7 @@ export class Rutinas implements OnInit {
   rutinaEditandoId: number | null = null;
   nuevaRutinaNombre = '';
   nuevaRutinaDescripcion = '';
+  nuevaFotoRutina: File | null = null;
 
   // Filtro de rutinas
   rutinasFiltradas = computed(() => {
@@ -98,18 +101,24 @@ export class Rutinas implements OnInit {
     this.rutinaEditandoId = null;
     this.nuevaRutinaNombre = '';
     this.nuevaRutinaDescripcion = '';
+    this.nuevaFotoRutina = null;
+    this.limpiarInputArchivo();
+    this.errorMensaje.set('');
   }
 
   abrirModalEditar(rutina: Rutina): void {
     this.rutinaEditandoId = rutina.id;
     this.nuevaRutinaNombre = rutina.nombre;
     this.nuevaRutinaDescripcion = rutina.descripcion;
+    this.nuevaFotoRutina = null;
+    this.limpiarInputArchivo();
+    this.errorMensaje.set('');
   }
 
   guardarRutina(form: NgForm): void {
     if (form.invalid) return;
 
-    const body = {
+    const dto = {
       nombre: this.nuevaRutinaNombre,
       descripcion: this.nuevaRutinaDescripcion
     };
@@ -121,14 +130,23 @@ export class Rutinas implements OnInit {
       apiUrl = `${environment.apiUrl}/rutinas`;
     }
 
+    const body = new FormData();
+
+    body.append('rutina', new Blob([JSON.stringify(dto)], { type: 'application/json' }));
+
+    if (this.nuevaFotoRutina) {
+        body.append('fotoRutina', this.nuevaFotoRutina);
+    }
+
     if (this.rutinaEditandoId) {
       // EDITAR
 
       this.http
-        .put<Rutina>(`${apiUrl}/${this.rutinaEditandoId}`, body, { headers: this.authService.getTokenHeader() })
+        .put<Rutina>(`${apiUrl}/${this.rutinaEditandoId}`, body, { headers: { 'Authorization': `Bearer ${this.authService.getToken()}` } })
         .subscribe({
           next: async (rutinaActualizada) => {
-            this.rutinas.update(lista => lista.map(r => r.id === this.rutinaEditandoId ? rutinaActualizada : r));
+            if(this.alumnoId)this.cargarRutinasAlumno();
+            else this.cargarRutinas();
             await cerrarComponenteBS('modalNuevaRutina');
             form.resetForm();
           },
@@ -144,10 +162,11 @@ export class Rutinas implements OnInit {
       // CREAR
 
       this.http
-        .post<Rutina>(`${apiUrl}`, body, { headers: this.authService.getTokenHeader() })
+        .post<Rutina>(`${apiUrl}`, body, { headers: { 'Authorization': `Bearer ${this.authService.getToken()}` } })
         .subscribe({
           next: async (rutina) => {
-            this.rutinas.update(lista => [...lista, rutina]);
+            if(this.alumnoId)this.cargarRutinasAlumno();
+            else this.cargarRutinas();
             await cerrarComponenteBS('modalNuevaRutina');
             form.resetForm();
           },
@@ -161,6 +180,24 @@ export class Rutinas implements OnInit {
         });
     }
   }
+
+    onFotoRutinaSeleccionada(event: any): void {
+      const file: File = event.target.files[0];
+      if (file.size > 1024 * 1024) { // 1MB
+          this.errorMensaje.set('La imagen no puede superar 1MB');
+          event.target.value = '';
+          return;
+      }
+      this.errorMensaje.set('');
+      if (!file) return;
+      this.nuevaFotoRutina = file;
+    }
+
+    limpiarInputArchivo(): void {
+      if (this.fileInput) {
+        this.fileInput.nativeElement.value = '';
+      }
+    }
 
   verDetalle(rutina: Rutina): void {
     this.router.navigate([`/sesiones/${this.alumnoId}/${rutina.id}`]);

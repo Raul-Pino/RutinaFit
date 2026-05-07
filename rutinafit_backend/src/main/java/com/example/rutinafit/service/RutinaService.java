@@ -6,23 +6,36 @@ import com.example.rutinafit.model.Rutina;
 import com.example.rutinafit.model.Usuario;
 import com.example.rutinafit.repository.RutinaRepository;
 import com.example.rutinafit.repository.UsuarioRepository;
+import com.example.rutinafit.util.FilesUtils;
 import com.example.rutinafit.util.SecurityUtils;
 
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class RutinaService {
 
+    @Value("${app.url-back}")
+    private String urlBack;
+    @Value("${app.upload.dir}")
+    private String uploadDir;
+
     private final RutinaRepository rutinaRepository;
     private final UsuarioRepository usuarioRepository;
     private final SecurityUtils securityUtils;
+    private final FilesUtils filesUtils;
 
     /*
     * Devuelve todas las rutinas por su usuario ID
@@ -34,7 +47,7 @@ public class RutinaService {
         }
 
         return rutinaRepository.findByUsuarioId(usuarioId).stream()
-                        .map(r -> new RutinaResponse(r.getId(), r.getNombre(), r.getDescripcion()))
+                        .map(r -> new RutinaResponse(r.getId(), r.getNombre(), r.getDescripcion(), r.getFotoRutina()))
                         .toList();
     }
 
@@ -57,13 +70,13 @@ public class RutinaService {
         if (rutina.getUsuario().getId() != usuarioId) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No tienes permiso para ver esta rutina");
         }
-        return new RutinaResponse(rutina.getId(), rutina.getNombre(), rutina.getDescripcion());
+        return new RutinaResponse(rutina.getId(), rutina.getNombre(), rutina.getDescripcion(), rutina.getFotoRutina());
     }
 
     /*
     * Crea una nueva rutina para un usuario específico
     */
-    public RutinaResponse create(Long usuarioId, Long propietarioId, RutinaRequest dto) {
+    public RutinaResponse create(Long usuarioId, Long propietarioId, RutinaRequest dto, MultipartFile fotoRutina) throws IOException {
         Usuario usuario = usuarioRepository.findById(propietarioId)
             .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
             
@@ -82,25 +95,53 @@ public class RutinaService {
         rutina.setDescripcion(dto.descripcion());
         rutina.setUsuario(usuario);
         
+        if (fotoRutina != null && !fotoRutina.isEmpty()) {
+            Path ruta = Paths.get(uploadDir + "/fotoRutinas");
+            Files.createDirectories(ruta);
+            String filename = "rutina_" + propietarioId + "_" + System.currentTimeMillis()
+                            + filesUtils.getExtension(fotoRutina.getOriginalFilename());
+            fotoRutina.transferTo(ruta.resolve(filename));
+            rutina.setFotoRutina(urlBack + "/fotoRutinas/" + filename);
+        }
+
+
+
         rutina = rutinaRepository.save(rutina);
-        return new RutinaResponse(rutina.getId(), rutina.getNombre(), rutina.getDescripcion());
+        return new RutinaResponse(rutina.getId(), rutina.getNombre(), rutina.getDescripcion(), rutina.getFotoRutina());
     }
 
     /*
     * Actualizar una rutina existente
     */
-    public RutinaResponse update(Long id, Long usuarioId, RutinaRequest dto){
+    public RutinaResponse update(Long id, Long usuarioId, RutinaRequest dto, MultipartFile fotoRutina) throws IOException {
         Rutina rutina = rutinaRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Rutina no encontrada"));
 
         // Valida el acceso si es el dueño o el entrenador
         securityUtils.validarAcceso(rutina.getUsuario(), usuarioId);
 
+        if (fotoRutina != null && !fotoRutina.isEmpty()) {
+            // Borrar la antigua solo si es un fichero local (no una URL externa)
+            if (rutina.getFotoRutina() != null && rutina.getFotoRutina().startsWith(urlBack)) {
+                String rutaAntigua = rutina.getFotoRutina().replace(urlBack, "");
+                Path antigua = Paths.get(uploadDir + rutaAntigua);
+                Files.deleteIfExists(antigua);
+            }
+
+
+            Path ruta = Paths.get(uploadDir + "/fotoRutinas");
+            Files.createDirectories(ruta);
+            String filename = "rutina_" + rutina.getUsuario().getId() + "_" + System.currentTimeMillis()
+                            + filesUtils.getExtension(fotoRutina.getOriginalFilename());
+            fotoRutina.transferTo(ruta.resolve(filename));
+            rutina.setFotoRutina(urlBack + "/fotoRutinas/" + filename);
+        }
+
         rutina.setNombre(dto.nombre());
         rutina.setDescripcion(dto.descripcion());
         rutina = rutinaRepository.save(rutina);
 
-        return new RutinaResponse(rutina.getId(), rutina.getNombre(), rutina.getDescripcion());
+        return new RutinaResponse(rutina.getId(), rutina.getNombre(), rutina.getDescripcion(), rutina.getFotoRutina());
     }
 
     /*

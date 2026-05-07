@@ -38,6 +38,9 @@ public class Rutina {
     @Column(nullable = false)
     private String nombre;
 
+    @Column(name = "foto_rutina")
+    private String fotoRutina = null;
+
     @Length(max = 255)
     @Column(length = 255)
     private String descripcion;

@@ -8,6 +8,7 @@ import com.example.rutinafit.model.TipoSolicitud;
 import com.example.rutinafit.model.Usuario;
 import com.example.rutinafit.repository.SolicitudRepository;
 import com.example.rutinafit.repository.UsuarioRepository;
+import com.example.rutinafit.util.FilesUtils;
 import com.example.rutinafit.util.SecurityUtils;
 import com.example.rutinafit.util.UsuarioMapper;
 
@@ -36,6 +37,9 @@ public class UsuarioService {
 
     @Value("${app.url-back}")
     private String urlBack;
+    
+    @Value("${app.upload.dir}")
+    private String uploadDir;
 
     private final SecurityUtils securityUtils;
     private final UsuarioMapper usuarioMapper;
@@ -44,6 +48,7 @@ public class UsuarioService {
     private final PasswordEncoder encoder;
     private final AmistadService amistadService;
     private final EmailService emailService;
+    private final FilesUtils filesUtils;
 
     // LISTAR (Solo admins deberían poder hacer esto habitualmente)
     public List<UsuarioResponse> findAll() {
@@ -127,14 +132,14 @@ public class UsuarioService {
             // Borrar la antigua solo si es un fichero local (no una URL externa)
             if (usuario.getFotoPerfil() != null && usuario.getFotoPerfil().startsWith(urlBack)) {
                 String rutaAntigua = usuario.getFotoPerfil().replace(urlBack, "");
-                Path antigua = Paths.get("uploads" + rutaAntigua);
+                Path antigua = Paths.get(uploadDir  + rutaAntigua);
                 Files.deleteIfExists(antigua);
             }
 
-            Path ruta = Paths.get("uploads/avatars");
+            Path ruta = Paths.get(uploadDir + "/avatars");
             Files.createDirectories(ruta);
             String filename = "avatar_" + userId + "_" + System.currentTimeMillis()
-                            + getExtension(fotoPerfil.getOriginalFilename());
+                            + filesUtils.getExtension(fotoPerfil.getOriginalFilename());
             fotoPerfil.transferTo(ruta.resolve(filename));
             usuario.setFotoPerfil(urlBack + "/avatars/" + filename);
         }
@@ -263,12 +268,5 @@ public class UsuarioService {
         securityUtils.validarAcceso(usuario, usuarioId);
 
         return usuario.getUsername();
-    }
-
-    private String getExtension(String filename) {
-        if (filename == null || !filename.contains(".")) {
-            return ".jpg";
-        }
-        return filename.substring(filename.lastIndexOf("."));
     }
 }

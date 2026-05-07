@@ -8,6 +8,8 @@ import com.example.rutinafit.util.SecurityUtils;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -15,11 +17,13 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -56,26 +60,28 @@ public class RutinaController {
     /**
      * Crear una nueva rutina de mi propiedad
      */
-    @PostMapping
+    @PostMapping(value = "", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<RutinaResponse> crearRutina(
-            @RequestBody RutinaRequest rutina,
-            @RequestHeader("Authorization") String authHeader) {
+            @RequestPart("rutina") RutinaRequest rutina,
+            @RequestPart(value = "fotoRutina", required = false) MultipartFile fotoRutina,
+            @RequestHeader("Authorization") String authHeader) throws IOException {
         
         Long usuarioId = securityUtils.getUsuarioId(authHeader);
-        return ResponseEntity.ok(rutinaService.create(usuarioId, usuarioId, rutina));
+        return ResponseEntity.ok(rutinaService.create(usuarioId, usuarioId, rutina, fotoRutina));
     }
 
     /**
-     * Actualizar una rutina de mi propiedad
+     * Actualizar una rutina de mi propiedad o de un alumno que entreno
      */
-    @PutMapping("/{id}")
+    @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<RutinaResponse> update(
             @PathVariable Long id,
-            @Valid @RequestBody RutinaRequest rutina,
-            @RequestHeader("Authorization") String authHeader) {
+            @Valid @RequestPart("rutina") RutinaRequest rutina,
+            @RequestPart(value = "fotoRutina", required = false) MultipartFile fotoRutina,
+            @RequestHeader("Authorization") String authHeader) throws IOException {
         
         Long usuarioId = securityUtils.getUsuarioId(authHeader);
-        return ResponseEntity.ok(rutinaService.update(id, usuarioId, rutina));
+        return ResponseEntity.ok(rutinaService.update(id, usuarioId, rutina, fotoRutina));
     }
 
     /**
@@ -99,13 +105,14 @@ public class RutinaController {
     /**
      * Crear una nueva rutina para un alumno
      */
-    @PostMapping("/alumnos/{alumnoId}")
+    @PostMapping(value = "/alumnos/{alumnoId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<RutinaResponse> crearRutinaAlumno(
             @PathVariable Long alumnoId,
-            @RequestBody RutinaRequest rutina,
-            @RequestHeader("Authorization") String authHeader) {
+            @RequestPart("rutina") RutinaRequest rutina,
+            @RequestPart(value = "fotoRutina", required = false) MultipartFile fotoRutina,
+            @RequestHeader("Authorization") String authHeader) throws IOException {
         Long usuarioId = securityUtils.getUsuarioId(authHeader);
-        return ResponseEntity.ok(rutinaService.create(usuarioId, alumnoId, rutina));
+        return ResponseEntity.ok(rutinaService.create(usuarioId, alumnoId, rutina, fotoRutina));
     }
 
     /**

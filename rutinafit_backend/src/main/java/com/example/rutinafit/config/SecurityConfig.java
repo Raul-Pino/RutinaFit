@@ -8,6 +8,8 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.beans.factory.annotation.Value;
+
 
 @Configuration
 public class SecurityConfig {
@@ -29,6 +31,9 @@ public class SecurityConfig {
 
     @Configuration
     public class WebConfig implements WebMvcConfigurer {
+        @Value("${app.upload.dir}")
+        private String uploadDir;
+
         @Override
         public void addCorsMappings(CorsRegistry registry) {
             registry.addMapping("/**")
@@ -39,8 +44,8 @@ public class SecurityConfig {
 
         @Override
         public void addResourceHandlers(ResourceHandlerRegistry registry) {
-            registry.addResourceHandler("/avatars/**")
-                    .addResourceLocations("file:uploads/avatars/");
+            registry.addResourceHandler("/**")
+                    .addResourceLocations("file:" + uploadDir + "/");
         }
     }
 }
