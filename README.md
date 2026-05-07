@@ -47,6 +47,17 @@ Abre `.env` y ajusta:
 DB_NAME=nombre_de_tu_base_de_datos
 DB_USER=tu_usuario
 DB_PASSWORD=tu_contraseña_segura
+
+URL_FRONT=
+URL_BACK=
+
+SPRING_DATASOURCE_URL=
+SPRING_DATASOURCE_USERNAME=
+SPRING_DATASOURCE_PASSWORD=
+SPRING_JPA_HIBERNATE_DDL_AUTO=
+
+EMAIL_HOST_USER=
+EMAIL_HOST_PASSWORD=
 ```
 
 ### 3. Levanta el proyecto
