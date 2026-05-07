@@ -47,6 +47,9 @@ public class Usuario {
     @Column(nullable = false, unique = true)
     private String email;
 
+    @Column(name = "foto_perfil")
+    private String fotoPerfil;
+
     @NotBlank(message = "La contraseña es obligatoria")
     @Length(min = 8)
     @Column(nullable = false)

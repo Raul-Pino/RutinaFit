@@ -14,11 +14,17 @@ import com.example.rutinafit.util.UsuarioMapper;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +33,9 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class UsuarioService {
+
+    @Value("${app.url-back}")
+    private String urlBack;
 
     private final SecurityUtils securityUtils;
     private final UsuarioMapper usuarioMapper;
@@ -97,7 +106,7 @@ public class UsuarioService {
     }
 
     // ACTUALIZAR
-    public UsuarioResponse update(Long userId, UsuarioUpdateRequest dto) {
+    public UsuarioResponse update(Long userId, UsuarioUpdateRequest dto, MultipartFile fotoPerfil) throws IOException {
         Usuario usuario = usuarioRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
@@ -113,6 +122,22 @@ public class UsuarioService {
         usuario.setUsername(dto.username());
         usuario.setEmail(dto.email());
         usuario.setEsEntrenador(dto.esEntrenador());
+
+        if (fotoPerfil != null && !fotoPerfil.isEmpty()) {
+            // Borrar la antigua solo si es un fichero local (no una URL externa)
+            if (usuario.getFotoPerfil() != null && usuario.getFotoPerfil().startsWith(urlBack)) {
+                String rutaAntigua = usuario.getFotoPerfil().replace(urlBack, "");
+                Path antigua = Paths.get("uploads" + rutaAntigua);
+                Files.deleteIfExists(antigua);
+            }
+
+            Path ruta = Paths.get("uploads/avatars");
+            Files.createDirectories(ruta);
+            String filename = "avatar_" + userId + "_" + System.currentTimeMillis()
+                            + getExtension(fotoPerfil.getOriginalFilename());
+            fotoPerfil.transferTo(ruta.resolve(filename));
+            usuario.setFotoPerfil(urlBack + "/avatars/" + filename);
+        }
 
         usuarioRepository.save(usuario);
         return usuarioMapper.pasarADTO(usuario);
@@ -238,5 +263,12 @@ public class UsuarioService {
         securityUtils.validarAcceso(usuario, usuarioId);
 
         return usuario.getUsername();
+    }
+
+    private String getExtension(String filename) {
+        if (filename == null || !filename.contains(".")) {
+            return ".jpg";
+        }
+        return filename.substring(filename.lastIndexOf("."));
     }
 }

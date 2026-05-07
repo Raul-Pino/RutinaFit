@@ -36,10 +36,15 @@ public class AuthService {
                         throw new RuntimeException("La contraseña no cumple con los requisitos");
                 }
 
+                String fotoPerfil = "https://ui-avatars.com/api/?name=" + request.username() + 
+                        "&background=random&color=fff&size=128";
+
+
                 // 2. Construir el objeto Usuario
                 Usuario usuario = new Usuario();
                 usuario.setUsername(request.username());
                 usuario.setEmail(request.email());
+                usuario.setFotoPerfil(fotoPerfil);
 
                 // 3. ENCRIPTAR la contraseña antes de guardar
                 usuario.setPassword(encoder.encode(request.password()));

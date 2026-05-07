@@ -22,6 +22,7 @@ export class Perfil {
     username = '';
     email = '';
     fotoPerfil = '';
+    nuevaFotoPerfil: File | null = null;
     esEntrenador = false;
     editError = signal('');
     editSuccess = signal('');
@@ -84,13 +85,22 @@ export class Perfil {
         }
 
         this.loadingEdit.set(true);
-        const body = {
+        let dto = {
             username: this.username,
             email: this.email,
             esEntrenador: this.esEntrenador
         };
 
-        this.http.put<any>(`${environment.apiUrl}/usuarios/perfil`, body, { headers: this.authService.getTokenHeader() })
+        const body = new FormData();
+
+        body.append('dto', new Blob([JSON.stringify(dto)], { type: 'application/json' }));
+
+        if (this.nuevaFotoPerfil) {
+            body.append('fotoPerfil', this.nuevaFotoPerfil);
+        }
+
+        this.http.put<any>(`${environment.apiUrl}/usuarios/perfil`, body, 
+            { headers: { 'Authorization': `Bearer ${this.authService.getToken()}` } })
         .subscribe({
             next: (data) => {
             this.editSuccess.set('Perfil actualizado correctamente');
@@ -156,7 +166,6 @@ export class Perfil {
             this.passwordConfirmar = '';
             this.loadingPassword.set(false);
             if (err.status === 400) {
-                console.log(err.error);
                 this.passwordError.set('La contraseña actual es incorrecta');
             } else {
                 this.passwordError.set('Error al cambiar la contraseña');
@@ -178,11 +187,22 @@ export class Perfil {
             this.authService.cerrarSesion();
             },
             error: (err: HttpErrorResponse) => {
-            console.log(err);
             this.loadingDelete.set(false);
             this.deleteError.set('Error al eliminar la cuenta');
             }
         });
+    }
+
+    onFotoPerfilSeleccionada(event: any): void {
+            const file: File = event.target.files[0];
+            if (file.size > 1024 * 1024) { // 1MB
+                this.editError.set('La imagen no puede superar 1MB');
+                event.target.value = '';
+                return;
+            }
+            this.editError.set('');
+            if (!file) return;
+            this.nuevaFotoPerfil = file;
     }
 
     volver(): void {
