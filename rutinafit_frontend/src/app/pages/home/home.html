@@ -8,19 +8,6 @@
         <img src="Nombre.png" alt="RutinaFit" height="22" class="d-none d-sm-block">
       </a>
 
-      <ul class="nav nav-pills col-12 col-md-auto mb-2 justify-content-center mb-md-0 gap-1">
-        <li>
-          <a routerLink="/" fragment="caracteristicas" class="nav-link text-white fw-medium">
-            Características
-          </a>
-        </li>
-        <li>
-          <a routerLink="/" fragment="como-funciona" class="nav-link text-white fw-medium">
-            Cómo funciona
-          </a>
-        </li>
-      </ul>
-
       <div class="col-md-3 text-end d-flex gap-2 justify-content-center justify-content-md-end">
         <a routerLink="/login" class="btn btn-contorno-verde px-3">Iniciar sesión</a>
         <a routerLink="/registro" class="btn btn-verde px-3">Registrarse</a>
@@ -38,14 +25,14 @@
             Domina tu entrenamiento con <span class="texto-verde">rutinaFit</span>
           </h1>
           <p class="fs-5 mb-4 hero-subtitle">
-            La plataforma definitiva para organizar tus rutinas, planificar sesiones intensas y registrar cada ejercicio con precisión profesional.
+            La plataforma definitiva para crear, gestionar y compartir rutinas de entrenamiento. Trabaja solo o conecta con tu entrenador personal para optimizar tu progreso.
           </p>
           <button class="btn btn-verde btn-lg px-4" routerLink="/registro">
             Empieza Gratis
           </button>
         </div>
         <div class="col-lg-6 text-center">
-          <img src="LogoCompleto.png" alt="RutinaFit App" class="img-fluid rounded-3 hero-img">
+          <img src="Hero.png" alt="RutinaFit App" class="img-fluid rounded-3">
         </div>
       </div>
     </div>
@@ -88,8 +75,8 @@
             <div class="mb-3">
               <i class="bi bi-grid-1x2-fill fs-2 texto-verde"></i>
             </div>
-            <h5 class="fw-bold text-white">Organiza tus Rutinas</h5>
-            <p class="caracteristica-descripcion">Estructura tus planes de entrenamiento de forma lógica y personalizada. Divide por grupos musculares o días.</p>
+            <h5 class="fw-bold text-white">Crea, Edita, Elimina</h5>
+            <p class="caracteristica-descripcion">Gestión completa de rutinas: crea nuevas, modifica las existentes o elimina las que ya no necesites con facilidad.</p>
           </div>
         </div>
         <div class="col-md-4">
@@ -117,27 +104,78 @@
   <!-- ==================== SECCIÓN CÓMO FUNCIONA ==================== -->
   <section id="como-funciona" class="py-5 como-funciona-section">
     <div class="container">
-      <h2 class="text-center fw-bold text-white display-6 mb-5">Empieza en 3 pasos</h2>
-      <div class="row g-4 text-center">
-        <div class="col-md-4">
-          <div class="d-flex flex-column align-items-center">
-            <div class="paso-numero">1</div>
-            <h5 class="fw-bold text-white">Crea tu rutina</h5>
-            <p class="paso-descripcion">Define tus objetivos principales y los días que te dedicarás al entrenamiento.</p>
+      <h2 class="text-center fw-bold text-white display-6 mb-5">Elige tu camino de entrenamiento</h2>
+      
+      <!-- FLUJO INDEPENDIENTE -->
+      <div class="row g-5 mb-5">
+        <div class="col-lg-6">
+          <div class="p-4 rounded-4 tarjeta-oscura">
+            <h3 class="text-center fw-bold texto-verde mb-4">Entrena Independiente</h3>
+            <div class="row g-3">
+              <div class="col-12">
+                <div class="d-flex gap-3">
+                  <div class="paso-numero" style="width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">1</div>
+                  <div>
+                    <h5 class="fw-bold text-white">Crea tu rutina</h5>
+                    <p class="paso-descripcion mb-0">Organiza tus ejercicios, define objetivos y estructura tu plan de entrenamiento personalizado.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-12">
+                <div class="d-flex gap-3">
+                  <div class="paso-numero" style="width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">2</div>
+                  <div>
+                    <h5 class="fw-bold text-white">Planifica sesiones</h5>
+                    <p class="paso-descripcion mb-0">Añade ejercicios, series, repeticiones y establece los parámetros que necesitas.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-12">
+                <div class="d-flex gap-3">
+                  <div class="paso-numero" style="width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">3</div>
+                  <div>
+                    <h5 class="fw-bold text-white">Entrena y evoluciona</h5>
+                    <p class="paso-descripcion mb-0">Registra tu progreso, visualiza tu evolución y mantente motivado con tus propias métricas.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-        <div class="col-md-4">
-          <div class="d-flex flex-column align-items-center">
-            <div class="paso-numero">2</div>
-            <h5 class="fw-bold text-white">Añade sesiones</h5>
-            <p class="paso-descripcion">Personaliza cada movimiento, carga y tiempo de descanso según tu nivel.</p>
-          </div>
-        </div>
-        <div class="col-md-4">
-          <div class="d-flex flex-column align-items-center">
-            <div class="paso-numero">3</div>
-            <h5 class="fw-bold text-white">Entrena y registra</h5>
-            <p class="paso-descripcion">Lleva el control de tus marcas en tiempo real directamente desde el móvil.</p>
+        
+        <!-- FLUJO CON ENTRENADOR -->
+        <div class="col-lg-6">
+          <div class="p-4 rounded-4 tarjeta-oscura">
+            <h3 class="text-center fw-bold texto-verde mb-4">Con tu Entrenador Personal</h3>
+            <div class="row g-3">
+              <div class="col-12">
+                <div class="d-flex gap-3">
+                  <div class="paso-numero" style="width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">1</div>
+                  <div>
+                    <h5 class="fw-bold text-white">Busca tu entrenador</h5>
+                    <p class="paso-descripcion mb-0">Explora y conecta con entrenadores certificados que se adapten a tus objetivos.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-12">
+                <div class="d-flex gap-3">
+                  <div class="paso-numero" style="width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">2</div>
+                  <div>
+                    <h5 class="fw-bold text-white">Tu entrenador diseña</h5>
+                    <p class="paso-descripcion mb-0">Recibe rutinas personalizadas, ajustadas a tu nivel, disponibilidad y metas específicas.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-12">
+                <div class="d-flex gap-3">
+                  <div class="paso-numero" style="width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">3</div>
+                  <div>
+                    <h5 class="fw-bold text-white">Progresa supervisado</h5>
+                    <p class="paso-descripcion mb-0">Tu entrenador monitorea tu avance, ajusta las rutinas y te guía hacia el éxito.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>

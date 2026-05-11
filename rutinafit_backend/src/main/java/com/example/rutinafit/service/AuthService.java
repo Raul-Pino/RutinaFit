@@ -11,8 +11,10 @@ import lombok.RequiredArgsConstructor;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class AuthService {
 
@@ -65,6 +67,7 @@ public class AuthService {
         /**
          * Autentica un usuario existente y devuelve el token.
          */
+        @Transactional(readOnly = true)
         public AuthResponse login(LoginRequest request) {
                 // 1. Buscar usuario por email
                 Usuario usuario = usuarioRepository.findByEmail(request.email())
@@ -83,6 +86,7 @@ public class AuthService {
         /**
          * Generar un nuevo token a partir de un token válido antiguo.
          */
+        @Transactional(readOnly = true)
         public AuthResponse refreshToken(String authHeader) {
                 // 1. Limpiar el prefijo "Bearer "
                 if (authHeader == null || !authHeader.startsWith("Bearer ")) {

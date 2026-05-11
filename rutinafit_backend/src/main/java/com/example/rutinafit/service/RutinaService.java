@@ -10,10 +10,10 @@ import com.example.rutinafit.util.FilesUtils;
 import com.example.rutinafit.util.SecurityUtils;
 
 import lombok.RequiredArgsConstructor;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -24,6 +24,7 @@ import java.nio.file.Paths;
 import java.util.List;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class RutinaService {
 
@@ -40,6 +41,7 @@ public class RutinaService {
     /*
     * Devuelve todas las rutinas por su usuario ID
     */
+    @Transactional(readOnly = true)
     public List<RutinaResponse> findByUsuarioId(Long usuarioId) {
         // Verificamos que el usuario exista
         if (!usuarioRepository.existsById(usuarioId)) {
@@ -51,6 +53,7 @@ public class RutinaService {
                         .toList();
     }
 
+    @Transactional(readOnly = true)
     public List<RutinaResponse> findByUsuarioId(Long usuarioId, long propietarioId){
         Usuario usuario = usuarioRepository.findById(propietarioId)
             .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
@@ -63,6 +66,7 @@ public class RutinaService {
     /*
     * Devuelve una rutina por su ID y el ID del usuario propietario
     */
+    @Transactional(readOnly = true)
     public RutinaResponse findByIdAndUsuarioId(Long rutinaId, Long usuarioId) {
         Rutina rutina = rutinaRepository.findById(rutinaId)
                 .orElseThrow(() -> new RuntimeException("Rutina no encontrada"));

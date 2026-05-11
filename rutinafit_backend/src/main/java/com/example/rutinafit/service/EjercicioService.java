@@ -13,10 +13,12 @@ import com.example.rutinafit.util.SecurityUtils;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class EjercicioService {
 
@@ -29,6 +31,7 @@ public class EjercicioService {
     /**
      * Listar ejercicios de una sesión
      */
+    @Transactional(readOnly = true)
     public List<EjercicioResponse> findBySesionId(Long usuarioId, Long sesionId) {
         Sesion sesion = sesionRepository.findById(sesionId)
                 .orElseThrow(() -> new RuntimeException("Sesión no encontrada"));

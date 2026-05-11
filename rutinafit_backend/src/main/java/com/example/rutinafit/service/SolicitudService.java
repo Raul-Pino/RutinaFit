@@ -20,6 +20,7 @@ import com.example.rutinafit.repository.UsuarioRepository;
 import com.example.rutinafit.util.UsuarioMapper;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class SolicitudService {
     private final SolicitudRepository solicitudRepository;
@@ -27,7 +28,6 @@ public class SolicitudService {
     private final AmistadRepository amistadRepository;
     private final UsuarioMapper usuarioMapper;
 
-    @Transactional
     public void enviarSolicitud(Long remitenteId, SolicitudRequest dto) {
         Usuario remitente = usuarioRepository.findById(remitenteId)
                 .orElseThrow(() -> new RuntimeException("Remitente no encontrado"));
@@ -74,7 +74,6 @@ public class SolicitudService {
      * se hace un Rollback automático y se deshacen todos los cambios previos 
      * Así evitamos que la base de datos quede en un estado inconsistente o con datos corruptos.
      */
-    @Transactional
     public void aceptarSolicitud(Long solicitudId, Long usuarioLogueadoId) {
         Solicitud sol = solicitudRepository.findById(solicitudId)
                 .orElseThrow(() -> new RuntimeException("Solicitud no encontrada"));
@@ -124,18 +123,6 @@ public class SolicitudService {
                     .toList();
     }
 
-    /**
-     * Tarea automática que limpia la base de datos de solicitudes antiguas.
-     * Cron: "segundo minuto hora día mes día-semana"
-     * "0 0 3 * * *" = Todos los días a las 03:00:00 AM
-     */
-    // Para pruebas cada 5 minutos: @Scheduled(fixedRate = 300000)
-    // @Scheduled(cron = "0 0 3 * * *")
-    // public void limpiarSolicitudesCaducadas() {
-    //     LocalDateTime limite = LocalDateTime.now().minusDays(30);
-    //     solicitudRepository.deleteByFechaCreacionBefore(limite);
-    //     System.out.println("Limpieza de solicitudes completada para fechas anteriores a: " + limite);
-    // }
 
     public void rechazarSolicitud(Long solicitudId, Long usuarioLogueadoId) {
         Solicitud sol = solicitudRepository.findById(solicitudId)

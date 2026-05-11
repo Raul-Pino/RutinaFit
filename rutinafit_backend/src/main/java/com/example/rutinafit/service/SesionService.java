@@ -10,15 +10,15 @@ import com.example.rutinafit.repository.RutinaRepository;
 import com.example.rutinafit.repository.SesionRepository;
 import com.example.rutinafit.util.SecurityUtils;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class SesionService {
 
@@ -31,6 +31,7 @@ public class SesionService {
      * Devuelve las sesiones de una rutina, PERO verifica que la rutina sea del
      * usuario.
      */
+    @Transactional(readOnly = true)
     public List<SesionResponse> findByRutinaId(Long usuarioId, Long rutinaId) {
         Rutina rutina = rutinaRepository.findById(rutinaId)
                 .orElseThrow(() -> new RuntimeException("Rutina no encontrada"));
@@ -45,7 +46,6 @@ public class SesionService {
     /**
      * Crea una sesión vinculándola a una rutina y verificando al usuario.
      */
-    @Transactional
     public SesionResponse create(Long usuarioId, Long rutinaId, SesionRequest dto) {
         // Buscamos la rutina padre
         Rutina rutina = rutinaRepository.findById(rutinaId)

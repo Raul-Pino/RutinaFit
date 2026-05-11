@@ -12,13 +12,12 @@ import com.example.rutinafit.util.FilesUtils;
 import com.example.rutinafit.util.SecurityUtils;
 import com.example.rutinafit.util.UsuarioMapper;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -32,6 +31,7 @@ import java.util.Map;
 import java.util.UUID;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class UsuarioService {
 
@@ -51,11 +51,13 @@ public class UsuarioService {
     private final FilesUtils filesUtils;
 
     // LISTAR (Solo admins deberían poder hacer esto habitualmente)
+    @Transactional(readOnly = true)
     public List<UsuarioResponse> findAll() {
         return usuarioRepository.findAll().stream().map(u -> usuarioMapper.pasarADTO(u)).toList();
     }
 
     // VER PERFIL
+    @Transactional(readOnly = true)
     public UsuarioResponse findById(Long id) {
         Usuario u = usuarioRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
@@ -63,6 +65,7 @@ public class UsuarioService {
     }
 
     // Buscar por Nombre de usuario
+    @Transactional(readOnly = true)
     public List<UsuarioBuscarResponse> buscarUsuarios(Long id) {
         return usuarioRepository.findAll().stream()
                 .filter(u -> !u.getRol().equals("ADMIN") && !u.getId().equals(id)) // No mostrar a los admins ni a uno
@@ -71,6 +74,7 @@ public class UsuarioService {
                 .toList();
     }
 
+    @Transactional(readOnly = true)
     public UsuarioResponse buscarUsuarioPorId(Long id) {
         Usuario u = usuarioRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
@@ -149,6 +153,7 @@ public class UsuarioService {
     }
 
     // Listar Alumnos de un enternador
+    @Transactional(readOnly = true)
     public List<UsuarioResponse> listarMisAlumnos(Long entrenadorId) {
         Usuario entrenador = usuarioRepository.findById(entrenadorId)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
@@ -162,7 +167,6 @@ public class UsuarioService {
     }
 
     // Dejar de ser Entrenador o dejar de ser Alumno de un entrenador
-    @Transactional
     public void dejarEntrenador(Long alumnoId, Long solicitanteId) {
         Usuario alumno = usuarioRepository.findById(alumnoId)
                 .orElseThrow(() -> new RuntimeException("Alumno no encontrado"));
@@ -209,7 +213,6 @@ public class UsuarioService {
         usuarioRepository.save(usuario);
     }
 
-    @Transactional
     public void recuperarPassword(Map<String, String> datos) {
         String token = datos.get("token");
         String password = datos.get("password");
@@ -239,6 +242,9 @@ public class UsuarioService {
         usuarioRepository.save(usuario);
     }
 
+    /**
+     * Genera un token de recuperación de contraseña para el usuario con el email dado y lo envía por email
+     */
     public void generarToken(String email) {
         Usuario usuario = usuarioRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Usuario no econtrado"));
@@ -255,12 +261,14 @@ public class UsuarioService {
         emailService.enviarRecuperarPassword(email, token);
     }
 
+    @Transactional(readOnly = true)
     public boolean verificarToken(String token) {
         Usuario usuario = usuarioRepository.findByToken(token)
                 .orElseThrow(() -> new RuntimeException("Token no encontrado"));
         return usuario.isTokenValido();
     }
 
+    @Transactional(readOnly = true)
     public String getPropietario(Long alumnoId, Long usuarioId) {
         Usuario usuario = usuarioRepository.findById(alumnoId)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));

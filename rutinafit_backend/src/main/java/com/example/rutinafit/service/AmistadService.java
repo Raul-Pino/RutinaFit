@@ -8,14 +8,15 @@ import com.example.rutinafit.repository.AmistadRepository;
 import com.example.rutinafit.repository.SolicitudRepository;
 import com.example.rutinafit.util.UsuarioMapper;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class AmistadService {
 
@@ -23,6 +24,7 @@ public class AmistadService {
     private final SolicitudRepository solicitudRepository;
     private final UsuarioMapper usuarioMapper;
 
+    @Transactional(readOnly = true)
     public List<UsuarioResponse> listarMisAmigos(Long userId) {
         List<Usuario> amistades = amistadRepository.buscarPorUsuarioId(userId);
 
@@ -35,7 +37,6 @@ public class AmistadService {
         return respuesta;
     }
 
-    @Transactional
     public void eliminarAmistad(Long amigoId, Long usuarioId){
         Amistad amistad = amistadRepository.buscarAmistadEntre(usuarioId, amigoId)
                     .orElseThrow(() -> new RuntimeException("No existe una relación de amistad entre estos usuarios"));
@@ -45,6 +46,7 @@ public class AmistadService {
         amistadRepository.delete(amistad);
     }
 
+    @Transactional(readOnly = true)
     public boolean sonAmigos(Long u1, Long u2){
         return amistadRepository.sonAmigos(u1, u2);
     }

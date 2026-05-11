@@ -6,9 +6,11 @@ import com.example.rutinafit.model.EjercicioInfo;
 import com.example.rutinafit.repository.EjercicioInfoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class EjercicioInfoService {
 
@@ -17,6 +19,7 @@ public class EjercicioInfoService {
     /*
     * Listar todos los tipos de ejercicios
     */
+    @Transactional(readOnly = true)
     public List<EjercicioInfoResponse> findAll(){
         return ejercicioInfoRepository.findAll().stream().map(e -> transformarADto(e)).toList();
     }
@@ -61,6 +64,7 @@ public class EjercicioInfoService {
     /**
      * Buscar el ejercicio info que contenga el nombre
      */
+    @Transactional(readOnly = true)
     public List<EjercicioInfoResponse> buscarEjercicioInfo(String nombre){
         return ejercicioInfoRepository.findByNombreContainingIgnoreCase(nombre).stream()
                     .map(e -> transformarADto(e)).toList();
