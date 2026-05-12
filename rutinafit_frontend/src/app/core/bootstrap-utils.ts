@@ -11,18 +11,20 @@ export function cerrarComponenteBS(id: string): Promise<void> {
 
     const isOffcanvas = el.classList.contains('offcanvas');
     const instance = isOffcanvas 
-      ? bootstrap.Offcanvas.getInstance(el) 
-      : bootstrap.Modal.getInstance(el);
-
-    if (!instance) {
-      resolve();
-      return;
-    }
+      ? bootstrap.Offcanvas.getOrCreateInstance(el) 
+      : bootstrap.Modal.getOrCreateInstance(el);
 
     const limpieza = () => {
       el.removeEventListener('hidden.bs.modal', limpieza);
       el.removeEventListener('hidden.bs.offcanvas', limpieza);
-      resolve();
+      
+      setTimeout(() => {
+        document.querySelectorAll('.modal-backdrop, .offcanvas-backdrop').forEach(el => el.remove());
+        document.body.classList.remove('modal-open', 'offcanvas-open');
+        document.body.style.overflow = '';
+        document.body.style.paddingRight = '';
+        resolve();
+      }, 0);
     };
 
     el.addEventListener('hidden.bs.modal', limpieza, { once: true });
