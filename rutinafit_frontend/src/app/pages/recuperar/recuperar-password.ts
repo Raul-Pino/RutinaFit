@@ -116,7 +116,7 @@ export class RecuperarPassword {
           if (err.status === 0) {
             this.errorRecuperar.set('No se pudo conectar con el servidor. Verifica tu conexión.');
           } else {
-            this.errorRecuperar.set(err.error.error);
+            this.errorRecuperar.set('La contraseña debe incluir al menos una letra mayúscula, una letra minúscula, un número y un carácter especial.');
           }
         }
       });

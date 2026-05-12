@@ -67,7 +67,7 @@ export class Registro {
           if (err.status === 0) {
             this.errorRegistro.set('No se pudo conectar con el servidor. Verifica tu conexión.');
           } else {
-            this.errorRegistro.set(err.error.error);
+            this.errorRegistro.set('La contraseña debe incluir al menos una letra mayúscula, una letra minúscula, un número y un carácter especial.');
           }
         }
       });
