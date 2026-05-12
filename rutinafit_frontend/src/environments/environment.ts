@@ -3,7 +3,7 @@
 // ==============================
 
 export const environment = {
-  apiUrl: 'http://localhost:8080',
+  apiUrl: 'https://rutinafit-back.onrender.com',
   appName: 'RutinaFit',
   version: '1.0.0',
 };
